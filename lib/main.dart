@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 // import 'package:nc_project/pages/home_page.dart';
 // import 'package:nc_project/pages/loading_page.dart';
 import 'package:nc_project/pages/login_page.dart';
-// import 'package:nc_project/pages/profile_page.dart';
+import 'package:nc_project/pages/profile_page.dart';
 // import 'package:nc_project/pages/register_page.dart';
 
 void main() {
@@ -20,16 +20,14 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.purple,
       ),
-      initialRoute: "login",
+      initialRoute: "profile",
       routes: {
         // "/": (context) => LoadingPage(),
         // "register": (context) => RegisterPage(),
         "login": (context) => LoginPage(),
         // "home": (context) => HomePage(),
-        // "profile": (context) => ProfilePage(),
+        "profile": (context) => ProfilePage(),
       },
     );
   }
-
-  
 }
