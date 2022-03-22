@@ -99,12 +99,45 @@ class _HomePageState extends State<HomePage> {
         MediaQuery.of(context).size.height;
     _deviceWidth =
         MediaQuery.of(context).size.width;
-    return Container(
-      color: Color.fromARGB(255, 250, 218, 225),
-      height: _deviceHeight!,
-      width: _deviceWidth!,
-      child: petCards(),
-    );
+    return Scaffold(
+        body: Container(
+            child: Column(children: <Widget>[
+      Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: TextField(
+          onChanged: (value) {},
+          controller: null,
+          decoration: InputDecoration(
+              labelText:
+                  "Search - dogs, rabbits, budgies...",
+              hintText: "Search",
+              prefixIcon: Icon(Icons.search),
+              border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(
+                      Radius.circular(50.0)))),
+        ),
+      ),
+      Stack(
+        children: <Widget>[
+          TextButton(
+            style: ButtonStyle(
+              foregroundColor:
+                  MaterialStateProperty.all<
+                      Color>(Colors.blue),
+            ),
+            onPressed: () {},
+            child: Text('TextButton'),
+          ),
+          Container(
+            color: Color.fromARGB(
+                255, 250, 218, 225),
+            height: _deviceHeight! * 0.91,
+            width: _deviceWidth!,
+            child: petCards(),
+          )
+        ],
+      )
+    ])));
   }
 
   Widget petCards() {
@@ -121,12 +154,7 @@ class _HomePageState extends State<HomePage> {
           margin: EdgeInsets.all(15.0),
           decoration: BoxDecoration(
             borderRadius:
-                BorderRadius.circular(50),
-            boxShadow: [
-              BoxShadow(
-                  color: Colors.black12,
-                  spreadRadius: 3)
-            ],
+                BorderRadius.circular(40),
             image: DecorationImage(
               image: NetworkImage(
                   "${entries[index]['image']}"),
@@ -136,7 +164,7 @@ class _HomePageState extends State<HomePage> {
           child: Container(
               decoration: BoxDecoration(
                   borderRadius:
-                      BorderRadius.circular(50),
+                      BorderRadius.circular(40),
                   gradient: LinearGradient(
                       colors: [
                         Colors.black12,
@@ -206,7 +234,7 @@ class _HomePageState extends State<HomePage> {
                                 Icons.favorite,
                                 color:
                                     Colors.pink,
-                                size: 24.0,
+                                size: 40.0,
                                 semanticLabel:
                                     'Heart',
                               ),
