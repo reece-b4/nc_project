@@ -22,16 +22,24 @@ class _ProfilePageState extends State<ProfilePage> {
             horizontal: _deviceWidth! * 0.05,
             vertical: _deviceHeight! * 0.05,
           ),
-          child: Center(
-              child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            mainAxisSize: MainAxisSize.max,
-            crossAxisAlignment: CrossAxisAlignment.center,
+          child: ListView(
             children: [
-              _titleWidget(),
-              _UserCard(),
+              Center(
+                  child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisSize: MainAxisSize.max,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  _titleWidget(),
+                  _UserCard(),
+                  _myPetsTitle(),
+                  _userPetsCard(),
+                  _myReviewsTitle(),
+                  _userReviewsCard(),
+                ],
+              )),
             ],
-          )),
+          ),
         ),
       ),
     );
@@ -50,7 +58,12 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Widget _UserCard() {
     return Container(
-        margin: const EdgeInsets.only(left: 20.0, right: 20.0),
+        margin: const EdgeInsets.only(
+          left: 20.0,
+          right: 20.0,
+          bottom: 20.0,
+          top: 20.0,
+        ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           mainAxisSize: MainAxisSize.max,
@@ -83,7 +96,114 @@ class _ProfilePageState extends State<ProfilePage> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       mainAxisSize: MainAxisSize.max,
       crossAxisAlignment: CrossAxisAlignment.center,
-      children: [const Text("Jess64"), const Text("Leeds")],
+      children: [
+        const Text(
+          "Jess64",
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+        ),
+        const Text("Leeds",
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600))
+      ],
     ));
+  }
+
+  Widget _userPetsCard() {
+    return Container(
+        decoration: BoxDecoration(border: Border.all(color: Colors.black)),
+        margin: const EdgeInsets.only(
+          left: 20.0,
+          right: 20.0,
+          bottom: 20.0,
+        ),
+        height: _deviceHeight! * 0.4,
+        padding: EdgeInsets.symmetric(horizontal: _deviceWidth! * 0.05),
+        child: ListView(
+          scrollDirection: Axis.horizontal,
+          children: [
+            _petInfo(),
+            _petInfo(),
+            _petInfo(),
+          ],
+        ));
+  }
+
+  Widget _petInfo() {
+    return Container(
+        margin: EdgeInsets.only(
+          bottom: _deviceHeight! * 0.02,
+          right: _deviceHeight! * 0.02,
+        ),
+        height: _deviceHeight! * 0.20,
+        width: _deviceHeight! * 0.20,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(child: Image.network("https://i.pravatar.cc/300")),
+            const Text("Rover",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
+            const Text("7",
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+            const Text("Dog",
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+            const Text("Dalmatian",
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600))
+          ],
+        ));
+  }
+
+  Widget _myPetsTitle() {
+    return const Text("My Pets",
+        style: TextStyle(fontSize: 22.5, fontWeight: FontWeight.w600));
+  }
+
+  Widget _myReviewsTitle() {
+    return const Text("My Reviews",
+        style: TextStyle(fontSize: 22.5, fontWeight: FontWeight.w600));
+  }
+
+  Widget _userReviewsCard() {
+    return Container(
+        decoration: BoxDecoration(border: Border.all(color: Colors.black)),
+        margin: const EdgeInsets.only(
+          left: 20.0,
+          right: 20.0,
+        ),
+        height: _deviceHeight! * 0.4,
+        padding: EdgeInsets.symmetric(horizontal: _deviceWidth! * 0.05),
+        child: ListView(
+          scrollDirection: Axis.vertical,
+          children: [
+            _reviewInfo(),
+            _reviewInfo(),
+            _reviewInfo(),
+            _reviewInfo(),
+            _reviewInfo(),
+            _reviewInfo(),
+            _reviewInfo(),
+            _reviewInfo(),
+            _reviewInfo(),
+            _reviewInfo(),
+          ],
+        ));
+  }
+
+  Widget _reviewInfo() {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 5, top: 5),
+      child: Column(
+        children: [
+          const Text(
+            "Bobby11 - 12/03/2022 13:02",
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const Text(
+              "Rover is the devil. He ate my piglet! Avoid at all cost. Jess is hot though"),
+        ],
+      ),
+    );
   }
 }
