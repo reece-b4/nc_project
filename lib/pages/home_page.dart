@@ -9,7 +9,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  double? _deviceHeight, _deviceWidth;
+  double? _deviceHeight;
+  double? _deviceWidth;
   final List<Map> entries = <Map>[
     {
       "pet_name": "Rover",
@@ -104,42 +105,56 @@ class _HomePageState extends State<HomePage> {
     _deviceWidth =
         MediaQuery.of(context).size.width;
     return Scaffold(
-        resizeToAvoidBottomInset: false,
-        body: Container(
-            child: Column(children: <Widget>[
+      resizeToAvoidBottomInset: false,
+      body: Column(
+        children: <Widget>[
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
               onChanged: (value) {},
               controller: null,
-              decoration: InputDecoration(
-                  hintText: "Search",
-                  hintStyle: TextStyle(
-                    color: Colors.deepPurple,
-                    fontSize: 18,
-                    fontStyle: FontStyle.normal,
+              decoration: const InputDecoration(
+                hintText: "Search",
+                hintStyle: TextStyle(
+                  color: Color.fromARGB(
+                      255, 0, 145, 150),
+                  fontSize: 18,
+                  fontStyle: FontStyle.normal,
+                ),
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(50.0),
                   ),
-                  prefixIcon: Icon(Icons.search),
-                  border: OutlineInputBorder(
-                      borderRadius:
-                          BorderRadius.all(
-                              Radius.circular(
-                                  50.0)))),
+                ),
+              ),
             ),
           ),
           Column(
             children: <Widget>[
               Container(child: filterDropDown()),
               Container(
-                color: Color.fromARGB(
-                    255, 214, 201, 250),
+                decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                        colors: [
+                          Color.fromARGB(
+                              255, 187, 255, 249),
+                          Color.fromARGB(
+                              255, 0, 247, 255),
+                        ],
+                        begin: Alignment.center,
+                        stops: [0.1, 1000],
+                        end: Alignment
+                            .bottomCenter)),
                 height: _deviceHeight! * 0.80,
                 width: _deviceWidth!,
                 child: petCards(),
-              )
+              ),
             ],
-          )
-        ])));
+          ),
+        ],
+      ),
+    );
   }
 
   Widget filterDropDown() {
@@ -148,10 +163,11 @@ class _HomePageState extends State<HomePage> {
       icon: const Icon(Icons.arrow_downward),
       elevation: 16,
       style: const TextStyle(
-          color: Colors.deepPurple),
+          color:
+              Color.fromARGB(255, 0, 143, 148)),
       underline: Container(
         height: 2,
-        color: Colors.deepPurpleAccent,
+        color: Color.fromARGB(255, 0, 145, 150),
       ),
       onChanged: (String? newValue) {
         setState(() {
@@ -160,18 +176,18 @@ class _HomePageState extends State<HomePage> {
               .where((pet) => dropdownValue
                   .contains(pet["species"]))
               .toList();
-          if (filteredEntries.length == 0 &&
+          if (filteredEntries.isEmpty &&
               dropdownValue != "- Filter by -") {
             showDialog(
               context: context,
               builder: (BuildContext context) {
                 return AlertDialog(
-                  title: new Text("Sorry!"),
-                  content: new Text(
-                      "There are currently no ${dropdownValue}"),
+                  title: const Text("Sorry!"),
+                  content: Text(
+                      "There are currently no $dropdownValue"),
                   actions: <Widget>[
-                    new ElevatedButton(
-                      child: new Text("OK"),
+                    ElevatedButton(
+                      child: const Text("OK"),
                       onPressed: () {
                         Navigator.of(context)
                             .pop();
@@ -182,7 +198,6 @@ class _HomePageState extends State<HomePage> {
               },
             );
           }
-          ;
         });
       },
       items: <String>[
@@ -194,18 +209,19 @@ class _HomePageState extends State<HomePage> {
         "tortoises and turtles",
         "other"
       ].map<DropdownMenuItem<String>>(
-          (String value) {
-        return DropdownMenuItem<String>(
-          value: value,
-          child: Text(value),
-        );
-      }).toList(),
+        (String value) {
+          return DropdownMenuItem<String>(
+            value: value,
+            child: Text(value),
+          );
+        },
+      ).toList(),
     );
   }
 
   Widget petCards() {
     return ListView.separated(
-      itemCount: (filteredEntries.length == 0
+      itemCount: (filteredEntries.isEmpty
           ? entries.length
           : filteredEntries.length),
       separatorBuilder:
@@ -216,14 +232,13 @@ class _HomePageState extends State<HomePage> {
         return Container(
           height: _deviceHeight! * 0.5,
           width: _deviceWidth! * 0.5,
-          margin: EdgeInsets.all(15.0),
+          margin: const EdgeInsets.all(15.0),
           decoration: BoxDecoration(
             borderRadius:
                 BorderRadius.circular(40),
             image: DecorationImage(
               image: NetworkImage((filteredEntries
-                          .length ==
-                      0
+                      .isEmpty
                   ? "${entries[index]["image"]}"
                   : "${filteredEntries[index]["image"]}")),
               fit: BoxFit.cover,
@@ -233,7 +248,7 @@ class _HomePageState extends State<HomePage> {
               decoration: BoxDecoration(
                   borderRadius:
                       BorderRadius.circular(40),
-                  gradient: LinearGradient(
+                  gradient: const LinearGradient(
                       colors: [
                         Colors.black12,
                         Colors.black87,
@@ -246,72 +261,68 @@ class _HomePageState extends State<HomePage> {
               child: Stack(
                 children: [
                   Positioned(
-                      right: 10,
-                      left: 30,
-                      bottom: 10,
-                      child: Row(
+                    right: 10,
+                    left: 30,
+                    bottom: 10,
+                    child: Row(
+                      crossAxisAlignment:
+                          CrossAxisAlignment.end,
+                      mainAxisAlignment:
+                          MainAxisAlignment
+                              .spaceBetween,
+                      children: [
+                        Column(
                           crossAxisAlignment:
                               CrossAxisAlignment
-                                  .end,
-                          mainAxisAlignment:
-                              MainAxisAlignment
-                                  .spaceBetween,
-                          children: [
-                            Column(
-                              crossAxisAlignment:
-                                  CrossAxisAlignment
-                                      .start,
-                              mainAxisSize:
-                                  MainAxisSize
-                                      .min,
-                              children: <Widget>[
-                                Text(
-                                  (filteredEntries
-                                              .length ==
-                                          0
-                                      ? "${entries[index]["pet_name"]}, ${entries[index]["age"]}"
-                                      : "${filteredEntries[index]["pet_name"]}, ${filteredEntries[index]["age"]}"),
-                                  style: TextStyle(
-                                      fontFamily:
-                                          "Roboto",
-                                      decoration:
-                                          TextDecoration
-                                              .none,
-                                      fontSize:
-                                          40,
-                                      color: Colors
-                                          .white),
-                                ),
-                                Text(
-                                  "${entries[index]["distance"]}",
-                                  style: TextStyle(
-                                      fontFamily:
-                                          "Roboto",
-                                      decoration:
-                                          TextDecoration
-                                              .none,
-                                      fontSize:
-                                          20,
-                                      color: Colors
-                                          .white),
-                                ),
-                              ],
+                                  .start,
+                          mainAxisSize:
+                              MainAxisSize.min,
+                          children: <Widget>[
+                            Text(
+                              (filteredEntries
+                                      .isEmpty
+                                  ? "${entries[index]["pet_name"]}, ${entries[index]["age"]}"
+                                  : "${filteredEntries[index]["pet_name"]}, ${filteredEntries[index]["age"]}"),
+                              style: const TextStyle(
+                                  fontFamily:
+                                      "Roboto",
+                                  decoration:
+                                      TextDecoration
+                                          .none,
+                                  fontSize: 40,
+                                  color: Colors
+                                      .white),
                             ),
-                            Padding(
-                              padding:
-                                  EdgeInsets.only(
-                                      bottom: 16,
-                                      right: 20),
-                              child: Icon(
-                                Icons.favorite,
-                                color:
-                                    Colors.pink,
-                                size: 40.0,
-                                semanticLabel:
-                                    "Heart",
-                              ),
-                            )
-                          ]))
+                            Text(
+                              "${entries[index]["distance"]}",
+                              style: const TextStyle(
+                                  fontFamily:
+                                      "Roboto",
+                                  decoration:
+                                      TextDecoration
+                                          .none,
+                                  fontSize: 20,
+                                  color: Colors
+                                      .white),
+                            ),
+                          ],
+                        ),
+                        const Padding(
+                          padding:
+                              EdgeInsets.only(
+                                  bottom: 16,
+                                  right: 20),
+                          child: Icon(
+                            Icons.favorite,
+                            color: Colors.pink,
+                            size: 40.0,
+                            semanticLabel:
+                                "Heart",
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               )),
         );
