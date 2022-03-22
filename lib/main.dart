@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:nc_project/pages/login_page.dart';
 import 'package:nc_project/pages/profile_page.dart';
 // import 'package:nc_project/pages/register_page.dart';
+import 'package:nc_project/pages/add_pet_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -27,6 +28,7 @@ class MyApp extends StatelessWidget {
         "login": (context) => LoginPage(),
         // "home": (context) => HomePage(),
         "profile": (context) => ProfilePage(),
+        "addpet": (context) => AddPetPage(),
       },
     );
   }

@@ -183,7 +183,7 @@ class _ProfilePageState extends State<ProfilePage> {
           color: Colors.purple,
           child: InkWell(
             splashColor: Colors.green,
-            onTap: () {},
+            onTap: () => Navigator.pushNamed(context, 'addpet'),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
