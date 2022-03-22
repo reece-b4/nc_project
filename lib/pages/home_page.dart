@@ -104,39 +104,42 @@ class _HomePageState extends State<HomePage> {
     _deviceWidth =
         MediaQuery.of(context).size.width;
     return Scaffold(
+        resizeToAvoidBottomInset: false,
         body: Container(
             child: Column(children: <Widget>[
-      Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: TextField(
-          onChanged: (value) {},
-          controller: null,
-          decoration: InputDecoration(
-              hintText: "Search",
-              hintStyle: TextStyle(
-                color: Colors.deepPurple,
-                fontSize: 18,
-                fontStyle: FontStyle.normal,
-              ),
-              prefixIcon: Icon(Icons.search),
-              border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(
-                      Radius.circular(50.0)))),
-        ),
-      ),
-      Column(
-        children: <Widget>[
-          Container(child: filterDropDown()),
-          Container(
-            color: Color.fromARGB(
-                255, 214, 201, 250),
-            height: _deviceHeight! * 0.85,
-            width: _deviceWidth!,
-            child: petCards(),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              onChanged: (value) {},
+              controller: null,
+              decoration: InputDecoration(
+                  hintText: "Search",
+                  hintStyle: TextStyle(
+                    color: Colors.deepPurple,
+                    fontSize: 18,
+                    fontStyle: FontStyle.normal,
+                  ),
+                  prefixIcon: Icon(Icons.search),
+                  border: OutlineInputBorder(
+                      borderRadius:
+                          BorderRadius.all(
+                              Radius.circular(
+                                  50.0)))),
+            ),
+          ),
+          Column(
+            children: <Widget>[
+              Container(child: filterDropDown()),
+              Container(
+                color: Color.fromARGB(
+                    255, 214, 201, 250),
+                height: _deviceHeight! * 0.80,
+                width: _deviceWidth!,
+                child: petCards(),
+              )
+            ],
           )
-        ],
-      )
-    ])));
+        ])));
   }
 
   Widget filterDropDown() {
