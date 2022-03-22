@@ -33,6 +33,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   _titleWidget(),
                   _UserCard(),
                   _myPetsTitle(),
+                  _addOrDeleteButtons(),
                   _userPetsCard(),
                   _myReviewsTitle(),
                   _userReviewsCard(),
@@ -156,6 +157,27 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget _myPetsTitle() {
     return const Text("My Pets",
         style: TextStyle(fontSize: 22.5, fontWeight: FontWeight.w600));
+  }
+
+  Widget _addOrDeleteButtons() {
+    return Row(
+      children: [
+        MaterialButton(
+          onPressed: () {},
+          minWidth: _deviceWidth! * 0.10,
+          height: _deviceHeight! * 0.02,
+          color: Colors.green,
+          child: const Text(
+            "Add Pet",
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 10,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        )
+      ],
+    );
   }
 
   Widget _myReviewsTitle() {
