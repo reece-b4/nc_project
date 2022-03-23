@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:nc_project/pages/add_pet_page.dart';
 
 // import 'package:nc_project/pages/home_page.dart';
 // import 'package:nc_project/pages/loading_page.dart';
 import 'package:nc_project/pages/login_page.dart';
 import 'package:nc_project/pages/profile_page.dart';
-// import 'package:nc_project/pages/register_page.dart';
-import 'package:nc_project/pages/add_pet_page.dart';
+import 'package:nc_project/pages/register_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
       initialRoute: "profile",
       routes: {
         // "/": (context) => LoadingPage(),
-        // "register": (context) => RegisterPage(),
+        "register": (context) => const RegisterPage(),
         "login": (context) => LoginPage(),
         // "home": (context) => HomePage(),
         "profile": (context) => ProfilePage(),
