@@ -15,6 +15,9 @@ class _AddPetState extends State<AddPetPage> {
   double? _deviceHeight;
   double? _deviceWidth;
   String? _name;
+  int? _age;
+  String? _breed;
+  String? _description;
 
   @override
   Widget build(BuildContext context) {
@@ -105,7 +108,7 @@ class _AddPetState extends State<AddPetPage> {
           _value!.length > 2 ? null : "Must be greater than 2 characters",
       onSaved: (_value) {
         setState(() {
-          _name = _value;
+          _age = _value as int?;
         });
       },
     );
@@ -118,7 +121,7 @@ class _AddPetState extends State<AddPetPage> {
       autovalidateMode: AutovalidateMode.onUserInteraction,
       onSaved: (_value) {
         setState(() {
-          _name = _value;
+          _breed = _value;
         });
       },
     );
@@ -134,7 +137,7 @@ class _AddPetState extends State<AddPetPage> {
       onSaved: (_value) {
         setState(
           () {
-            _name = _value;
+            _description = _value;
           },
         );
       },
@@ -175,7 +178,13 @@ class _AddPetState extends State<AddPetPage> {
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
           textStyle: const TextStyle(fontSize: 18),
         ),
-        onPressed: () {},
+        onPressed: () {
+          if (_addPetStateKey.currentState!.validate()) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Adding pet...')),
+            );
+          }
+        },
         child: const Text("Add Pet"),
       ),
     );
