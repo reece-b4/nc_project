@@ -12,7 +12,6 @@ class _AddPetState extends State<AddPetPage> {
   final _AddPetStateKey = GlobalKey<FormState>();
   double? _deviceHeight;
   double? _deviceWidth;
-  String? _name;
 
   @override
   Widget build(BuildContext context) {
@@ -120,21 +119,6 @@ class _AddPetState extends State<AddPetPage> {
         });
   }
 
-  Widget _addPetButton() {
-    return SizedBox(
-      width: _deviceWidth! * 0.5,
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-          textStyle: const TextStyle(fontSize: 18),
-        ),
-        onPressed: () {},
-        child: const Text("Add Pet"),
-      ),
-    );
-  }
-
   Widget _descriptionTextField() {
     return TextFormField(
         decoration:
@@ -151,7 +135,7 @@ class _AddPetState extends State<AddPetPage> {
 
   Widget _addPictureButton() {
     return SizedBox.fromSize(
-      size: Size(55, 55),
+      size: const Size(55, 55),
       child: ClipOval(
         child: Material(
           color: Colors.purple,
@@ -160,7 +144,7 @@ class _AddPetState extends State<AddPetPage> {
             onTap: () => {},
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [
+              children: const [
                 Icon(
                   Icons.add_a_photo,
                   color: Colors.white,
@@ -170,6 +154,21 @@ class _AddPetState extends State<AddPetPage> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _addPetButton() {
+    return SizedBox(
+      width: _deviceWidth! * 0.5,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+          textStyle: const TextStyle(fontSize: 18),
+        ),
+        onPressed: () {},
+        child: const Text("Add Pet"),
       ),
     );
   }
