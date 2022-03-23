@@ -2,6 +2,8 @@ import "package:flutter/material.dart";
 import 'package:flutter/services.dart';
 
 class AddPetPage extends StatefulWidget {
+  const AddPetPage({Key? key}) : super(key: key);
+
   @override
   State<StatefulWidget> createState() {
     return _AddPetState();
@@ -9,7 +11,7 @@ class AddPetPage extends StatefulWidget {
 }
 
 class _AddPetState extends State<AddPetPage> {
-  final _AddPetStateKey = GlobalKey<FormState>();
+  final _addPetStateKey = GlobalKey<FormState>();
   double? _deviceHeight;
   double? _deviceWidth;
   String? _name;
@@ -46,10 +48,10 @@ class _AddPetState extends State<AddPetPage> {
   }
 
   Widget _addPetForm() {
-    return Container(
+    return SizedBox(
       height: _deviceHeight! * 0.75,
       child: Form(
-        key: _AddPetStateKey,
+        key: _addPetStateKey,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           mainAxisSize: MainAxisSize.max,
@@ -68,22 +70,23 @@ class _AddPetState extends State<AddPetPage> {
 
   Widget _nameTextField() {
     return TextFormField(
-        decoration: const InputDecoration(hintText: "Whats your pet's name?"),
-        autovalidateMode: AutovalidateMode.onUserInteraction,
-        validator: (_value) =>
-            _value!.length > 1 ? null : "Must be greater than 1 character",
-        onSaved: (_value) {
-          setState(() {
-            _name = _value;
-          });
+      decoration: const InputDecoration(hintText: "Whats your pet's name?"),
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      validator: (_value) =>
+          _value!.length > 1 ? null : "Must be greater than 1 character",
+      onSaved: (_value) {
+        setState(() {
+          _name = _value;
         });
+      },
+    );
   }
 
   Widget _ageTextField() {
     return TextFormField(
       autovalidateMode: AutovalidateMode.onUserInteraction,
       validator: (_value) =>
-          _value!.length > 0 ? null : "Must be greater than 0",
+          _value!.isNotEmpty ? null : "Must be greater than 0",
       keyboardType: TextInputType.number,
       inputFormatters: [
         FilteringTextInputFormatter.digitsOnly,
@@ -96,42 +99,46 @@ class _AddPetState extends State<AddPetPage> {
 
   Widget _speciesTextField() {
     return TextFormField(
-        decoration:
-            const InputDecoration(hintText: "What species is your pet?"),
-        autovalidateMode: AutovalidateMode.onUserInteraction,
-        validator: (_value) =>
-            _value!.length > 2 ? null : "Must be greater than 2 characters",
-        onSaved: (_value) {
-          setState(() {
-            _name = _value;
-          });
+      decoration: const InputDecoration(hintText: "What species is your pet?"),
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      validator: (_value) =>
+          _value!.length > 2 ? null : "Must be greater than 2 characters",
+      onSaved: (_value) {
+        setState(() {
+          _name = _value;
         });
+      },
+    );
   }
 
   Widget _breedTextField() {
     return TextFormField(
-        decoration: const InputDecoration(
-            hintText: "If applicable, what breed is your pet?"),
-        autovalidateMode: AutovalidateMode.onUserInteraction,
-        onSaved: (_value) {
-          setState(() {
-            _name = _value;
-          });
+      decoration: const InputDecoration(
+          hintText: "If applicable, what breed is your pet?"),
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      onSaved: (_value) {
+        setState(() {
+          _name = _value;
         });
+      },
+    );
   }
 
   Widget _descriptionTextField() {
     return TextFormField(
-        decoration:
-            const InputDecoration(hintText: "Please add short description"),
-        autovalidateMode: AutovalidateMode.onUserInteraction,
-        validator: (_value) =>
-            _value!.length > 20 ? null : "Must be greater than 20 characters",
-        onSaved: (_value) {
-          setState(() {
+      decoration:
+          const InputDecoration(hintText: "Please add short description"),
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      validator: (_value) =>
+          _value!.length > 20 ? null : "Must be greater than 20 characters",
+      onSaved: (_value) {
+        setState(
+          () {
             _name = _value;
-          });
-        });
+          },
+        );
+      },
+    );
   }
 
   Widget _addPictureButton() {
