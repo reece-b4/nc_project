@@ -12,6 +12,7 @@ class _AddPetState extends State<AddPetPage> {
   final _AddPetStateKey = GlobalKey<FormState>();
   double? _deviceHeight;
   double? _deviceWidth;
+  String? _name;
 
   @override
   Widget build(BuildContext context) {
