@@ -1,6 +1,8 @@
 import "package:flutter/material.dart";
 
 class LoginPage extends StatefulWidget {
+  const LoginPage({Key? key}) : super(key: key);
+
   @override
   State<StatefulWidget> createState() {
     return _LoginPageState();
@@ -55,19 +57,20 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _loginForm() {
-    return Container(
+    return SizedBox(
       height: _deviceHeight! * 0.21,
       child: Form(
-          key: _loginFormKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            mainAxisSize: MainAxisSize.max,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              _emailTextField(),
-              _passwordTextField(),
-            ],
-          )),
+        key: _loginFormKey,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            _emailTextField(),
+            _passwordTextField(),
+          ],
+        ),
+      ),
     );
   }
 

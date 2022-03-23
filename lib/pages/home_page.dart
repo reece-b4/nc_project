@@ -4,8 +4,7 @@ class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
   @override
-  State<HomePage> createState() =>
-      _HomePageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
@@ -100,10 +99,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    _deviceHeight =
-        MediaQuery.of(context).size.height;
-    _deviceWidth =
-        MediaQuery.of(context).size.width;
+    _deviceHeight = MediaQuery.of(context).size.height;
+    _deviceWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Column(
@@ -116,8 +113,7 @@ class _HomePageState extends State<HomePage> {
               decoration: const InputDecoration(
                 hintText: "Search",
                 hintStyle: TextStyle(
-                  color: Color.fromARGB(
-                      255, 0, 145, 150),
+                  color: Color.fromARGB(255, 0, 145, 150),
                   fontSize: 18,
                   fontStyle: FontStyle.normal,
                 ),
@@ -137,15 +133,12 @@ class _HomePageState extends State<HomePage> {
                 decoration: const BoxDecoration(
                     gradient: LinearGradient(
                         colors: [
-                          Color.fromARGB(
-                              255, 187, 255, 249),
-                          Color.fromARGB(
-                              255, 0, 247, 255),
+                          Color.fromARGB(255, 187, 255, 249),
+                          Color.fromARGB(255, 0, 247, 255),
                         ],
                         begin: Alignment.center,
                         stops: [0.1, 1000],
-                        end: Alignment
-                            .bottomCenter)),
+                        end: Alignment.bottomCenter)),
                 height: _deviceHeight! * 0.80,
                 width: _deviceWidth!,
                 child: petCards(),
@@ -162,35 +155,29 @@ class _HomePageState extends State<HomePage> {
       value: dropdownValue,
       icon: const Icon(Icons.arrow_downward),
       elevation: 16,
-      style: const TextStyle(
-          color:
-              Color.fromARGB(255, 0, 143, 148)),
+      style: const TextStyle(color: Color.fromARGB(255, 0, 143, 148)),
       underline: Container(
         height: 2,
-        color: Color.fromARGB(255, 0, 145, 150),
+        color: const Color.fromARGB(255, 0, 145, 150),
       ),
       onChanged: (String? newValue) {
         setState(() {
           dropdownValue = newValue!;
           filteredEntries = entries
-              .where((pet) => dropdownValue
-                  .contains(pet["species"]))
+              .where((pet) => dropdownValue.contains(pet["species"]))
               .toList();
-          if (filteredEntries.isEmpty &&
-              dropdownValue != "- Filter by -") {
+          if (filteredEntries.isEmpty && dropdownValue != "- Filter by -") {
             showDialog(
               context: context,
               builder: (BuildContext context) {
                 return AlertDialog(
                   title: const Text("Sorry!"),
-                  content: Text(
-                      "There are currently no $dropdownValue"),
+                  content: Text("There are currently no $dropdownValue"),
                   actions: <Widget>[
                     ElevatedButton(
                       child: const Text("OK"),
                       onPressed: () {
-                        Navigator.of(context)
-                            .pop();
+                        Navigator.of(context).pop();
                       },
                     ),
                   ],
@@ -221,24 +208,18 @@ class _HomePageState extends State<HomePage> {
 
   Widget petCards() {
     return ListView.separated(
-      itemCount: (filteredEntries.isEmpty
-          ? entries.length
-          : filteredEntries.length),
-      separatorBuilder:
-          (BuildContext context, int index) =>
-              const Divider(),
-      itemBuilder:
-          (BuildContext context, int index) {
+      itemCount:
+          (filteredEntries.isEmpty ? entries.length : filteredEntries.length),
+      separatorBuilder: (BuildContext context, int index) => const Divider(),
+      itemBuilder: (BuildContext context, int index) {
         return Container(
           height: _deviceHeight! * 0.5,
           width: _deviceWidth! * 0.5,
           margin: const EdgeInsets.all(15.0),
           decoration: BoxDecoration(
-            borderRadius:
-                BorderRadius.circular(40),
+            borderRadius: BorderRadius.circular(40),
             image: DecorationImage(
-              image: NetworkImage((filteredEntries
-                      .isEmpty
+              image: NetworkImage((filteredEntries.isEmpty
                   ? "${entries[index]["image"]}"
                   : "${filteredEntries[index]["image"]}")),
               fit: BoxFit.cover,
@@ -246,8 +227,7 @@ class _HomePageState extends State<HomePage> {
           ),
           child: Container(
               decoration: BoxDecoration(
-                  borderRadius:
-                      BorderRadius.circular(40),
+                  borderRadius: BorderRadius.circular(40),
                   gradient: const LinearGradient(
                       colors: [
                         Colors.black12,
@@ -255,8 +235,7 @@ class _HomePageState extends State<HomePage> {
                       ],
                       begin: Alignment.center,
                       stops: [0.4, 1],
-                      end: Alignment
-                          .bottomCenter)),
+                      end: Alignment.bottomCenter)),
               padding: const EdgeInsets.all(8),
               child: Stack(
                 children: [
@@ -265,59 +244,40 @@ class _HomePageState extends State<HomePage> {
                     left: 30,
                     bottom: 10,
                     child: Row(
-                      crossAxisAlignment:
-                          CrossAxisAlignment.end,
-                      mainAxisAlignment:
-                          MainAxisAlignment
-                              .spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Column(
-                          crossAxisAlignment:
-                              CrossAxisAlignment
-                                  .start,
-                          mainAxisSize:
-                              MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
                             Text(
-                              (filteredEntries
-                                      .isEmpty
+                              (filteredEntries.isEmpty
                                   ? "${entries[index]["pet_name"]}, ${entries[index]["age"]}"
                                   : "${filteredEntries[index]["pet_name"]}, ${filteredEntries[index]["age"]}"),
                               style: const TextStyle(
-                                  fontFamily:
-                                      "Roboto",
-                                  decoration:
-                                      TextDecoration
-                                          .none,
+                                  fontFamily: "Roboto",
+                                  decoration: TextDecoration.none,
                                   fontSize: 40,
-                                  color: Colors
-                                      .white),
+                                  color: Colors.white),
                             ),
                             Text(
                               "${entries[index]["distance"]}",
                               style: const TextStyle(
-                                  fontFamily:
-                                      "Roboto",
-                                  decoration:
-                                      TextDecoration
-                                          .none,
+                                  fontFamily: "Roboto",
+                                  decoration: TextDecoration.none,
                                   fontSize: 20,
-                                  color: Colors
-                                      .white),
+                                  color: Colors.white),
                             ),
                           ],
                         ),
                         const Padding(
-                          padding:
-                              EdgeInsets.only(
-                                  bottom: 16,
-                                  right: 20),
+                          padding: EdgeInsets.only(bottom: 16, right: 20),
                           child: Icon(
                             Icons.favorite,
                             color: Colors.pink,
                             size: 40.0,
-                            semanticLabel:
-                                "Heart",
+                            semanticLabel: "Heart",
                           ),
                         ),
                       ],

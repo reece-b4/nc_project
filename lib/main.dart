@@ -25,10 +25,10 @@ class MyApp extends StatelessWidget {
       routes: {
         // "/": (context) => LoadingPage(),
         "register": (context) => const RegisterPage(),
-        "login": (context) => LoginPage(),
+        "login": (context) => const LoginPage(),
         // "home": (context) => HomePage(),
-        "profile": (context) => ProfilePage(),
-        "addpet": (context) => AddPetPage(),
+        "profile": (context) => const ProfilePage(),
+        "addpet": (context) => const AddPetPage(),
       },
     );
   }
