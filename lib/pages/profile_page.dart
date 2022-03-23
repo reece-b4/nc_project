@@ -16,6 +16,9 @@ class _ProfilePageState extends State<ProfilePage> {
     _deviceHeight = MediaQuery.of(context).size.height;
     _deviceWidth = MediaQuery.of(context).size.width;
     return Scaffold(
+      appBar: AppBar(
+        title: const Text("My Profile"),
+      ),
       body: SafeArea(
         child: Container(
           padding: EdgeInsets.symmetric(
@@ -30,7 +33,6 @@ class _ProfilePageState extends State<ProfilePage> {
                 mainAxisSize: MainAxisSize.max,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  _titleWidget(),
                   _UserCard(),
                   _myPetsTitle(),
                   _userPetsCard(),
@@ -41,17 +43,6 @@ class _ProfilePageState extends State<ProfilePage> {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _titleWidget() {
-    return const Text(
-      "My Profile",
-      style: TextStyle(
-        color: Colors.black,
-        fontSize: 25,
-        fontWeight: FontWeight.w600,
       ),
     );
   }
