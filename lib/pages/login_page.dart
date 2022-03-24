@@ -59,7 +59,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _logoWidget() {
-    return Container(
+    return SizedBox(
         height: _deviceHeight! * 0.5,
         child: Image.asset(
           'ptp_logocardsglow.png',
@@ -68,7 +68,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _loginForm() {
-    return Container(
+    return SizedBox(
       height: _deviceHeight! * 0.18,
       child: Form(
           key: _loginFormKey,
