@@ -1,6 +1,8 @@
 import "package:flutter/material.dart";
 
 class LoginPage extends StatefulWidget {
+  const LoginPage({Key? key}) : super(key: key);
+
   @override
   State<StatefulWidget> createState() {
     return _LoginPageState();
@@ -82,7 +84,8 @@ class _LoginPageState extends State<LoginPage> {
               _emailTextField(),
               _passwordTextField(),
             ],
-          )),
+          ),
+      ),
     );
   }
 
