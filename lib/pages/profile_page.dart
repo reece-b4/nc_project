@@ -18,9 +18,9 @@ class _ProfilePageState extends State<ProfilePage> {
     _deviceHeight = MediaQuery.of(context).size.height;
     _deviceWidth = MediaQuery.of(context).size.width;
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("My Profile"),
-      ),
+      // appBar: AppBar(
+      //   title: const Text("My Profile"),
+      // ),
       body: SafeArea(
         child: Container(
           padding: EdgeInsets.symmetric(
