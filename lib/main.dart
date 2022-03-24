@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nc_project/pages/add_pet_page.dart';
+import 'package:nc_project/pages/chat_page.dart';
 // import 'package:nc_project/pages/loading_page.dart';
 import 'package:nc_project/pages/login_page.dart';
 import 'package:nc_project/pages/nav_home_page.dart';
@@ -19,9 +20,10 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.purple,
       ),
-      initialRoute: "nav",
+      initialRoute: "chat",
       routes: {
         // "/": (context) => LoadingPage(),
+        "chat": (context) => const MyHomePage(),
         "nav": (context) => const NavHomePage(),
         "register": (context) => const RegisterPage(),
         "login": (context) => const LoginPage(),
