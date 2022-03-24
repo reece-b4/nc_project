@@ -11,7 +11,7 @@ class NavHomePage extends StatefulWidget {
 
 class _NavHomePageState extends State<NavHomePage> {
   int _selectedIndex = 0;
-  String _appBarName = "Part-Time Pet";
+  String _appBarName = "Home";
 
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
