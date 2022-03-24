@@ -1,5 +1,7 @@
 import "package:flutter/material.dart";
 import 'package:flutter/services.dart';
+import "dart:io";
+import 'package:image_picker/image_picker.dart';
 
 class AddPetPage extends StatefulWidget {
   const AddPetPage({Key? key}) : super(key: key);
@@ -18,6 +20,35 @@ class _AddPetState extends State<AddPetPage> {
   int? _age;
   String? _breed;
   String? _description;
+  File? image;
+
+  Future pickImage() async {
+    try {
+      final image = await ImagePicker().pickImage(source: ImageSource.gallery);
+
+      if (image == null) return;
+
+      final imageTemp = File(image.path);
+
+      setState(() => this.image = imageTemp);
+    } on PlatformException catch (e) {
+      print('Failed to pick image: $e');
+    }
+  }
+
+  Future pickImageC() async {
+    try {
+      final image = await ImagePicker().pickImage(source: ImageSource.camera);
+
+      if (image == null) return;
+
+      final imageTemp = File(image.path);
+
+      setState(() => this.image = imageTemp);
+    } on PlatformException catch (e) {
+      print('Failed to pick image: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +70,13 @@ class _AddPetState extends State<AddPetPage> {
                 mainAxisSize: MainAxisSize.max,
                 children: <Widget>[
                   _addPetForm(),
-                  _addPictureButton(),
+                  _pictureButtons(),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  image != null
+                      ? Image.file(image!)
+                      : const Text("No image selected"),
                   _addPetButton(),
                 ],
               ),
@@ -144,7 +181,7 @@ class _AddPetState extends State<AddPetPage> {
     );
   }
 
-  Widget _addPictureButton() {
+  Widget _addCameraPictureButton() {
     return SizedBox.fromSize(
       size: const Size(55, 55),
       child: ClipOval(
@@ -152,7 +189,9 @@ class _AddPetState extends State<AddPetPage> {
           color: Colors.purple,
           child: InkWell(
             splashColor: Colors.green,
-            onTap: () => {},
+            onTap: () {
+              pickImageC();
+            },
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: const [
@@ -160,7 +199,6 @@ class _AddPetState extends State<AddPetPage> {
                   Icons.add_a_photo,
                   color: Colors.white,
                 ), // <-- Icon
-                Text("Add", style: TextStyle(color: Colors.white)), // <-- Text
               ],
             ),
           ),
@@ -169,6 +207,47 @@ class _AddPetState extends State<AddPetPage> {
     );
   }
 
+  Widget _pictureButtons() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      mainAxisSize: MainAxisSize.max,
+      children: [
+        _addCameraPictureButton(),
+        _addGalleryPictureButton(),
+      ],
+    );
+  }
+
+  Widget _addGalleryPictureButton() {
+    return SizedBox.fromSize(
+      size: const Size(55, 55),
+      child: ClipOval(
+        child: Material(
+          color: Colors.purple,
+          child: InkWell(
+            splashColor: Colors.green,
+            onTap: () {
+              pickImage();
+            },
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                Icon(
+                  Icons.collections,
+                  color: Colors.white,
+                ), // <-- Icon <-- Text
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+//  Widget _petPicture() {
+
+//  }
   Widget _addPetButton() {
     return SizedBox(
       width: _deviceWidth! * 0.5,
