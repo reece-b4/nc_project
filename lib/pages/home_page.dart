@@ -103,49 +103,23 @@ class _HomePageState extends State<HomePage> {
     _deviceWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: Column(
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              onChanged: (value) {},
-              controller: null,
-              decoration: const InputDecoration(
-                hintText: "Search",
-                hintStyle: TextStyle(
-                  color: Color.fromARGB(255, 0, 145, 150),
-                  fontSize: 18,
-                  fontStyle: FontStyle.normal,
-                ),
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(50.0),
-                  ),
-                ),
-              ),
-            ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Container(
+            decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                    colors: [
+                      Color.fromARGB(255, 187, 255, 249),
+                      Color.fromARGB(255, 0, 247, 255),
+                    ],
+                    begin: Alignment.center,
+                    stops: [0.1, 1000],
+                    end: Alignment.bottomCenter)),
+            height: _deviceHeight! * 0.80,
+            width: _deviceWidth!,
+            child: petCards(),
           ),
-          Column(
-            children: <Widget>[
-              Container(child: filterDropDown()),
-              Container(
-                decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                        colors: [
-                          Color.fromARGB(255, 187, 255, 249),
-                          Color.fromARGB(255, 0, 247, 255),
-                        ],
-                        begin: Alignment.center,
-                        stops: [0.1, 1000],
-                        end: Alignment.bottomCenter)),
-                height: _deviceHeight! * 0.80,
-                width: _deviceWidth!,
-                child: petCards(),
-              ),
-            ],
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -213,7 +187,7 @@ class _HomePageState extends State<HomePage> {
       separatorBuilder: (BuildContext context, int index) => const Divider(),
       itemBuilder: (BuildContext context, int index) {
         return Container(
-          height: _deviceHeight! * 0.5,
+          height: _deviceHeight! * 0.65,
           width: _deviceWidth! * 0.5,
           margin: const EdgeInsets.all(15.0),
           decoration: BoxDecoration(
