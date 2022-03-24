@@ -22,7 +22,7 @@ class _AddPetState extends State<AddPetPage> {
   String? _description;
   File? image;
 
-  Future pickImage() async {
+  Future pickImageFromGallery() async {
     try {
       final image = await ImagePicker().pickImage(source: ImageSource.gallery);
 
@@ -32,11 +32,11 @@ class _AddPetState extends State<AddPetPage> {
 
       setState(() => this.image = imageTemp);
     } on PlatformException catch (e) {
-      print('Failed to pick image: $e');
+      print("Failed to pick image: $e");
     }
   }
 
-  Future pickImageC() async {
+  Future pickImageFromCamera() async {
     try {
       final image = await ImagePicker().pickImage(source: ImageSource.camera);
 
@@ -190,7 +190,7 @@ class _AddPetState extends State<AddPetPage> {
           child: InkWell(
             splashColor: Colors.green,
             onTap: () {
-              pickImageC();
+              pickImageFromCamera();
             },
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -228,7 +228,7 @@ class _AddPetState extends State<AddPetPage> {
           child: InkWell(
             splashColor: Colors.green,
             onTap: () {
-              pickImage();
+              pickImageFromGallery();
             },
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
