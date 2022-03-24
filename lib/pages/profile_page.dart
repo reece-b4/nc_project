@@ -144,9 +144,26 @@ class _ProfilePageState extends State<ProfilePage> {
               style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
           const Text("Dalmatian",
               style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
-          const Icon(
-            Icons.delete,
-            color: Colors.red,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              InkWell(
+                onTap: () {},
+                child: const Icon(
+                  Icons.delete,
+                  color: Colors.red,
+                ),
+              ),
+              InkWell(
+                onTap: () {},
+                child: const Icon(
+                  Icons.edit,
+                  color: Colors.blue,
+                ),
+              )
+            ],
           ), // <-- Icon
         ],
       ),
@@ -178,7 +195,6 @@ class _ProfilePageState extends State<ProfilePage> {
         child: Material(
           color: Colors.purple,
           child: InkWell(
-            splashColor: Colors.green,
             onTap: () => Navigator.pushNamed(context, 'addpet'),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
