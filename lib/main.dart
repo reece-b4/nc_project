@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.purple,
       ),
-      initialRoute: "chat",
+      initialRoute: "login",
       routes: {
         // "/": (context) => LoadingPage(),
         "chat": (context) => const MyHomePage(),
