@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:flip_card/flip_card.dart";
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -93,10 +94,8 @@ class _HomePageState extends State<HomePage> {
       "notes": "Loves a bit of fuss."
     },
   ];
-  String dropdownValue = "Sort";
+  String dropdownValue = "All pets";
   bool _folded = true;
-
-  //STATE CHANGES
   List filteredEntries = [];
 
   @override
@@ -112,30 +111,30 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             children: <Widget>[
               Container(
-                  color: Color.fromARGB(
+                  color: const Color.fromARGB(
                       255, 240, 240, 240),
-                  height: _deviceHeight! * 0.07,
+                  height: _deviceHeight! * 0.08,
                   width: _deviceWidth!,
                   child: Row(children: [
                     Padding(
                       padding: const EdgeInsets
-                          .fromLTRB(0, 5, 0, 5),
+                          .fromLTRB(7, 5, 2, 5),
                       child: Container(
                           decoration: BoxDecoration(
                               borderRadius:
                                   BorderRadius
                                       .circular(
                                           40),
-                              color:
-                                  Color.fromARGB(
-                                      255,
-                                      255,
-                                      255,
-                                      255)),
+                              color: const Color
+                                      .fromARGB(
+                                  255,
+                                  255,
+                                  255,
+                                  255)),
                           child:
                               filterDropDown()),
                     ),
-                    Spacer(),
+                    const Spacer(),
                     searchBar()
                   ])),
               Container(
@@ -163,7 +162,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget filterDropDown() {
-    return Container(
+    return SizedBox(
       width: 120,
       child: DropdownButtonHideUnderline(
         child: Padding(
@@ -171,53 +170,60 @@ class _HomePageState extends State<HomePage> {
           child: DropdownButton<String>(
             value: dropdownValue,
             isExpanded: true,
-            icon: const Icon(Icons
-                .arrow_drop_down_circle_outlined),
+            icon: Image.asset(
+              "paw_icon.png",
+              color: Colors.grey,
+            ),
             elevation: 60,
             style: const TextStyle(
                 color:
                     Color.fromARGB(255, 0, 0, 0)),
             underline: Container(
               height: 2,
-              color: Color.fromARGB(255, 0, 0, 0),
+              color: const Color.fromARGB(
+                  255, 0, 0, 0),
             ),
             onChanged: (String? newValue) {
-              setState(() {
-                dropdownValue = newValue!;
-                filteredEntries = entries
-                    .where((pet) => dropdownValue
-                        .contains(pet["species"]))
-                    .toList();
-                if (filteredEntries.isEmpty &&
-                    dropdownValue != "Sort") {
-                  showDialog(
-                    context: context,
-                    builder:
-                        (BuildContext context) {
-                      return AlertDialog(
-                        title:
-                            const Text("Sorry!"),
-                        content: Text(
-                            "There are currently no $dropdownValue"),
-                        actions: <Widget>[
-                          ElevatedButton(
-                            child:
-                                const Text("OK"),
-                            onPressed: () {
-                              Navigator.of(
-                                      context)
-                                  .pop();
-                            },
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                }
-              });
+              setState(
+                () {
+                  dropdownValue = newValue!;
+                  filteredEntries = entries
+                      .where((pet) =>
+                          dropdownValue.contains(
+                              pet["species"]))
+                      .toList();
+                  if (filteredEntries.isEmpty &&
+                      dropdownValue !=
+                          "All pets") {
+                    showDialog(
+                      context: context,
+                      builder:
+                          (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text(
+                              "Sorry!"),
+                          content: Text(
+                              "There are currently no $dropdownValue"),
+                          actions: <Widget>[
+                            ElevatedButton(
+                              child: const Text(
+                                  "OK"),
+                              onPressed: () {
+                                Navigator.of(
+                                        context)
+                                    .pop();
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  }
+                },
+              );
             },
             items: <String>[
-              "Sort",
+              "All pets",
               "dogs",
               "birds",
               "hamsters",
@@ -238,6 +244,83 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  Widget searchBar() {
+    return Padding(
+      padding:
+          const EdgeInsets.fromLTRB(0, 2, 5, 2),
+      child: AnimatedContainer(
+        duration:
+            const Duration(milliseconds: 400),
+        width: _folded ? 56 : 240,
+        height: 50,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(32),
+          color: Colors.white,
+          boxShadow: kElevationToShadow[6],
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.only(
+                    left: 16, bottom: 5),
+                child: !_folded
+                    ? const TextField(
+                        decoration: InputDecoration(
+                            hintText: "Search",
+                            hintStyle: TextStyle(
+                                color: Color
+                                    .fromARGB(255,
+                                        0, 0, 0)),
+                            border:
+                                InputBorder.none),
+                      )
+                    : null,
+              ),
+            ),
+            AnimatedContainer(
+              duration: const Duration(
+                  milliseconds: 400),
+              child: Material(
+                type: MaterialType.transparency,
+                child: InkWell(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(
+                        _folded ? 32 : 0),
+                    topRight:
+                        const Radius.circular(32),
+                    bottomLeft: Radius.circular(
+                        _folded ? 32 : 0),
+                    bottomRight:
+                        const Radius.circular(32),
+                  ),
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.all(16),
+                    child: Icon(
+                      _folded
+                          ? Icons.search
+                          : Icons.close,
+                      color: const Color.fromARGB(
+                          255, 0, 0, 0),
+                    ),
+                  ),
+                  onTap: () {
+                    setState(
+                      () {
+                        _folded = !_folded;
+                      },
+                    );
+                  },
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget petCards() {
     return ListView.separated(
       itemCount: (filteredEntries.isEmpty
@@ -248,22 +331,27 @@ class _HomePageState extends State<HomePage> {
               const Divider(),
       itemBuilder:
           (BuildContext context, int index) {
-        return Container(
-          height: _deviceHeight! * 0.65,
-          width: _deviceWidth! * 0.5,
-          margin: const EdgeInsets.all(15.0),
-          decoration: BoxDecoration(
-            borderRadius:
-                BorderRadius.circular(40),
-            image: DecorationImage(
-              image: NetworkImage((filteredEntries
-                      .isEmpty
-                  ? "${entries[index]["image"]}"
-                  : "${filteredEntries[index]["image"]}")),
-              fit: BoxFit.cover,
+        return FlipCard(
+          fill: Fill
+              .fillBack, // Fill the back side of the card to make in the same size as the front.
+          direction:
+              FlipDirection.HORIZONTAL, // default
+          front: Container(
+            height: _deviceHeight! * 0.6,
+            width: _deviceWidth! * 0.5,
+            margin: const EdgeInsets.all(15.0),
+            decoration: BoxDecoration(
+              borderRadius:
+                  BorderRadius.circular(40),
+              image: DecorationImage(
+                image: NetworkImage((filteredEntries
+                        .isEmpty
+                    ? "${entries[index]["image"]}"
+                    : "${filteredEntries[index]["image"]}")),
+                fit: BoxFit.cover,
+              ),
             ),
-          ),
-          child: Container(
+            child: Container(
               decoration: BoxDecoration(
                   borderRadius:
                       BorderRadius.circular(40),
@@ -313,7 +401,10 @@ class _HomePageState extends State<HomePage> {
                                       .white),
                             ),
                             Text(
-                              "${entries[index]["distance"]}",
+                              filteredEntries
+                                      .isEmpty
+                                  ? "${entries[index]["distance"]}"
+                                  : "${filteredEntries[index]["distance"]}",
                               style: const TextStyle(
                                   fontFamily:
                                       "Roboto",
@@ -334,7 +425,7 @@ class _HomePageState extends State<HomePage> {
                           child: Icon(
                             Icons.favorite,
                             color: Color.fromARGB(
-                                255, 238, 44, 10),
+                                255, 228, 93, 69),
                             size: 40.0,
                             semanticLabel:
                                 "Heart",
@@ -344,84 +435,146 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                 ],
-              )),
-        );
-      },
-    );
-  }
-
-  Widget searchBar() {
-    return Padding(
-      padding:
-          const EdgeInsets.fromLTRB(0, 2, 0, 3),
-      child: AnimatedContainer(
-        duration: Duration(milliseconds: 400),
-        width: _folded ? 56 : 250,
-        height: 56,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(32),
-          color: Colors.white,
-          boxShadow: kElevationToShadow[6],
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Container(
-                padding: EdgeInsets.only(
-                    left: 16, bottom: 5),
-                child: !_folded
-                    ? const TextField(
-                        decoration: InputDecoration(
-                            hintText: 'Search',
-                            hintStyle: TextStyle(
-                                color: Color
-                                    .fromARGB(255,
-                                        0, 0, 0)),
-                            border:
-                                InputBorder.none),
-                      )
-                    : null,
               ),
             ),
-            AnimatedContainer(
-                duration: const Duration(
-                    milliseconds: 400),
-                child: Material(
-                    type:
-                        MaterialType.transparency,
-                    child: InkWell(
-                      borderRadius:
-                          BorderRadius.only(
-                        topLeft: Radius.circular(
-                            _folded ? 32 : 0),
-                        topRight:
-                            Radius.circular(32),
-                        bottomLeft:
-                            Radius.circular(
-                                _folded ? 32 : 0),
-                        bottomRight:
-                            Radius.circular(32),
-                      ),
-                      child: Padding(
-                        padding:
-                            EdgeInsets.all(16),
-                        child: Icon(
-                          _folded
-                              ? Icons.search
-                              : Icons.close,
-                          color: Color.fromARGB(
-                              255, 0, 0, 0),
+          ),
+          back: Container(
+            height: _deviceHeight! * 0.65,
+            width: _deviceWidth! * 0.5,
+            margin: const EdgeInsets.all(15.0),
+            decoration: BoxDecoration(
+              color: const Color.fromARGB(
+                  255, 255, 245, 216),
+              borderRadius:
+                  BorderRadius.circular(40),
+            ),
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius:
+                    BorderRadius.circular(40),
+              ),
+              padding: const EdgeInsets.all(8),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets
+                                .fromLTRB(
+                            20, 20, 0, 0),
+                        child: Column(
+                          crossAxisAlignment:
+                              CrossAxisAlignment
+                                  .start,
+                          mainAxisSize:
+                              MainAxisSize.min,
+                          children: <Widget>[
+                            Row(
+                              children: [
+                                Text(
+                                  (filteredEntries
+                                          .isEmpty
+                                      ? "${entries[index]["pet_name"]}"
+                                      : "${filteredEntries[index]["pet_name"]}"),
+                                  style: const TextStyle(
+                                      fontFamily:
+                                          "Roboto",
+                                      decoration:
+                                          TextDecoration
+                                              .none,
+                                      fontSize:
+                                          40,
+                                      color: Color
+                                          .fromARGB(
+                                              255,
+                                              0,
+                                              0,
+                                              0)),
+                                ),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets
+                                              .fromLTRB(
+                                          15,
+                                          0,
+                                          0,
+                                          0),
+                                  child:
+                                      Container(
+                                    height: 100.0,
+                                    width: 100.0,
+                                    decoration:
+                                        BoxDecoration(
+                                      image:
+                                          DecorationImage(
+                                        image: NetworkImage((filteredEntries
+                                                .isEmpty
+                                            ? "${entries[index]["image"]}"
+                                            : "${filteredEntries[index]["image"]}")),
+                                        fit: BoxFit
+                                            .fill,
+                                      ),
+                                      shape: BoxShape
+                                          .circle,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              width: 250,
+                              child: Text(
+                                filteredEntries
+                                        .isEmpty
+                                    ? "Distance: ${entries[index]["distance"]}\nAge: ${entries[index]["age"]}\nSpecies: ${entries[index]["species"]}\nAvailabilty: ${entries[index]["availabilty"]}\nNotes: ${entries[index]["notes"]}"
+                                    : "Distance: ${filteredEntries[index]["distance"]}\nAge: ${filteredEntries[index]["age"]}\nSpecies: ${filteredEntries[index]["species"]}\nAvailabilty: ${filteredEntries[index]["availabilty"]}\nNotes: ${filteredEntries[index]["notes"]}",
+                                style: const TextStyle(
+                                    fontFamily:
+                                        "Roboto",
+                                    decoration:
+                                        TextDecoration
+                                            .none,
+                                    fontSize: 20,
+                                    color: Color
+                                        .fromARGB(
+                                            255,
+                                            0,
+                                            0,
+                                            0)),
+                              ),
+                            ),
+                            SizedBox(
+                              width: 180,
+                              child: ElevatedButton(
+                                  onPressed:
+                                      () {},
+                                  child: const Text(
+                                      "Contact owner",
+                                      style: TextStyle(
+                                          fontFamily:
+                                              "Roboto",
+                                          decoration:
+                                              TextDecoration
+                                                  .none,
+                                          fontSize:
+                                              20,
+                                          color: Color.fromARGB(
+                                              255,
+                                              255,
+                                              255,
+                                              255)))),
+                            )
+                          ],
                         ),
                       ),
-                      onTap: () {
-                        setState(() {
-                          _folded = !_folded;
-                        });
-                      },
-                    )))
-          ],
-        ),
-      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }
