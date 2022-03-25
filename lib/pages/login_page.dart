@@ -12,6 +12,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  String? _error;
   double? _deviceHeight;
   double? _deviceWidth;
 
@@ -141,7 +142,10 @@ class _LoginPageState extends State<LoginPage> {
     return Container(
       margin: const EdgeInsets.only(top: 15.0),
       child: MaterialButton(
-        onPressed: _loginUser,
+        onPressed: () {
+          _loginUser;
+          
+        },
         minWidth: _deviceWidth! * 0.30,
         height: _deviceHeight! * 0.05,
         color: Colors.red,
@@ -168,7 +172,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _registerPageLink() {
     return GestureDetector(
-      // onTap: () => Navigator.pushNamed(context, 'register'),
+      onTap: () => Navigator.pushNamed(context, 'register'),
       child: const Text(
         "Don't have an account?",
         style: TextStyle(

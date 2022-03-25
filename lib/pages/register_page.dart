@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import "dart:io";
+import 'package:flutter/services.dart';
+import 'package:nc_project/services/firebase_service.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);
@@ -15,6 +19,36 @@ class _RegisterPageState extends State<RegisterPage> {
   String? _username;
   String? _email;
   String? _password;
+  File? image;
+  FirebaseService? _firebaseService;
+
+  Future pickImageFromGallery() async {
+    try {
+      final image = await ImagePicker().pickImage(source: ImageSource.gallery);
+
+      if (image == null) return;
+
+      final imageTemp = File(image.path);
+
+      setState(() => this.image = imageTemp);
+    } on PlatformException catch (e) {
+      print("Failed to pick image: $e");
+    }
+  }
+
+  Future pickImageFromCamera() async {
+    try {
+      final image = await ImagePicker().pickImage(source: ImageSource.camera);
+
+      if (image == null) return;
+
+      final imageTemp = File(image.path);
+
+      setState(() => this.image = imageTemp);
+    } on PlatformException catch (e) {
+      print('Failed to pick image: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,6 +70,17 @@ class _RegisterPageState extends State<RegisterPage> {
                 mainAxisSize: MainAxisSize.max,
                 children: <Widget>[
                   _registerForm(),
+                  _pictureButtons(),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  image != null
+                      ? Image.file(
+                          image!,
+                          height: 250,
+                          width: 250,
+                        )
+                      : const Text("No image selected"),
                   _registerButton(),
                 ],
               ),
@@ -123,6 +168,70 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
+  Widget _pictureButtons() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      mainAxisSize: MainAxisSize.max,
+      children: [
+        _addCameraPictureButton(),
+        _addGalleryPictureButton(),
+      ],
+    );
+  }
+
+  Widget _addCameraPictureButton() {
+    return SizedBox.fromSize(
+      size: const Size(55, 55),
+      child: ClipOval(
+        child: Material(
+          color: Colors.purple,
+          child: InkWell(
+            splashColor: Colors.green,
+            onTap: () {
+              pickImageFromCamera();
+            },
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                Icon(
+                  Icons.add_a_photo,
+                  color: Colors.white,
+                ), // <-- Icon
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _addGalleryPictureButton() {
+    return SizedBox.fromSize(
+      size: const Size(55, 55),
+      child: ClipOval(
+        child: Material(
+          color: Colors.purple,
+          child: InkWell(
+            splashColor: Colors.green,
+            onTap: () {
+              pickImageFromGallery();
+            },
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                Icon(
+                  Icons.collections,
+                  color: Colors.white,
+                ), // <-- Icon <-- Text
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _registerButton() {
     return SizedBox(
       width: _deviceWidth! * 0.5,
@@ -138,9 +247,24 @@ class _RegisterPageState extends State<RegisterPage> {
               const SnackBar(content: Text('Registration in progress...')),
             );
           }
+          _registerUser;
         },
         child: const Text("Register"),
       ),
     );
+  }
+
+  void _registerUser() async {
+    if (_registerFormKey.currentState!.validate() && image != null) {
+      _registerFormKey.currentState!.save();
+      // if (_result) Navigator.pop(context);
+    }
+    print("image");
+    bool _result = await _firebaseService!.registerUser(
+        username: _username!,
+        email: _email!,
+        password: _password!,
+        image: image!);
+    if (_result) Navigator.popAndPushNamed(context, 'login');
   }
 }

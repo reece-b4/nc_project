@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nc_project/pages/add_pet_page.dart';
 import 'package:nc_project/pages/chat_page.dart';
-import 'package:nc_project/pages/home_page.dart';
 // import 'package:nc_project/pages/loading_page.dart';
 import 'package:nc_project/pages/login_page.dart';
 import 'package:nc_project/pages/nav_home_page.dart';
