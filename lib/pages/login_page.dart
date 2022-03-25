@@ -13,18 +13,15 @@ class _LoginPageState extends State<LoginPage> {
   double? _deviceHeight;
   double? _deviceWidth;
 
-  final GlobalKey<FormState> _loginFormKey =
-      GlobalKey<FormState>();
+  final GlobalKey<FormState> _loginFormKey = GlobalKey<FormState>();
 
   String? _email;
   String? _password;
 
   @override
   Widget build(BuildContext context) {
-    _deviceHeight =
-        MediaQuery.of(context).size.height;
-    _deviceWidth =
-        MediaQuery.of(context).size.width;
+    _deviceHeight = MediaQuery.of(context).size.height;
+    _deviceWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       resizeToAvoidBottomInset: true,
       body: SafeArea(
@@ -38,22 +35,21 @@ class _LoginPageState extends State<LoginPage> {
                   begin: Alignment.center,
                   stops: [0.1, 1000],
                   end: Alignment.bottomCenter)),
-          padding: const EdgeInsets.fromLTRB(
-              20, 20, 20, 100),
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
           child: Center(
-              child: Column(
-            mainAxisAlignment:
-                MainAxisAlignment.spaceAround,
-            mainAxisSize: MainAxisSize.max,
-            crossAxisAlignment:
-                CrossAxisAlignment.center,
-            children: [
-              // _titleWidget(),
-              _logoWidget(),
-              _loginForm(),
-              _loginButton(),
-              _registerPageLink(),
-            ],
+              child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisSize: MainAxisSize.max,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // _titleWidget(),
+                _logoWidget(),
+                _loginForm(),
+                _loginButton(),
+                _registerPageLink(),
+              ],
+            ),
           )),
         ),
       ),
@@ -71,15 +67,13 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _loginForm() {
     return SizedBox(
-      height: _deviceHeight! * 0.18,
+      height: _deviceHeight! * 0.22,
       child: Form(
         key: _loginFormKey,
         child: Column(
-          mainAxisAlignment:
-              MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           mainAxisSize: MainAxisSize.max,
-          crossAxisAlignment:
-              CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             _emailTextField(),
             _passwordTextField(),
@@ -95,8 +89,7 @@ class _LoginPageState extends State<LoginPage> {
           filled: true,
           fillColor: Colors.white,
           enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(
-                color: Colors.grey, width: 0.0),
+            borderSide: BorderSide(color: Colors.grey, width: 0.0),
           ),
           hintText: "Email..."),
       onSaved: (_value) {
@@ -109,9 +102,7 @@ class _LoginPageState extends State<LoginPage> {
           RegExp(
               r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"),
         );
-        return _result
-            ? null
-            : "Please enter a valid email";
+        return _result ? null : "Please enter a valid email";
       },
     );
   }
@@ -123,8 +114,7 @@ class _LoginPageState extends State<LoginPage> {
           filled: true,
           fillColor: Colors.white,
           enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(
-                color: Colors.grey, width: 0.0),
+            borderSide: BorderSide(color: Colors.grey, width: 0.0),
           ),
           hintText: "Password..."),
       onSaved: (_value) {
@@ -161,7 +151,8 @@ class _LoginPageState extends State<LoginPage> {
   void _loginUser() {
     if (_loginFormKey.currentState!.validate()) {
       _loginFormKey.currentState!.save();
-      // if (_result) Navigator.popAndPushNamed(context, 'home');
+      Navigator.pushNamed(context, 'nav');
+      // if (_result) Navigator.popAndPushNamed(context, 'nav');
     }
   }
 

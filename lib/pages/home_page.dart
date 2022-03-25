@@ -1,10 +1,12 @@
 import "package:flutter/material.dart";
+import "package:flip_card/flip_card.dart";
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<HomePage> createState() =>
+      _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
@@ -92,142 +94,267 @@ class _HomePageState extends State<HomePage> {
       "notes": "Loves a bit of fuss."
     },
   ];
-  String dropdownValue = "- Filter by -";
-
-  //STATE CHANGES
+  String dropdownValue = "All pets";
+  bool _folded = true;
   List filteredEntries = [];
 
   @override
   Widget build(BuildContext context) {
-    _deviceHeight = MediaQuery.of(context).size.height;
-    _deviceWidth = MediaQuery.of(context).size.width;
+    _deviceHeight =
+        MediaQuery.of(context).size.height;
+    _deviceWidth =
+        MediaQuery.of(context).size.width;
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: Column(
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              onChanged: (value) {},
-              controller: null,
-              decoration: const InputDecoration(
-                hintText: "Search",
-                hintStyle: TextStyle(
-                  color: Color.fromARGB(255, 0, 145, 150),
-                  fontSize: 18,
-                  fontStyle: FontStyle.normal,
-                ),
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(50.0),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Column(
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
             children: <Widget>[
-              Container(child: filterDropDown()),
+              Container(
+                  color: const Color.fromARGB(
+                      255, 240, 240, 240),
+                  height: _deviceHeight! * 0.08,
+                  width: _deviceWidth!,
+                  child: Row(children: [
+                    Padding(
+                      padding: const EdgeInsets
+                          .fromLTRB(7, 5, 2, 5),
+                      child: Container(
+                          decoration: BoxDecoration(
+                              borderRadius:
+                                  BorderRadius
+                                      .circular(
+                                          40),
+                              color: const Color
+                                      .fromARGB(
+                                  255,
+                                  255,
+                                  255,
+                                  255)),
+                          child:
+                              filterDropDown()),
+                    ),
+                    const Spacer(),
+                    searchBar()
+                  ])),
               Container(
                 decoration: const BoxDecoration(
                     gradient: LinearGradient(
                         colors: [
-                          Color.fromARGB(255, 187, 255, 249),
-                          Color.fromARGB(255, 0, 247, 255),
+                          Color.fromARGB(
+                              255, 240, 240, 240),
+                          Color.fromARGB(
+                              255, 240, 240, 240),
                         ],
                         begin: Alignment.center,
                         stops: [0.1, 1000],
-                        end: Alignment.bottomCenter)),
-                height: _deviceHeight! * 0.80,
+                        end: Alignment
+                            .bottomCenter)),
+                height: _deviceHeight! * 0.90,
                 width: _deviceWidth!,
                 child: petCards(),
               ),
             ],
           ),
-        ],
+        ),
       ),
     );
   }
 
   Widget filterDropDown() {
-    return DropdownButton<String>(
-      value: dropdownValue,
-      icon: const Icon(Icons.arrow_downward),
-      elevation: 16,
-      style: const TextStyle(color: Color.fromARGB(255, 0, 143, 148)),
-      underline: Container(
-        height: 2,
-        color: const Color.fromARGB(255, 0, 145, 150),
-      ),
-      onChanged: (String? newValue) {
-        setState(() {
-          dropdownValue = newValue!;
-          filteredEntries = entries
-              .where((pet) => dropdownValue.contains(pet["species"]))
-              .toList();
-          if (filteredEntries.isEmpty && dropdownValue != "- Filter by -") {
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  title: const Text("Sorry!"),
-                  content: Text("There are currently no $dropdownValue"),
-                  actions: <Widget>[
-                    ElevatedButton(
-                      child: const Text("OK"),
-                      onPressed: () {
-                        Navigator.of(context).pop();
+    return SizedBox(
+      width: 120,
+      child: DropdownButtonHideUnderline(
+        child: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: DropdownButton<String>(
+            value: dropdownValue,
+            isExpanded: true,
+            icon: Image.asset(
+              "paw_icon.png",
+              color: Colors.grey,
+            ),
+            elevation: 60,
+            style: const TextStyle(
+                color:
+                    Color.fromARGB(255, 0, 0, 0)),
+            underline: Container(
+              height: 2,
+              color: const Color.fromARGB(
+                  255, 0, 0, 0),
+            ),
+            onChanged: (String? newValue) {
+              setState(
+                () {
+                  dropdownValue = newValue!;
+                  filteredEntries = entries
+                      .where((pet) =>
+                          dropdownValue.contains(
+                              pet["species"]))
+                      .toList();
+                  if (filteredEntries.isEmpty &&
+                      dropdownValue !=
+                          "All pets") {
+                    showDialog(
+                      context: context,
+                      builder:
+                          (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text(
+                              "Sorry!"),
+                          content: Text(
+                              "There are currently no $dropdownValue"),
+                          actions: <Widget>[
+                            ElevatedButton(
+                              child: const Text(
+                                  "OK"),
+                              onPressed: () {
+                                Navigator.of(
+                                        context)
+                                    .pop();
+                              },
+                            ),
+                          ],
+                        );
                       },
-                    ),
-                  ],
+                    );
+                  }
+                },
+              );
+            },
+            items: <String>[
+              "All pets",
+              "dogs",
+              "birds",
+              "hamsters",
+              "guinea pigs",
+              "tortoises and turtles",
+              "other"
+            ].map<DropdownMenuItem<String>>(
+              (String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
                 );
               },
-            );
-          }
-        });
-      },
-      items: <String>[
-        "- Filter by -",
-        "dogs",
-        "birds",
-        "hamsters",
-        "guinea pigs",
-        "tortoises and turtles",
-        "other"
-      ].map<DropdownMenuItem<String>>(
-        (String value) {
-          return DropdownMenuItem<String>(
-            value: value,
-            child: Text(value),
-          );
-        },
-      ).toList(),
+            ).toList(),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget searchBar() {
+    return Padding(
+      padding:
+          const EdgeInsets.fromLTRB(0, 2, 5, 2),
+      child: AnimatedContainer(
+        duration:
+            const Duration(milliseconds: 400),
+        width: _folded ? 56 : 240,
+        height: 50,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(32),
+          color: Colors.white,
+          boxShadow: kElevationToShadow[6],
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.only(
+                    left: 16, bottom: 5),
+                child: !_folded
+                    ? const TextField(
+                        decoration: InputDecoration(
+                            hintText: "Search",
+                            hintStyle: TextStyle(
+                                color: Color
+                                    .fromARGB(255,
+                                        0, 0, 0)),
+                            border:
+                                InputBorder.none),
+                      )
+                    : null,
+              ),
+            ),
+            AnimatedContainer(
+              duration: const Duration(
+                  milliseconds: 400),
+              child: Material(
+                type: MaterialType.transparency,
+                child: InkWell(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(
+                        _folded ? 32 : 0),
+                    topRight:
+                        const Radius.circular(32),
+                    bottomLeft: Radius.circular(
+                        _folded ? 32 : 0),
+                    bottomRight:
+                        const Radius.circular(32),
+                  ),
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.all(16),
+                    child: Icon(
+                      _folded
+                          ? Icons.search
+                          : Icons.close,
+                      color: const Color.fromARGB(
+                          255, 0, 0, 0),
+                    ),
+                  ),
+                  onTap: () {
+                    setState(
+                      () {
+                        _folded = !_folded;
+                      },
+                    );
+                  },
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
   Widget petCards() {
     return ListView.separated(
-      itemCount:
-          (filteredEntries.isEmpty ? entries.length : filteredEntries.length),
-      separatorBuilder: (BuildContext context, int index) => const Divider(),
-      itemBuilder: (BuildContext context, int index) {
-        return Container(
-          height: _deviceHeight! * 0.5,
-          width: _deviceWidth! * 0.5,
-          margin: const EdgeInsets.all(15.0),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(40),
-            image: DecorationImage(
-              image: NetworkImage((filteredEntries.isEmpty
-                  ? "${entries[index]["image"]}"
-                  : "${filteredEntries[index]["image"]}")),
-              fit: BoxFit.cover,
+      itemCount: (filteredEntries.isEmpty
+          ? entries.length
+          : filteredEntries.length),
+      separatorBuilder:
+          (BuildContext context, int index) =>
+              const Divider(),
+      itemBuilder:
+          (BuildContext context, int index) {
+        return FlipCard(
+          fill: Fill
+              .fillBack, // Fill the back side of the card to make in the same size as the front.
+          direction:
+              FlipDirection.HORIZONTAL, // default
+          front: Container(
+            height: _deviceHeight! * 0.6,
+            width: _deviceWidth! * 0.5,
+            margin: const EdgeInsets.all(15.0),
+            decoration: BoxDecoration(
+              borderRadius:
+                  BorderRadius.circular(40),
+              image: DecorationImage(
+                image: NetworkImage((filteredEntries
+                        .isEmpty
+                    ? "${entries[index]["image"]}"
+                    : "${filteredEntries[index]["image"]}")),
+                fit: BoxFit.cover,
+              ),
             ),
-          ),
-          child: Container(
+            child: Container(
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(40),
+                  borderRadius:
+                      BorderRadius.circular(40),
                   gradient: const LinearGradient(
                       colors: [
                         Colors.black12,
@@ -235,7 +362,8 @@ class _HomePageState extends State<HomePage> {
                       ],
                       begin: Alignment.center,
                       stops: [0.4, 1],
-                      end: Alignment.bottomCenter)),
+                      end: Alignment
+                          .bottomCenter)),
               padding: const EdgeInsets.all(8),
               child: Stack(
                 children: [
@@ -244,47 +372,207 @@ class _HomePageState extends State<HomePage> {
                     left: 30,
                     bottom: 10,
                     child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment:
+                          CrossAxisAlignment.end,
+                      mainAxisAlignment:
+                          MainAxisAlignment
+                              .spaceBetween,
                       children: [
                         Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment:
+                              CrossAxisAlignment
+                                  .start,
+                          mainAxisSize:
+                              MainAxisSize.min,
                           children: <Widget>[
                             Text(
-                              (filteredEntries.isEmpty
+                              (filteredEntries
+                                      .isEmpty
                                   ? "${entries[index]["pet_name"]}, ${entries[index]["age"]}"
                                   : "${filteredEntries[index]["pet_name"]}, ${filteredEntries[index]["age"]}"),
                               style: const TextStyle(
-                                  fontFamily: "Roboto",
-                                  decoration: TextDecoration.none,
+                                  fontFamily:
+                                      "Roboto",
+                                  decoration:
+                                      TextDecoration
+                                          .none,
                                   fontSize: 40,
-                                  color: Colors.white),
+                                  color: Colors
+                                      .white),
                             ),
                             Text(
-                              "${entries[index]["distance"]}",
+                              filteredEntries
+                                      .isEmpty
+                                  ? "${entries[index]["distance"]}"
+                                  : "${filteredEntries[index]["distance"]}",
                               style: const TextStyle(
-                                  fontFamily: "Roboto",
-                                  decoration: TextDecoration.none,
+                                  fontFamily:
+                                      "Roboto",
+                                  decoration:
+                                      TextDecoration
+                                          .none,
                                   fontSize: 20,
-                                  color: Colors.white),
+                                  color: Colors
+                                      .white),
                             ),
                           ],
                         ),
                         const Padding(
-                          padding: EdgeInsets.only(bottom: 16, right: 20),
+                          padding:
+                              EdgeInsets.only(
+                                  bottom: 16,
+                                  right: 20),
                           child: Icon(
                             Icons.favorite,
-                            color: Colors.pink,
+                            color: Color.fromARGB(
+                                255, 228, 93, 69),
                             size: 40.0,
-                            semanticLabel: "Heart",
+                            semanticLabel:
+                                "Heart",
                           ),
                         ),
                       ],
                     ),
                   ),
                 ],
-              )),
+              ),
+            ),
+          ),
+          back: Container(
+            height: _deviceHeight! * 0.65,
+            width: _deviceWidth! * 0.5,
+            margin: const EdgeInsets.all(15.0),
+            decoration: BoxDecoration(
+              color: const Color.fromARGB(
+                  255, 255, 245, 216),
+              borderRadius:
+                  BorderRadius.circular(40),
+            ),
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius:
+                    BorderRadius.circular(40),
+              ),
+              padding: const EdgeInsets.all(8),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets
+                                .fromLTRB(
+                            20, 20, 0, 0),
+                        child: Column(
+                          crossAxisAlignment:
+                              CrossAxisAlignment
+                                  .start,
+                          mainAxisSize:
+                              MainAxisSize.min,
+                          children: <Widget>[
+                            Row(
+                              children: [
+                                Text(
+                                  (filteredEntries
+                                          .isEmpty
+                                      ? "${entries[index]["pet_name"]}"
+                                      : "${filteredEntries[index]["pet_name"]}"),
+                                  style: const TextStyle(
+                                      fontFamily:
+                                          "Roboto",
+                                      decoration:
+                                          TextDecoration
+                                              .none,
+                                      fontSize:
+                                          40,
+                                      color: Color
+                                          .fromARGB(
+                                              255,
+                                              0,
+                                              0,
+                                              0)),
+                                ),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets
+                                              .fromLTRB(
+                                          15,
+                                          0,
+                                          0,
+                                          0),
+                                  child:
+                                      Container(
+                                    height: 100.0,
+                                    width: 100.0,
+                                    decoration:
+                                        BoxDecoration(
+                                      image:
+                                          DecorationImage(
+                                        image: NetworkImage((filteredEntries
+                                                .isEmpty
+                                            ? "${entries[index]["image"]}"
+                                            : "${filteredEntries[index]["image"]}")),
+                                        fit: BoxFit
+                                            .fill,
+                                      ),
+                                      shape: BoxShape
+                                          .circle,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              width: 250,
+                              child: Text(
+                                filteredEntries
+                                        .isEmpty
+                                    ? "Distance: ${entries[index]["distance"]}\nAge: ${entries[index]["age"]}\nSpecies: ${entries[index]["species"]}\nAvailabilty: ${entries[index]["availabilty"]}\nNotes: ${entries[index]["notes"]}"
+                                    : "Distance: ${filteredEntries[index]["distance"]}\nAge: ${filteredEntries[index]["age"]}\nSpecies: ${filteredEntries[index]["species"]}\nAvailabilty: ${filteredEntries[index]["availabilty"]}\nNotes: ${filteredEntries[index]["notes"]}",
+                                style: const TextStyle(
+                                    fontFamily:
+                                        "Roboto",
+                                    decoration:
+                                        TextDecoration
+                                            .none,
+                                    fontSize: 20,
+                                    color: Color
+                                        .fromARGB(
+                                            255,
+                                            0,
+                                            0,
+                                            0)),
+                              ),
+                            ),
+                            SizedBox(
+                              width: 180,
+                              child: ElevatedButton(
+                                  onPressed:
+                                      () {},
+                                  child: const Text(
+                                      "Contact owner",
+                                      style: TextStyle(
+                                          fontFamily:
+                                              "Roboto",
+                                          decoration:
+                                              TextDecoration
+                                                  .none,
+                                          fontSize:
+                                              20,
+                                          color: Color.fromARGB(
+                                              255,
+                                              255,
+                                              255,
+                                              255)))),
+                            )
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
         );
       },
     );
