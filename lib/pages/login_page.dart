@@ -2,6 +2,7 @@ import "package:flutter/material.dart";
 import 'package:nc_project/services/firebase_service.dart';
 import 'package:get_it/get_it.dart';
 
+
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
 
@@ -76,7 +77,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _loginForm() {
     return SizedBox(
-      height: _deviceHeight! * 0.18,
+      height: _deviceHeight! * 0.22,
       child: Form(
         key: _loginFormKey,
         child: Column(
@@ -139,7 +140,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _loginButton() {
     return Container(
-      margin: const EdgeInsets.only(top: 15.0),
+      margin: const EdgeInsets.only(top: 20.0),
       child: MaterialButton(
         onPressed: _loginUser,
         minWidth: _deviceWidth! * 0.30,
@@ -168,7 +169,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _registerPageLink() {
     return GestureDetector(
-      // onTap: () => Navigator.pushNamed(context, 'register'),
+      onTap: () => Navigator.pushNamed(context, 'register'),
       child: const Text(
         "Don't have an account?",
         style: TextStyle(
