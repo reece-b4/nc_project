@@ -2,7 +2,6 @@ import "package:flutter/material.dart";
 import 'package:nc_project/services/firebase_service.dart';
 import 'package:get_it/get_it.dart';
 
-
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
 
@@ -13,7 +12,6 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  String? _error;
   double? _deviceHeight;
   double? _deviceWidth;
 
@@ -143,10 +141,7 @@ class _LoginPageState extends State<LoginPage> {
     return Container(
       margin: const EdgeInsets.only(top: 20.0),
       child: MaterialButton(
-        onPressed: () {
-          _loginUser;
-          
-        },
+        onPressed: _loginUser,
         minWidth: _deviceWidth! * 0.30,
         height: _deviceHeight! * 0.05,
         color: Colors.red,
