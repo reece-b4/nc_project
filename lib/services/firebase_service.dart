@@ -33,7 +33,7 @@ class FirebaseService {
           p.extension(image
               .path); //create a filename that looks like "1231232131412341" which is timestamp + the extension of the file ie .png
 
-      UploadTask _task = _storage.ref('images/$_userId/$_fileName').putFile(
+      UploadTask _task = _storage.ref("images/$_userId/$_fileName").putFile(
           image); //uploads the file on storage at the reference(file path) we define
 
       return _task.then((_snapshot) async {
@@ -68,6 +68,7 @@ class FirebaseService {
           email: email, password: password);
       if (_userCredential.user != null) {
         currentUser = await getUserData(uid: _userCredential.user!.uid);
+        print(currentUser);
         return true;
       } else {
         return false;

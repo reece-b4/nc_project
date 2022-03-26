@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart'; //
 import 'package:get_it/get_it.dart';
 import 'package:image_picker/image_picker.dart';
-import "dart:io";
+import "dart:io"; //
 import 'package:flutter/services.dart';
 import 'package:nc_project/services/firebase_service.dart';
 
@@ -247,15 +247,7 @@ class _RegisterPageState extends State<RegisterPage> {
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
           textStyle: const TextStyle(fontSize: 18),
         ),
-        onPressed: () {
-          _registerUser;
-          // if (_registerFormKey.currentState!.validate()) {
-          //   ScaffoldMessenger.of(context).showSnackBar(
-          //     const SnackBar(content: Text('Registration in progress...')),
-          //   );
-
-          // }
-        },
+        onPressed: _registerUser,
         child: const Text("Register"),
       ),
     );
@@ -263,15 +255,28 @@ class _RegisterPageState extends State<RegisterPage> {
 
   void _registerUser() async {
     if (_registerFormKey.currentState!.validate() && imageProfile != null) {
-      print("hi");
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Registration in progress...')));
       _registerFormKey.currentState!.save();
     }
-    print("yo");
+
     bool _result = await _firebaseService!.registerUser(
         username: _username!,
         email: _email!,
         password: _password!,
         image: imageProfile!);
-    if (_result) Navigator.popAndPushNamed(context, 'login');
+    print(imageProfile);
+    if (_result) Navigator.pop(context);
   }
 }
+
+
+
+          
+          // if (_registerFormKey.currentState!.validate()) {
+          //   ScaffoldMessenger.of(context).showSnackBar(
+          //     const SnackBar(content: Text('Registration in progress...')),
+          //   );
+
+          // }
+      
