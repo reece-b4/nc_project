@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:image_picker/image_picker.dart';
 import "dart:io";
 import 'package:flutter/services.dart';
@@ -13,14 +14,20 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   final _registerFormKey = GlobalKey<FormState>();
-
+  FirebaseService? _firebaseService;
   double? _deviceHeight;
   double? _deviceWidth;
   String? _username;
   String? _email;
   String? _password;
   File? imageProfile;
-  FirebaseService? _firebaseService;
+
+  @override
+  void initState() {
+    super.initState();
+    _firebaseService = GetIt.instance.get<FirebaseService>();
+  }
+
   Future pickImageFromGallery() async {
     try {
       final image = await ImagePicker().pickImage(source: ImageSource.gallery);
@@ -241,12 +248,13 @@ class _RegisterPageState extends State<RegisterPage> {
           textStyle: const TextStyle(fontSize: 18),
         ),
         onPressed: () {
-          if (_registerFormKey.currentState!.validate()) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Registration in progress...')),
-            );
-          }
           _registerUser;
+          // if (_registerFormKey.currentState!.validate()) {
+          //   ScaffoldMessenger.of(context).showSnackBar(
+          //     const SnackBar(content: Text('Registration in progress...')),
+          //   );
+
+          // }
         },
         child: const Text("Register"),
       ),
@@ -255,10 +263,10 @@ class _RegisterPageState extends State<RegisterPage> {
 
   void _registerUser() async {
     if (_registerFormKey.currentState!.validate() && imageProfile != null) {
+      print("hi");
       _registerFormKey.currentState!.save();
-      // if (_result) Navigator.pop(context);
     }
-    print("image");
+    print("yo");
     bool _result = await _firebaseService!.registerUser(
         username: _username!,
         email: _email!,
