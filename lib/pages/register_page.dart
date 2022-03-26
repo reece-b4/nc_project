@@ -269,14 +269,3 @@ class _RegisterPageState extends State<RegisterPage> {
     if (_result) Navigator.pop(context);
   }
 }
-
-
-
-          
-          // if (_registerFormKey.currentState!.validate()) {
-          //   ScaffoldMessenger.of(context).showSnackBar(
-          //     const SnackBar(content: Text('Registration in progress...')),
-          //   );
-
-          // }
-      
