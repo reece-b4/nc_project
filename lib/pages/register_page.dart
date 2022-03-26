@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import "dart:io";
 import 'package:flutter/services.dart';
+import 'package:nc_project/services/firebase_service.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);
@@ -19,7 +20,7 @@ class _RegisterPageState extends State<RegisterPage> {
   String? _email;
   String? _password;
   File? imageProfile;
-
+  FirebaseService? _firebaseService;
   Future pickImageFromGallery() async {
     try {
       final image = await ImagePicker().pickImage(source: ImageSource.gallery);
@@ -245,9 +246,24 @@ class _RegisterPageState extends State<RegisterPage> {
               const SnackBar(content: Text('Registration in progress...')),
             );
           }
+          _registerUser;
         },
         child: const Text("Register"),
       ),
     );
+  }
+
+  void _registerUser() async {
+    if (_registerFormKey.currentState!.validate() && imageProfile != null) {
+      _registerFormKey.currentState!.save();
+      // if (_result) Navigator.pop(context);
+    }
+    print("image");
+    bool _result = await _firebaseService!.registerUser(
+        username: _username!,
+        email: _email!,
+        password: _password!,
+        image: imageProfile!);
+    if (_result) Navigator.popAndPushNamed(context, 'login');
   }
 }
