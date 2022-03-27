@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:nc_project/pages/models/chat_message_mode.dart';
 
 class ChatDetailPage extends StatefulWidget {
+  final String name;
+  const ChatDetailPage({Key? key, required this.name}) : super(key: key);
+
   @override
   _ChatDetailPageState createState() => _ChatDetailPageState();
 }
@@ -26,27 +29,26 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
         backgroundColor: Colors.white,
         flexibleSpace: SafeArea(
           child: Container(
-            padding: EdgeInsets.only(right: 16),
+            padding: const EdgeInsets.only(right: 16),
             child: Row(
               children: <Widget>[
                 IconButton(
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.arrow_back,
                     color: Colors.black,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 2,
                 ),
-                CircleAvatar(
-                  backgroundImage: NetworkImage(
-                      "<https://randomuser.me/api/portraits/men/5.jpg>"),
+                const CircleAvatar(
+                  backgroundImage: NetworkImage("https://i.pravatar.cc/300"),
                   maxRadius: 20,
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 12,
                 ),
                 Expanded(
@@ -55,11 +57,11 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Text(
-                        "Kriss Benwat",
-                        style: TextStyle(
+                        widget.name,
+                        style: const TextStyle(
                             fontSize: 16, fontWeight: FontWeight.w600),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 6,
                       ),
                       Text(
@@ -70,7 +72,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                     ],
                   ),
                 ),
-                Icon(
+                const Icon(
                   Icons.settings,
                   color: Colors.black54,
                 ),
@@ -84,63 +86,65 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
           ListView.builder(
             itemCount: messages.length,
             shrinkWrap: true,
-            padding: EdgeInsets.only(top: 10, bottom: 10),
-            physics: NeverScrollableScrollPhysics(),
+            padding: const EdgeInsets.only(top: 10, bottom: 10),
+            physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (context, index) {
               return Container(
-                padding:
-                    EdgeInsets.only(left: 16, right: 16, top: 10, bottom: 10),
-                child: Text(messages[index].messageContent),
+                padding: const EdgeInsets.only(
+                    left: 14, right: 14, top: 10, bottom: 10),
+                child: Align(
+                  alignment: (messages[index].messageType == "receiver"
+                      ? Alignment.topLeft
+                      : Alignment.topRight),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: (messages[index].messageType == "receiver"
+                          ? Colors.grey[300]
+                          : Colors.blue[100]),
+                    ),
+                    padding: const EdgeInsets.all(16),
+                    child: Text(
+                      messages[index].messageContent,
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
               );
             },
           ),
           Align(
             alignment: Alignment.bottomLeft,
             child: Container(
-              padding: EdgeInsets.only(left: 10, bottom: 10, top: 10),
+              padding: const EdgeInsets.only(left: 10, bottom: 10, top: 10),
               height: 60,
               width: double.infinity,
               color: Colors.white,
               child: Row(
                 children: <Widget>[
-                  GestureDetector(
-                    onTap: () {},
-                    child: Container(
-                      height: 30,
-                      width: 30,
-                      decoration: BoxDecoration(
-                        color: Colors.lightBlue,
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      child: Icon(
-                        Icons.add,
-                        color: Colors.white,
-                        size: 20,
-                      ),
-                    ),
-                  ),
-                  SizedBox(
+                  const SizedBox(
                     width: 15,
                   ),
-                  Expanded(
+                  const Expanded(
                     child: TextField(
                       decoration: InputDecoration(
-                          hintText: "Write message...",
-                          hintStyle: TextStyle(color: Colors.black54),
-                          border: InputBorder.none),
+                        hintText: "Write message...",
+                        hintStyle: TextStyle(color: Colors.black54),
+                      ),
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 15,
                   ),
                   FloatingActionButton(
                     onPressed: () {},
-                    child: Icon(
+                    child: const Icon(
                       Icons.send,
                       color: Colors.white,
                       size: 18,
                     ),
-                    backgroundColor: Colors.blue,
+                    backgroundColor: const Color.fromARGB(255, 119, 55, 192),
                     elevation: 0,
                   ),
                 ],

@@ -58,7 +58,7 @@ class _NavHomePageState extends State<NavHomePage> {
             backgroundColor: Colors.purple,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.chat),
+            icon: Icon(Icons.question_answer_outlined),
             label: 'Chat',
             backgroundColor: Colors.purple,
           ),
