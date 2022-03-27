@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import 'package:nc_project/pages/home_page.dart';
+import 'package:nc_project/pages/conversations_page.dart';
 import 'package:nc_project/pages/profile_page.dart';
 
 class NavHomePage extends StatefulWidget {
@@ -16,9 +17,10 @@ class _NavHomePageState extends State<NavHomePage> {
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
 
-  static const List<Widget> _pages = <Widget>[
-    HomePage(),
-    ProfilePage(),
+  static final List<Widget> _pages = <Widget>[
+    const HomePage(),
+    ConversationsPage(),
+    const ProfilePage()
   ];
 
   void _onItemTapped(int index) {
@@ -29,6 +31,9 @@ class _NavHomePageState extends State<NavHomePage> {
           _appBarName = "Home";
           break;
         case 1:
+          _appBarName = "Conversations";
+          break;
+        case 2:
           _appBarName = "Profile";
           break;
       }
@@ -50,6 +55,11 @@ class _NavHomePageState extends State<NavHomePage> {
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Home',
+            backgroundColor: Colors.purple,
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.chat),
+            label: 'Chat',
             backgroundColor: Colors.purple,
           ),
           BottomNavigationBarItem(
