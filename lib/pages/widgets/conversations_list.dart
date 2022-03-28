@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nc_project/pages/chat_detail_page.dart';
 
 class ConversationList extends StatefulWidget {
+  final String userId;
   final String name;
   final String messageText;
   final String imageUrl;
@@ -9,6 +10,7 @@ class ConversationList extends StatefulWidget {
   final bool isMessageRead;
   const ConversationList(
       {Key? key,
+      required this.userId,
       required this.name,
       required this.messageText,
       required this.imageUrl,
@@ -25,7 +27,7 @@ class _ConversationListState extends State<ConversationList> {
     return GestureDetector(
       onTap: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return ChatDetailPage(name: widget.name, otherUser: "help");
+          return ChatDetailPage(name: widget.name, otherUser: widget.userId);
         }));
       },
       child: Container(

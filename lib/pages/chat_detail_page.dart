@@ -25,7 +25,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
   @override
   void initState() {
     super.initState();
-    subToStream("help");
+    subToStream(widget.otherUser);
   }
 
   void subToStream(otherUserId) async {
@@ -35,6 +35,10 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
         return a.compareTo(b);
       });
       _conversationId = chattees.join('');
+      final bool _conversationExists = await checkConversationExists();
+      if (!_conversationExists) {
+        createConversation();
+      }
       _messageStream = FirebaseFirestore.instance
           .collection('conversations')
           .doc(_conversationId)
@@ -42,6 +46,21 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     } catch (error) {
       print(error);
     }
+  }
+
+  Future<bool> checkConversationExists() async {
+    final doc = await FirebaseFirestore.instance
+        .collection('conversations')
+        .doc(_conversationId)
+        .get();
+    return doc.exists;
+  }
+
+  void createConversation() async {
+    await FirebaseFirestore.instance
+        .collection('conversations')
+        .doc(_conversationId)
+        .set({"messages": []});
   }
 
   List convertMessages(List messages) {
