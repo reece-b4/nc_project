@@ -49,6 +49,7 @@ class FirebaseService {
             'Content-Type': 'application/json; charset=UTF-8',
           },
           body: jsonEncode(<String, String>{
+            "userId": _userId,
             "username": username,
             "email": email,
             "postcode": postcode,
