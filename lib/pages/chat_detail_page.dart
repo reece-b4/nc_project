@@ -10,6 +10,7 @@ class ChatDetailPage extends StatefulWidget {
 }
 
 class _ChatDetailPageState extends State<ChatDetailPage> {
+  final myController = TextEditingController();
   List<ChatMessage> messages = [
     ChatMessage(messageContent: "Hello, Will", messageType: "receiver"),
     ChatMessage(messageContent: "How have you been?", messageType: "receiver"),
@@ -126,9 +127,10 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                   const SizedBox(
                     width: 15,
                   ),
-                  const Expanded(
+                  Expanded(
                     child: TextField(
-                      decoration: InputDecoration(
+                      controller: myController,
+                      decoration: const InputDecoration(
                         hintText: "Write message...",
                         hintStyle: TextStyle(color: Colors.black54),
                       ),
@@ -138,7 +140,13 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                     width: 15,
                   ),
                   FloatingActionButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      setState(() {
+                        messages.add(ChatMessage(
+                            messageContent: myController.text,
+                            messageType: "sender"));
+                      });
+                    },
                     child: const Icon(
                       Icons.send,
                       color: Colors.white,
