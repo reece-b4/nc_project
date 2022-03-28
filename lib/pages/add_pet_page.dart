@@ -245,9 +245,6 @@ class _AddPetState extends State<AddPetPage> {
     );
   }
 
-//  Widget _petPicture() {
-
-//  }
   Widget _addPetButton() {
     return SizedBox(
       width: _deviceWidth! * 0.5,

@@ -1,4 +1,6 @@
 import "package:flutter/material.dart";
+import 'package:nc_project/services/firebase_service.dart';
+import 'package:get_it/get_it.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -13,11 +15,17 @@ class _LoginPageState extends State<LoginPage> {
   double? _deviceHeight;
   double? _deviceWidth;
 
-  final GlobalKey<FormState> _loginFormKey =
-      GlobalKey<FormState>();
+  FirebaseService? _firebaseService;
+  final GlobalKey<FormState> _loginFormKey = GlobalKey<FormState>();
 
   String? _email;
   String? _password;
+
+  @override
+  void initState() {
+    super.initState();
+    _firebaseService = GetIt.instance.get<FirebaseService>();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -168,17 +176,18 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  void _loginUser() {
+  void _loginUser() async {
     if (_loginFormKey.currentState!.validate()) {
       _loginFormKey.currentState!.save();
-      Navigator.pushNamed(context, 'nav');
-      // if (_result) Navigator.popAndPushNamed(context, 'nav');
+      bool _result = await _firebaseService!
+          .loginUser(email: _email!, password: _password!);
+      if (_result) Navigator.popAndPushNamed(context, 'nav');
     }
   }
 
   Widget _registerPageLink() {
     return GestureDetector(
-      // onTap: () => Navigator.pushNamed(context, 'register'),
+      onTap: () => Navigator.pushNamed(context, 'register'),
       child: const Text(
         "Don't have an account?",
         style: TextStyle(
