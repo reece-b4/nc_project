@@ -21,6 +21,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     ChatMessage(
         messageContent: "Is there any thing wrong?", messageType: "sender"),
   ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -85,10 +86,10 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
       body: Stack(
         children: <Widget>[
           ListView.builder(
+            reverse: true,
             itemCount: messages.length,
             shrinkWrap: true,
-            padding: const EdgeInsets.only(top: 10, bottom: 10),
-            physics: const NeverScrollableScrollPhysics(),
+            padding: const EdgeInsets.only(top: 10, bottom: 100),
             itemBuilder: (context, index) {
               return Container(
                 padding: const EdgeInsets.only(
@@ -142,9 +143,13 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                   FloatingActionButton(
                     onPressed: () {
                       setState(() {
-                        messages.add(ChatMessage(
-                            messageContent: myController.text,
-                            messageType: "sender"));
+                        messages.insert(
+                          0,
+                          ChatMessage(
+                              messageContent: myController.text,
+                              messageType: "sender"),
+                        );
+                        myController.text = '';
                       });
                     },
                     child: const Icon(
