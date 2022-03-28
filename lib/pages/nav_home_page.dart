@@ -15,9 +15,6 @@ class _NavHomePageState
   int _selectedIndex = 0;
   String _appBarName = "Home";
 
-  static const TextStyle optionStyle = TextStyle(
-      fontSize: 30, fontWeight: FontWeight.bold);
-
   static const List<Widget> _pages = <Widget>[
     HomePage(),
     ProfilePage(),
@@ -42,6 +39,9 @@ class _NavHomePageState
     return Scaffold(
       appBar: (_appBarName == "Home")
           ? AppBar(
+              backgroundColor:
+                  const Color.fromARGB(
+                      255, 83, 167, 245),
               centerTitle: true,
               title: Image.asset(
                   'ptp_logolong.png',
@@ -49,6 +49,9 @@ class _NavHomePageState
                   fit: BoxFit.cover),
             )
           : AppBar(
+              backgroundColor:
+                  const Color.fromARGB(
+                      255, 83, 167, 245),
               centerTitle: true,
               title: Text(_appBarName),
             ),
@@ -67,8 +70,8 @@ class _NavHomePageState
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor:
-            Color.fromARGB(255, 255, 53, 53),
+        selectedItemColor: const Color.fromARGB(
+            255, 83, 167, 245),
         onTap: _onItemTapped,
       ),
     );
