@@ -1,4 +1,7 @@
 PODS:
+  - Flutter (1.0.0)
+  - image_picker (0.0.1):
+    - Flutter
   - abseil/algorithm (0.20200225.0):
     - abseil/algorithm/algorithm (= 0.20200225.0)
     - abseil/algorithm/container (= 0.20200225.0)
@@ -507,6 +510,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/url_launcher_ios/ios"
 
 SPEC CHECKSUMS:
+  Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
+  image_picker: 541dcbb3b9cf32d87eacbd957845d8651d6c62c3
   abseil: 6c8eb7892aefa08d929b39f9bb108e5367e3228f
   BoringSSL-GRPC: 8edf627ee524575e2f8d19d56f068b448eea3879
   cloud_firestore: c6c42fe62809b7417aa3c45a6ef0c2812f7fb0d6

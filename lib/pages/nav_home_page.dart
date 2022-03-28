@@ -7,15 +7,17 @@ class NavHomePage extends StatefulWidget {
   const NavHomePage({Key? key}) : super(key: key);
 
   @override
-  State<NavHomePage> createState() => _NavHomePageState();
+  State<NavHomePage> createState() =>
+      _NavHomePageState();
 }
 
-class _NavHomePageState extends State<NavHomePage> {
+class _NavHomePageState
+    extends State<NavHomePage> {
   int _selectedIndex = 0;
   String _appBarName = "Home";
 
-  static const TextStyle optionStyle =
-      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+  static const TextStyle optionStyle = TextStyle(
+      fontSize: 30, fontWeight: FontWeight.bold);
 
   static final List<Widget> _pages = <Widget>[
     const HomePage(),
@@ -43,10 +45,18 @@ class _NavHomePageState extends State<NavHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text(_appBarName),
-      ),
+      appBar: (_appBarName == "Home")
+          ? AppBar(
+              centerTitle: true,
+              title: Image.asset(
+                  'ptp_logolong.png',
+                  height: 40,
+                  fit: BoxFit.cover),
+            )
+          : AppBar(
+              centerTitle: true,
+              title: Text(_appBarName),
+            ),
       body: Center(
         child: _pages.elementAt(_selectedIndex),
       ),
@@ -55,7 +65,6 @@ class _NavHomePageState extends State<NavHomePage> {
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Home',
-            backgroundColor: Colors.purple,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.question_answer_outlined),
@@ -65,11 +74,11 @@ class _NavHomePageState extends State<NavHomePage> {
           BottomNavigationBarItem(
             icon: Icon(Icons.face),
             label: 'Profile',
-            backgroundColor: Colors.purple,
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.amber[800],
+        selectedItemColor:
+            Color.fromARGB(255, 255, 53, 53),
         onTap: _onItemTapped,
       ),
     );
