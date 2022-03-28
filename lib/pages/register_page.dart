@@ -5,6 +5,7 @@ import "dart:io"; //
 import 'package:flutter/services.dart';
 import 'package:nc_project/services/firebase_service.dart';
 
+
 class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);
 
@@ -18,6 +19,7 @@ class _RegisterPageState extends State<RegisterPage> {
   double? _deviceHeight;
   double? _deviceWidth;
   String? _username;
+  String? _postcode;
   String? _email;
   String? _password;
   File? imageProfile;
@@ -109,6 +111,7 @@ class _RegisterPageState extends State<RegisterPage> {
           children: [
             _usernameTextField(),
             _emailTextField(),
+            _postcodeTextField(),
             _passwordTextField(),
             _passwordConfirmTextField(),
           ],
@@ -144,6 +147,24 @@ class _RegisterPageState extends State<RegisterPage> {
         onSaved: (_value) {
           setState(() {
             _username = _value;
+          });
+        });
+  }
+
+  Widget _postcodeTextField() {
+    return TextFormField(
+        decoration: const InputDecoration(hintText: "Postcode..."),
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        validator: (_value) {
+          bool _result = _value!.contains(
+            RegExp(r'^([A-Z]{1,2}\d{1,2}[A-Z]?)\s{0,1}(\d[A-Z]{2})$',
+                caseSensitive: false),
+          );
+          return _result ? null : "Please enter a valid postcode";
+        },
+        onSaved: (_value) {
+          setState(() {
+            _postcode = _value;
           });
         });
   }
@@ -264,6 +285,7 @@ class _RegisterPageState extends State<RegisterPage> {
         username: _username!,
         email: _email!,
         password: _password!,
+        postcode: _postcode!,
         image: imageProfile!);
     print(imageProfile);
     if (_result) Navigator.pop(context);

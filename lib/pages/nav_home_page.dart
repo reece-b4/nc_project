@@ -7,22 +7,17 @@ class NavHomePage extends StatefulWidget {
   const NavHomePage({Key? key}) : super(key: key);
 
   @override
-  State<NavHomePage> createState() =>
-      _NavHomePageState();
+  State<NavHomePage> createState() => _NavHomePageState();
 }
 
-class _NavHomePageState
-    extends State<NavHomePage> {
+class _NavHomePageState extends State<NavHomePage> {
   int _selectedIndex = 0;
   String _appBarName = "Home";
 
-  static const TextStyle optionStyle = TextStyle(
-      fontSize: 30, fontWeight: FontWeight.bold);
-
-  static final List<Widget> _pages = <Widget>[
+  final List<Widget> _pages = <Widget>[
     const HomePage(),
     ConversationsPage(),
-    const ProfilePage()
+    const ProfilePage(),
   ];
 
   void _onItemTapped(int index) {
@@ -47,13 +42,13 @@ class _NavHomePageState
     return Scaffold(
       appBar: (_appBarName == "Home")
           ? AppBar(
+              backgroundColor: const Color.fromARGB(255, 83, 167, 245),
               centerTitle: true,
-              title: Image.asset(
-                  'ptp_logolong.png',
-                  height: 40,
-                  fit: BoxFit.cover),
+              title: Image.asset('ptp_logolong.png',
+                  height: 40, fit: BoxFit.cover),
             )
           : AppBar(
+              backgroundColor: const Color.fromARGB(255, 83, 167, 245),
               centerTitle: true,
               title: Text(_appBarName),
             ),
@@ -77,8 +72,7 @@ class _NavHomePageState
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor:
-            Color.fromARGB(255, 255, 53, 53),
+        selectedItemColor: const Color.fromARGB(255, 83, 167, 245),
         onTap: _onItemTapped,
       ),
     );
