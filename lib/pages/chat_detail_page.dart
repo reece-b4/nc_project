@@ -1,9 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:nc_project/pages/models/chat_message_mode.dart';
 
 class ChatDetailPage extends StatefulWidget {
   final String name;
-  const ChatDetailPage({Key? key, required this.name}) : super(key: key);
+  final String otherUser;
+
+  const ChatDetailPage({Key? key, required this.name, required this.otherUser})
+      : super(key: key);
 
   @override
   _ChatDetailPageState createState() => _ChatDetailPageState();
@@ -11,16 +16,47 @@ class ChatDetailPage extends StatefulWidget {
 
 class _ChatDetailPageState extends State<ChatDetailPage> {
   final myController = TextEditingController();
-  List<ChatMessage> messages = [
-    ChatMessage(messageContent: "Hello, Will", messageType: "receiver"),
-    ChatMessage(messageContent: "How have you been?", messageType: "receiver"),
-    ChatMessage(
-        messageContent: "Hey Kriss, I am doing fine dude. wbu?",
-        messageType: "sender"),
-    ChatMessage(messageContent: "ehhhh, doing OK.", messageType: "receiver"),
-    ChatMessage(
-        messageContent: "Is there any thing wrong?", messageType: "sender"),
-  ].reversed.toList();
+  final FirebaseAuth auth = FirebaseAuth.instance;
+  List _messages = [];
+  String _conversationId = '';
+
+  @override
+  void initState() {
+    super.initState();
+    fetchMessages(widget.otherUser);
+  }
+
+  void fetchMessages(String otherUserId) async {
+    try {
+      // Takes two UID (_userId, arg uid), sort alpha, combine
+      List chattees = [auth.currentUser!.uid, otherUserId];
+      chattees.sort((a, b) {
+        return a.compareTo(b);
+      });
+      _conversationId = chattees.join('');
+      DocumentSnapshot _doc = await FirebaseFirestore.instance
+          .collection('conversations')
+          .doc(_conversationId)
+          .get();
+      List retrievedMessages = _doc.get("messages");
+      List convertedMessages = retrievedMessages
+          .map((message) => ChatMessage(
+              messageContent: message["message_content"],
+              messageType: 'sender'))
+          .toList();
+      setState(() {
+        _messages = convertedMessages;
+      });
+    } catch (error) {
+      print(error);
+    }
+  }
+
+  void sendMessage(ChatMessage message) async {
+    try {} catch (error) {
+      print(error);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -87,7 +123,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
         children: <Widget>[
           ListView.builder(
             reverse: true,
-            itemCount: messages.length,
+            itemCount: _messages.length,
             shrinkWrap: true,
             padding: const EdgeInsets.only(top: 10, bottom: 100),
             itemBuilder: (context, index) {
@@ -95,19 +131,19 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                 padding: const EdgeInsets.only(
                     left: 14, right: 14, top: 10, bottom: 10),
                 child: Align(
-                  alignment: (messages[index].messageType == "receiver"
+                  alignment: (_messages[index].messageType == "receiver"
                       ? Alignment.topLeft
                       : Alignment.topRight),
                   child: Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
-                      color: (messages[index].messageType == "receiver"
+                      color: (_messages[index].messageType == "receiver"
                           ? Colors.grey[300]
                           : Colors.blue[100]),
                     ),
                     padding: const EdgeInsets.all(16),
                     child: Text(
-                      messages[index].messageContent,
+                      _messages[index].messageContent,
                       style: const TextStyle(
                           fontSize: 16, fontWeight: FontWeight.bold),
                     ),
@@ -144,11 +180,11 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                     onPressed: () {
                       if (myController.text != '') {
                         setState(() {
-                          messages.insert(
-                            0,
+                          sendMessage(
                             ChatMessage(
-                                messageContent: myController.text,
-                                messageType: "sender"),
+                              messageContent: myController.text,
+                              messageType: "sender",
+                            ),
                           );
                           myController.text = '';
                         });

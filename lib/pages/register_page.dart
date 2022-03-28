@@ -5,7 +5,6 @@ import "dart:io"; //
 import 'package:flutter/services.dart';
 import 'package:nc_project/services/firebase_service.dart';
 
-
 class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);
 
