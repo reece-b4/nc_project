@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 const String userCollection = 'users';
 
@@ -19,6 +21,7 @@ class FirebaseService {
     required String username,
     required String email,
     required String password,
+    required String postcode,
     required File image,
   }) async {
     try {
@@ -38,14 +41,21 @@ class FirebaseService {
 
       return _task.then((_snapshot) async {
         //this will be the final return to the whole function
-
         String _downloadURL = await _snapshot.ref
             .getDownloadURL(); //create the url for the file we just uploaded
-        await _db.collection(userCollection).doc(_userId).set({
-          "username": username,
-          "email": email,
-          "image": _downloadURL,
-        }); //finally upload to firestore db
+        await http.post(
+          Uri.parse('https://nc-project-api.herokuapp.com/api/users'),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          body: jsonEncode(<String, String>{
+            "username": username,
+            "email": email,
+            "postcode": postcode,
+            "img": _downloadURL,
+          }),
+        );
+        //finally upload to firestore db
         return true; //once done, return true as it's a function that returns a bool. This becomes the value returned from line39
       });
     } catch (e) {
