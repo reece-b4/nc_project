@@ -17,6 +17,7 @@ class ChatDetailPage extends StatefulWidget {
 class _ChatDetailPageState extends State<ChatDetailPage> {
   final myController = TextEditingController();
   final FirebaseAuth auth = FirebaseAuth.instance;
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
   String _conversationId = '';
   List _messages = [];
   Stream<DocumentSnapshot>? _messageStream;
@@ -58,7 +59,15 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
   }
 
   void sendMessage(ChatMessage message) async {
-    try {} catch (error) {
+    String content = message.messageContent;
+    String writtenBy = message.messageType;
+    try {
+      await _db.collection("conversations").doc(_conversationId).update({
+        "messages": FieldValue.arrayUnion([
+          {"written_by": writtenBy, "message_content": content}
+        ])
+      });
+    } catch (error) {
       print(error);
     }
   }
