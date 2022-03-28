@@ -17,39 +17,44 @@ class ChatDetailPage extends StatefulWidget {
 class _ChatDetailPageState extends State<ChatDetailPage> {
   final myController = TextEditingController();
   final FirebaseAuth auth = FirebaseAuth.instance;
-  List _messages = [];
   String _conversationId = '';
+  List _messages = [];
+  Stream<DocumentSnapshot>? _messageStream;
 
   @override
   void initState() {
     super.initState();
-    fetchMessages(widget.otherUser);
+    subToStream("help");
   }
 
-  void fetchMessages(String otherUserId) async {
+  void subToStream(otherUserId) async {
     try {
-      // Takes two UID (_userId, arg uid), sort alpha, combine
       List chattees = [auth.currentUser!.uid, otherUserId];
       chattees.sort((a, b) {
         return a.compareTo(b);
       });
       _conversationId = chattees.join('');
-      DocumentSnapshot _doc = await FirebaseFirestore.instance
+      _messageStream = FirebaseFirestore.instance
           .collection('conversations')
           .doc(_conversationId)
-          .get();
-      List retrievedMessages = _doc.get("messages");
-      List convertedMessages = retrievedMessages
-          .map((message) => ChatMessage(
-              messageContent: message["message_content"],
-              messageType: 'sender'))
-          .toList();
-      setState(() {
-        _messages = convertedMessages;
-      });
+          .snapshots();
     } catch (error) {
       print(error);
     }
+  }
+
+  List convertMessages(List messages) {
+    return messages
+        .map((message) {
+          String type = (message["written_by"] == widget.otherUser)
+              ? "receiver"
+              : "sender";
+          return ChatMessage(
+              messageContent: message["message_content"], messageType: type);
+        })
+        .toList()
+        .reversed
+        .toList();
   }
 
   void sendMessage(ChatMessage message) async {
@@ -121,37 +126,46 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
       ),
       body: Stack(
         children: <Widget>[
-          ListView.builder(
-            reverse: true,
-            itemCount: _messages.length,
-            shrinkWrap: true,
-            padding: const EdgeInsets.only(top: 10, bottom: 100),
-            itemBuilder: (context, index) {
-              return Container(
-                padding: const EdgeInsets.only(
-                    left: 14, right: 14, top: 10, bottom: 10),
-                child: Align(
-                  alignment: (_messages[index].messageType == "receiver"
-                      ? Alignment.topLeft
-                      : Alignment.topRight),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: (_messages[index].messageType == "receiver"
-                          ? Colors.grey[300]
-                          : Colors.blue[100]),
-                    ),
-                    padding: const EdgeInsets.all(16),
-                    child: Text(
-                      _messages[index].messageContent,
-                      style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
+          StreamBuilder(
+              stream: _messageStream,
+              builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                if (snapshot.hasData) {
+                  _messages = convertMessages(snapshot.data!.get("messages"));
+                } else {
+                  _messages = [];
+                }
+                return ListView.builder(
+                  reverse: true,
+                  itemCount: _messages.length,
+                  shrinkWrap: true,
+                  padding: const EdgeInsets.only(top: 10, bottom: 100),
+                  itemBuilder: (context, index) {
+                    return Container(
+                      padding: const EdgeInsets.only(
+                          left: 14, right: 14, top: 10, bottom: 10),
+                      child: Align(
+                        alignment: (_messages[index].messageType == "receiver"
+                            ? Alignment.topLeft
+                            : Alignment.topRight),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            color: (_messages[index].messageType == "receiver"
+                                ? Colors.grey[300]
+                                : Colors.blue[100]),
+                          ),
+                          padding: const EdgeInsets.all(16),
+                          child: Text(
+                            _messages[index].messageContent,
+                            style: const TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                );
+              }),
           Align(
             alignment: Alignment.bottomLeft,
             child: Container(
