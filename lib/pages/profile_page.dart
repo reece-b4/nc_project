@@ -206,7 +206,8 @@ class _ProfilePageState
         bottom: 20.0,
       ),
       height: _deviceHeight! * 0.4,
-      padding: EdgeInsets.fromLTRB(5, 10, 5, 0),
+      padding:
+          const EdgeInsets.fromLTRB(5, 10, 5, 0),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(
             0, 10, 0, 10),
@@ -390,7 +391,8 @@ class _ProfilePageState
       size: const Size(50, 50),
       child: ClipOval(
         child: Material(
-          color: Color.fromARGB(255, 236, 68, 68),
+          color: const Color.fromARGB(
+              255, 236, 68, 68),
           child: InkWell(
             onTap: () => Navigator.pushNamed(
                 context, "addpet"),
@@ -455,7 +457,8 @@ class _ProfilePageState
         right: 20.0,
       ),
       height: _deviceHeight! * 0.4,
-      padding: EdgeInsets.fromLTRB(30, 0, 30, 0),
+      padding:
+          const EdgeInsets.fromLTRB(30, 0, 30, 0),
       child: ListView.separated(
           itemCount: entries[0]["reviews"].length,
           separatorBuilder:
@@ -473,7 +476,7 @@ class _ProfilePageState
                 children: [
                   Text(
                     "From: ${entries[0]["reviews"][index]["fromUser"]} ${entries[0]["reviews"][index]["date"]}",
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontWeight: FontWeight.w600,
                     ),
                   ),

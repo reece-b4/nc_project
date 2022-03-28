@@ -64,7 +64,8 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _logoWidget() {
     return Container(
-      margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
+      margin:
+          const EdgeInsets.fromLTRB(0, 0, 0, 10),
       child: SizedBox(
           height: _deviceHeight! * 0.5,
           child: Image.asset(

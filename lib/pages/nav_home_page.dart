@@ -12,11 +12,8 @@ class NavHomePage extends StatefulWidget {
 
 class _NavHomePageState
     extends State<NavHomePage> {
-  int _selectedIndex = 1;
+  int _selectedIndex = 0;
   String _appBarName = "Home";
-
-  static const TextStyle optionStyle = TextStyle(
-      fontSize: 30, fontWeight: FontWeight.bold);
 
   static const List<Widget> _pages = <Widget>[
     HomePage(),
@@ -52,8 +49,9 @@ class _NavHomePageState
                   fit: BoxFit.cover),
             )
           : AppBar(
-              backgroundColor: Color.fromARGB(
-                  255, 83, 167, 245),
+              backgroundColor:
+                  const Color.fromARGB(
+                      255, 83, 167, 245),
               centerTitle: true,
               title: Text(_appBarName),
             ),
@@ -72,8 +70,8 @@ class _NavHomePageState
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor:
-            Color.fromARGB(255, 83, 167, 245),
+        selectedItemColor: const Color.fromARGB(
+            255, 83, 167, 245),
         onTap: _onItemTapped,
       ),
     );
