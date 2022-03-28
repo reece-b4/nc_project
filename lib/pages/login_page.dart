@@ -13,15 +13,18 @@ class _LoginPageState extends State<LoginPage> {
   double? _deviceHeight;
   double? _deviceWidth;
 
-  final GlobalKey<FormState> _loginFormKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _loginFormKey =
+      GlobalKey<FormState>();
 
   String? _email;
   String? _password;
 
   @override
   Widget build(BuildContext context) {
-    _deviceHeight = MediaQuery.of(context).size.height;
-    _deviceWidth = MediaQuery.of(context).size.width;
+    _deviceHeight =
+        MediaQuery.of(context).size.height;
+    _deviceWidth =
+        MediaQuery.of(context).size.width;
     return Scaffold(
       resizeToAvoidBottomInset: true,
       body: SafeArea(
@@ -35,13 +38,16 @@ class _LoginPageState extends State<LoginPage> {
                   begin: Alignment.center,
                   stops: [0.1, 1000],
                   end: Alignment.bottomCenter)),
-          padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+          padding: const EdgeInsets.fromLTRB(
+              20, 0, 20, 0),
           child: Center(
               child: SingleChildScrollView(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisAlignment:
+                  MainAxisAlignment.spaceAround,
               mainAxisSize: MainAxisSize.max,
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment:
+                  CrossAxisAlignment.center,
               children: [
                 // _titleWidget(),
                 _logoWidget(),
@@ -57,27 +63,36 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _logoWidget() {
-    return SizedBox(
-        height: _deviceHeight! * 0.5,
-        child: Image.asset(
-          'ptp_logocardsglow.png',
-          fit: BoxFit.cover,
-        ));
+    return Container(
+      margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
+      child: SizedBox(
+          height: _deviceHeight! * 0.5,
+          child: Image.asset(
+            'ptp_logocardsglow.png',
+            fit: BoxFit.cover,
+          )),
+    );
   }
 
   Widget _loginForm() {
-    return SizedBox(
-      height: _deviceHeight! * 0.22,
-      child: Form(
-        key: _loginFormKey,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          mainAxisSize: MainAxisSize.max,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            _emailTextField(),
-            _passwordTextField(),
-          ],
+    return Padding(
+      padding:
+          const EdgeInsets.fromLTRB(0, 0, 0, 20),
+      child: SizedBox(
+        height: _deviceHeight! * 0.22,
+        child: Form(
+          key: _loginFormKey,
+          child: Column(
+            mainAxisAlignment:
+                MainAxisAlignment.spaceBetween,
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment:
+                CrossAxisAlignment.center,
+            children: [
+              _emailTextField(),
+              _passwordTextField(),
+            ],
+          ),
         ),
       ),
     );
@@ -89,7 +104,8 @@ class _LoginPageState extends State<LoginPage> {
           filled: true,
           fillColor: Colors.white,
           enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.grey, width: 0.0),
+            borderSide: BorderSide(
+                color: Colors.grey, width: 0.0),
           ),
           hintText: "Email..."),
       onSaved: (_value) {
@@ -102,7 +118,9 @@ class _LoginPageState extends State<LoginPage> {
           RegExp(
               r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"),
         );
-        return _result ? null : "Please enter a valid email";
+        return _result
+            ? null
+            : "Please enter a valid email";
       },
     );
   }
@@ -114,7 +132,8 @@ class _LoginPageState extends State<LoginPage> {
           filled: true,
           fillColor: Colors.white,
           enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.grey, width: 0.0),
+            borderSide: BorderSide(
+                color: Colors.grey, width: 0.0),
           ),
           hintText: "Password..."),
       onSaved: (_value) {
@@ -130,7 +149,8 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _loginButton() {
     return Container(
-      margin: const EdgeInsets.only(top: 15.0),
+      margin: const EdgeInsets.only(
+          top: 10.0, bottom: 5),
       child: MaterialButton(
         onPressed: _loginUser,
         minWidth: _deviceWidth! * 0.30,
@@ -163,7 +183,7 @@ class _LoginPageState extends State<LoginPage> {
         "Don't have an account?",
         style: TextStyle(
           color: Colors.black,
-          fontSize: 25,
+          fontSize: 20,
           fontWeight: FontWeight.w500,
         ),
       ),

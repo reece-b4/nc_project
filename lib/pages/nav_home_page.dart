@@ -12,7 +12,7 @@ class NavHomePage extends StatefulWidget {
 
 class _NavHomePageState
     extends State<NavHomePage> {
-  int _selectedIndex = 0;
+  int _selectedIndex = 1;
   String _appBarName = "Home";
 
   static const TextStyle optionStyle = TextStyle(
@@ -42,6 +42,9 @@ class _NavHomePageState
     return Scaffold(
       appBar: (_appBarName == "Home")
           ? AppBar(
+              backgroundColor:
+                  const Color.fromARGB(
+                      255, 83, 167, 245),
               centerTitle: true,
               title: Image.asset(
                   'ptp_logolong.png',
@@ -49,6 +52,8 @@ class _NavHomePageState
                   fit: BoxFit.cover),
             )
           : AppBar(
+              backgroundColor: Color.fromARGB(
+                  255, 83, 167, 245),
               centerTitle: true,
               title: Text(_appBarName),
             ),
@@ -68,7 +73,7 @@ class _NavHomePageState
         ],
         currentIndex: _selectedIndex,
         selectedItemColor:
-            Color.fromARGB(255, 255, 53, 53),
+            Color.fromARGB(255, 83, 167, 245),
         onTap: _onItemTapped,
       ),
     );
