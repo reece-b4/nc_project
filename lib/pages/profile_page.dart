@@ -1,5 +1,9 @@
 import "package:flutter/material.dart";
 import "package:flip_card/flip_card.dart";
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:nc_project/services/firebase_service.dart';
+import "dart:convert";
+import "package:http/http.dart" as http;
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -10,111 +14,60 @@ class ProfilePage extends StatefulWidget {
   }
 }
 
-class _ProfilePageState
-    extends State<ProfilePage> {
+class _ProfilePageState extends State<ProfilePage> {
+  Map _userJson = {};
+  String _username = "";
+  String _postcode = "";
+  String _img = "";
+  List _pets = [];
+  List _reviews = [];
+
+  final FirebaseAuth auth = FirebaseAuth.instance;
+  @override
+  void initState() {
+    super.initState();
+    fetchUser();
+  }
+
+  void fetchUser() async {
+    try {
+      final user = auth.currentUser;
+      final uid = user!.uid;
+      final response = await http.get(
+          Uri.parse('https://nc-project-api.herokuapp.com/api/users/$uid'));
+      final jsonData = jsonDecode(response.body) as Map;
+      setState(() {
+        _userJson = jsonData;
+
+        _username = _userJson['user']['username'];
+        _postcode = _userJson['user']['postcode'];
+        _img = _userJson['user']['avatar'];
+        _pets = _userJson['user']['pets'];
+        _reviews = _userJson['user']['reviews'];
+      });
+    } catch (error) {
+      print(error);
+    }
+  }
+
   double? _deviceHeight;
   double? _deviceWidth;
-  final List<Map> entries = <Map>[
-    {
-      "username": "Jess64",
-      "location": "Leeds",
-      "profileURL":
-          "https://images.unsplash.com/photo-1514315384763-ba401779410f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=383&q=80",
-      "pets": [
-        {
-          "pet_name": "Rover",
-          "age": 3,
-          "species": "dogs",
-          "image":
-              "https://images.unsplash.com/photo-1644614398468-06fad5e8f8f6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=502&q=80",
-          "availability": true,
-          "distance": "0.5 miles away",
-          "notes": "Likes chicken"
-        },
-        {
-          "pet_name": "Timmy",
-          "age": 87,
-          "species": "tortoises and turtles",
-          "image":
-              "https://images.unsplash.com/photo-1508455858334-95337ba25607?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=876&q=80",
-          "availability": true,
-          "distance": "2 miles away",
-          "notes": "A game of fetch takes forever"
-        },
-        {
-          "pet_name": "Blobby",
-          "age": 7,
-          "species": "other",
-          "image":
-              "https://images.unsplash.com/photo-1575485670541-824ff288aaf8?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=774&q=80",
-          "availability": true,
-          "distance": "3 miles away",
-          "notes": "Will bite you if provoked."
-        },
-        {
-          "pet_name": "Joshua",
-          "age": 6,
-          "species": "other",
-          "image":
-              "https://images.unsplash.com/photo-1615087240969-eeff2fa558f2?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=580&q=80",
-          "availability": true,
-          "distance": "8 miles away",
-          "notes": "Does not like being alone"
-        },
-        {
-          "pet_name": "Apple",
-          "age": 87,
-          "species": "hamsters",
-          "image":
-              "https://images.unsplash.com/photo-1425082661705-1834bfd09dca?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=876&q=80",
-          "availability": true,
-          "distance": "10 miles away",
-          "notes": "Sensitive"
-        }
-      ],
-      "reviews": [
-        {
-          "fromUser": "Andy123",
-          "date": "25/02/2022",
-          "comment":
-              "Rover is the devil. He ate my piglet! Avoid at all cost. Jess is hot though",
-        },
-        {
-          "fromUser": "TomUser",
-          "date": "1/02/2022",
-          "comment": "Great person! ",
-        },
-        {
-          "fromUser": "Andy123",
-          "date": "25/02/2022",
-          "comment":
-              "In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the visual form of a document or a typeface without relying on meaningful content. Lorem ipsum may be used as a placeholder before the final copy is available.",
-        }
-      ],
-    },
-  ];
 
   @override
   Widget build(BuildContext context) {
-    _deviceHeight =
-        MediaQuery.of(context).size.height;
-    _deviceWidth =
-        MediaQuery.of(context).size.width;
+    _deviceHeight = MediaQuery.of(context).size.height;
+    _deviceWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       body: SafeArea(
         child: Container(
-          color: const Color.fromARGB(
-              255, 245, 245, 245),
+          color: const Color.fromARGB(255, 245, 245, 245),
           child: ListView(
             children: [
               Center(
                 child: Column(
-                  mainAxisAlignment:
-                      MainAxisAlignment
-                          .spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   mainAxisSize: MainAxisSize.max,
-                  crossAxisAlignment:
-                      CrossAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     _userCard(),
                     _myPetsTitle(),
@@ -140,11 +93,9 @@ class _ProfilePageState
         top: 20.0,
       ),
       child: Row(
-        mainAxisAlignment:
-            MainAxisAlignment.spaceAround,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         mainAxisSize: MainAxisSize.max,
-        crossAxisAlignment:
-            CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [_userAvatar(), _userInfo()],
       ),
     );
@@ -163,8 +114,7 @@ class _ProfilePageState
         ),
         image: DecorationImage(
           fit: BoxFit.cover,
-          image: NetworkImage(
-              "${entries[0]["profileURL"]}"),
+          image: NetworkImage(_img),
         ),
       ),
     );
@@ -172,22 +122,16 @@ class _ProfilePageState
 
   Widget _userInfo() {
     return Column(
-      mainAxisAlignment:
-          MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       mainAxisSize: MainAxisSize.max,
-      crossAxisAlignment:
-          CrossAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
-          "${entries[0]["username"]}",
-          style: const TextStyle(
-              fontSize: 30,
-              fontWeight: FontWeight.w600),
+          _username,
+          style: const TextStyle(fontSize: 30, fontWeight: FontWeight.w600),
         ),
-        Text("${entries[0]["location"]}",
-            style: const TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w600))
+        Text(_postcode,
+            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600))
       ],
     );
   }
@@ -197,33 +141,26 @@ class _ProfilePageState
       decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(40),
-          border: Border.all(
-              color: const Color.fromARGB(
-                  255, 70, 70, 70))),
+          border: Border.all(color: const Color.fromARGB(255, 70, 70, 70))),
       margin: const EdgeInsets.only(
         left: 10.0,
         right: 10.0,
         bottom: 20.0,
       ),
       height: _deviceHeight! * 0.4,
-      padding:
-          const EdgeInsets.fromLTRB(5, 10, 5, 0),
+      padding: const EdgeInsets.fromLTRB(5, 10, 5, 0),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(
-            0, 10, 0, 10),
+        padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
         child: ListView.separated(
-          itemCount: entries[0]["pets"].length,
-          separatorBuilder:
-              (BuildContext context, int index) =>
-                  const Divider(),
+          itemCount: _pets.length,
+          separatorBuilder: (BuildContext context, int index) =>
+              const Divider(),
           scrollDirection: Axis.horizontal,
-          itemBuilder:
-              (BuildContext context, int index) {
+          itemBuilder: (BuildContext context, int index) {
             return FlipCard(
               fill: Fill
                   .fillBack, // Fill the back side of the card to make in the same size as the front.
-              direction: FlipDirection
-                  .VERTICAL, // default
+              direction: FlipDirection.VERTICAL, // default
               front: Container(
                 margin: EdgeInsets.only(
                   bottom: _deviceHeight! * 0.02,
@@ -232,38 +169,28 @@ class _ProfilePageState
                 height: _deviceHeight! * 0.20,
                 width: _deviceHeight! * 0.20,
                 decoration: BoxDecoration(
-                  borderRadius:
-                      BorderRadius.circular(40),
+                  borderRadius: BorderRadius.circular(40),
                   image: DecorationImage(
-                    image: NetworkImage(
-                        "${entries[0]["pets"][index]["image"]}"),
+                    image: NetworkImage("${_pets[index]["petImg"]}"),
                     fit: BoxFit.cover,
                   ),
                 ),
                 child: Container(
                   decoration: BoxDecoration(
-                      borderRadius:
-                          BorderRadius.circular(
-                              40),
-                      gradient:
-                          const LinearGradient(
-                              colors: [
-                                Colors.black12,
-                                Colors.black87,
-                              ],
-                              begin: Alignment
-                                  .center,
-                              stops: [0.4, 1],
-                              end: Alignment
-                                  .bottomCenter)),
-                  padding:
-                      const EdgeInsets.fromLTRB(
-                          0, 0, 0, 10),
+                      borderRadius: BorderRadius.circular(40),
+                      gradient: const LinearGradient(
+                          colors: [
+                            Colors.black12,
+                            Colors.black87,
+                          ],
+                          begin: Alignment.center,
+                          stops: [0.4, 1],
+                          end: Alignment.bottomCenter)),
+                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
                   child: Align(
-                    alignment:
-                        Alignment.bottomCenter,
+                    alignment: Alignment.bottomCenter,
                     child: Text(
-                      "${entries[0]["pets"][index]["pet_name"]}",
+                      "${_pets[index]["petName"]}",
                       maxLines: 3,
                       textAlign: TextAlign.center,
                       style: const TextStyle(
@@ -282,47 +209,32 @@ class _ProfilePageState
                 height: _deviceHeight! * 0.20,
                 width: _deviceHeight! * 0.20,
                 decoration: BoxDecoration(
-                  color: const Color.fromARGB(
-                      255, 255, 245, 216),
-                  borderRadius:
-                      BorderRadius.circular(40),
+                  color: const Color.fromARGB(255, 255, 245, 216),
+                  borderRadius: BorderRadius.circular(40),
                 ),
-                padding:
-                    const EdgeInsets.fromLTRB(
-                        20, 10, 5, 5),
+                padding: const EdgeInsets.fromLTRB(20, 10, 5, 5),
                 child: Align(
                   alignment: Alignment.topCenter,
                   child: Column(
                     children: [
                       RichText(
                         text: TextSpan(
-                          style:
-                              DefaultTextStyle.of(
-                                      context)
-                                  .style,
+                          style: DefaultTextStyle.of(context).style,
                           children: <TextSpan>[
                             TextSpan(
-                                text:
-                                    "${entries[0]["pets"][index]["pet_name"]}",
-                                style:
-                                    const TextStyle(
-                                  color: Color
-                                      .fromARGB(
-                                          255,
-                                          0,
-                                          0,
-                                          0),
+                                text: "${_pets[index]["petName"]}",
+                                style: const TextStyle(
+                                  color: Color.fromARGB(255, 0, 0, 0),
                                   fontSize: 30,
                                 )),
                             TextSpan(
                                 text:
-                                    "\nAge: ${entries[0]["pets"][index]["age"]}\nSpecies: ${entries[0]["pets"][index]["species"]}\nAvailability: ${entries[0]["pets"][index]["availability"]}\nNotes: ${entries[0]["pets"][index]["notes"]}"),
+                                    "\nAge: ${_pets[index]["age"]}\nSpecies: ${_pets[index]["species"]}\nAvailability: ${_pets[index]["availability"]}\nNotes: ${_pets[index]["notes"]}"),
                           ],
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets
-                            .fromLTRB(0, 5, 0, 0),
+                        padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
                         child: Row(
                           children: [
                             InkWell(
@@ -333,19 +245,12 @@ class _ProfilePageState
                               ),
                             ),
                             Padding(
-                              padding:
-                                  const EdgeInsets
-                                          .fromLTRB(
-                                      30,
-                                      0,
-                                      0,
-                                      0),
+                              padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
                               child: InkWell(
                                 onTap: () {},
                                 child: const Icon(
                                   Icons.edit,
-                                  color:
-                                      Colors.blue,
+                                  color: Colors.blue,
                                 ),
                               ),
                             ),
@@ -371,15 +276,11 @@ class _ProfilePageState
         bottom: 20.0,
       ),
       child: Row(
-        mainAxisAlignment:
-            MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const Text("My Pets",
-              style: TextStyle(
-                  fontSize: 22.5,
-                  fontWeight: FontWeight.w600)),
-          const Padding(
-              padding: EdgeInsets.all(5)),
+              style: TextStyle(fontSize: 22.5, fontWeight: FontWeight.w600)),
+          const Padding(padding: EdgeInsets.all(5)),
           _addButton()
         ],
       ),
@@ -391,23 +292,17 @@ class _ProfilePageState
       size: const Size(50, 50),
       child: ClipOval(
         child: Material(
-          color: const Color.fromARGB(
-              255, 236, 68, 68),
+          color: const Color.fromARGB(255, 236, 68, 68),
           child: InkWell(
-            onTap: () => Navigator.pushNamed(
-                context, "addpet"),
+            onTap: () => Navigator.pushNamed(context, "addpet"),
             child: Column(
-              mainAxisAlignment:
-                  MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: const [
                 Icon(
                   Icons.pets,
                   color: Colors.white,
                 ), // <-- Icon
-                Text("Add",
-                    style: TextStyle(
-                        color: Colors
-                            .white)), // <-- Text
+                Text("Add", style: TextStyle(color: Colors.white)), // <-- Text
               ],
             ),
           ),
@@ -424,19 +319,15 @@ class _ProfilePageState
         bottom: 20.0,
       ),
       child: Row(
-        mainAxisAlignment:
-            MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: const [
           Text("My Reviews",
-              style: TextStyle(
-                  fontSize: 22.5,
-                  fontWeight: FontWeight.w600)),
+              style: TextStyle(fontSize: 22.5, fontWeight: FontWeight.w600)),
           Padding(
             padding: EdgeInsets.all(5),
             child: Icon(
               Icons.reviews,
-              color: Color.fromARGB(
-                  255, 236, 68, 68),
+              color: Color.fromARGB(255, 236, 68, 68),
               size: 40,
             ),
           ),
@@ -450,38 +341,31 @@ class _ProfilePageState
       decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(40),
-          border:
-              Border.all(color: Colors.black)),
+          border: Border.all(color: Colors.black)),
       margin: const EdgeInsets.only(
         left: 20.0,
         right: 20.0,
       ),
       height: _deviceHeight! * 0.4,
-      padding:
-          const EdgeInsets.fromLTRB(30, 0, 30, 0),
+      padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
       child: ListView.separated(
-          itemCount: entries[0]["reviews"].length,
-          separatorBuilder:
-              (BuildContext context, int index) =>
-                  const Divider(),
+          itemCount: _reviews.length,
+          separatorBuilder: (BuildContext context, int index) =>
+              const Divider(),
           scrollDirection: Axis.vertical,
-          itemBuilder:
-              (BuildContext context, int index) {
+          itemBuilder: (BuildContext context, int index) {
             return Container(
-              margin: const EdgeInsets.only(
-                  bottom: 5, top: 5),
+              margin: const EdgeInsets.only(bottom: 5, top: 5),
               child: Column(
-                crossAxisAlignment:
-                    CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "From: ${entries[0]["reviews"][index]["fromUser"]} ${entries[0]["reviews"][index]["date"]}",
+                    "From: ${_reviews[index]["author"]} ${_reviews[index]["date"]}",
                     style: const TextStyle(
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  Text(
-                      "${entries[0]["reviews"][index]["comment"]}"),
+                  Text("${_reviews[index]["comment"]}"),
                 ],
               ),
             );
