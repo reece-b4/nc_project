@@ -19,6 +19,7 @@ class FirebaseService {
     required String username,
     required String email,
     required String password,
+    required String postcode,
     required File image,
   }) async {
     try {
@@ -44,6 +45,7 @@ class FirebaseService {
         await _db.collection(userCollection).doc(_userId).set({
           "username": username,
           "email": email,
+          "postcode": postcode,
           "image": _downloadURL,
         }); //finally upload to firestore db
         return true; //once done, return true as it's a function that returns a bool. This becomes the value returned from line39
