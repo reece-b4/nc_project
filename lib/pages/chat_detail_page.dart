@@ -20,7 +20,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     ChatMessage(messageContent: "ehhhh, doing OK.", messageType: "receiver"),
     ChatMessage(
         messageContent: "Is there any thing wrong?", messageType: "sender"),
-  ];
+  ].reversed.toList();
 
   @override
   Widget build(BuildContext context) {
@@ -142,15 +142,17 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                   ),
                   FloatingActionButton(
                     onPressed: () {
-                      setState(() {
-                        messages.insert(
-                          0,
-                          ChatMessage(
-                              messageContent: myController.text,
-                              messageType: "sender"),
-                        );
-                        myController.text = '';
-                      });
+                      if (myController.text != '') {
+                        setState(() {
+                          messages.insert(
+                            0,
+                            ChatMessage(
+                                messageContent: myController.text,
+                                messageType: "sender"),
+                          );
+                          myController.text = '';
+                        });
+                      }
                     },
                     child: const Icon(
                       Icons.send,
