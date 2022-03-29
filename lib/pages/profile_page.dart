@@ -9,7 +9,7 @@ class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() {
+  State<ProfilePage> createState() {
     return _ProfilePageState();
   }
 }
@@ -24,40 +24,45 @@ class _ProfilePageState extends State<ProfilePage> {
   String _isBreed = "";
 
   final FirebaseAuth auth = FirebaseAuth.instance;
-  @override
-  void initState() {
-    super.initState();
-    fetchUser();
-  }
 
   void fetchUser() async {
     try {
-      final user = auth.currentUser;
-      final uid = user!.uid;
+      final uid = auth.currentUser!.uid;
       final response = await http.get(
           Uri.parse('https://nc-project-api.herokuapp.com/api/users/$uid'));
       final jsonData = jsonDecode(response.body) as Map;
       setState(() {
         _userJson = jsonData;
-
         _username = _userJson['user']['username'];
         _postcode = _userJson['user']['postcode'];
-        _img = _userJson['user']['avatar'];
-        _pets = _userJson['user']['pets'];
-        _reviews = _userJson['user']['reviews'];
+        _img = _userJson['user']['img'];
+        try {
+          _pets = _userJson['user']['pets'];
+        } catch (error) {
+          _pets = [];
+        }
+        try {
+          _reviews = _userJson['user']['reviews'];
+        } catch (error) {
+          _reviews = [];
+        }
       });
     } catch (error) {
       print(error);
     }
   }
 
+  @override
+  void initState() {
+    super.initState();
+    fetchUser();
+  }
+
   double? _deviceHeight;
-  double? _deviceWidth;
 
   @override
   Widget build(BuildContext context) {
     _deviceHeight = MediaQuery.of(context).size.height;
-    _deviceWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       body: SafeArea(
         child: Container(
@@ -115,7 +120,9 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
         image: DecorationImage(
           fit: BoxFit.cover,
-          image: NetworkImage(_img),
+          image: _img.isNotEmpty
+              ? NetworkImage(_img)
+              : const NetworkImage("https://i.pravatar.cc/300"),
         ),
       ),
     );
@@ -175,7 +182,9 @@ class _ProfilePageState extends State<ProfilePage> {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(40),
                   image: DecorationImage(
-                    image: NetworkImage("${_pets[index]["petImg"]}"),
+                    image: _pets[index]["img"].isNotEmpty
+                        ? NetworkImage(_pets[index]["img"])
+                        : const NetworkImage("https://i.pravatar.cc/300"),
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -194,7 +203,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   child: Align(
                     alignment: Alignment.bottomCenter,
                     child: Text(
-                      "${_pets[index]["petName"]}",
+                      "${_pets[index]["name"]}",
                       maxLines: 3,
                       textAlign: TextAlign.center,
                       style: const TextStyle(
@@ -227,21 +236,16 @@ class _ProfilePageState extends State<ProfilePage> {
                           children: <TextSpan>[
                             //turn to widget
                             //change to Text widgets
-                            TextSpan(
-                                text: "${_pets[index]["petName"]}",
-                                style: const TextStyle(
-                                  color: Color.fromARGB(255, 0, 0, 0),
-                                  fontSize: 30,
-                                )),
+
                             TextSpan(
                                 text:
-                                    "\nAge: ${_pets[index]["petAge"]}\nSpecies: ${_pets[index]["species"]}"),
+                                    "\nAge: ${_pets[index]["age"]}\nSpecies: ${_pets[index]["species"]}"),
                             TextSpan(
                               text: _isBreed,
                             ),
                             TextSpan(
                                 text:
-                                    "\nAvailability: ${_pets[index]["availability"]}\nNotes: ${_pets[index]["notes"]}"),
+                                    "\nAvailability: ${_pets[index]["availability"]}\nNotes: ${_pets[index]["desc"]}"),
                           ],
                         ),
                       ),
@@ -371,18 +375,28 @@ class _ProfilePageState extends State<ProfilePage> {
               const Divider(),
           scrollDirection: Axis.vertical,
           itemBuilder: (BuildContext context, int index) {
+            String reviewTextHeader;
+            String reviewTextBody;
+            if (_reviews.isEmpty) {
+              reviewTextHeader =
+                  "From: ${_reviews[index]["author"]} ${_reviews[index]["date"]}";
+              reviewTextBody = "${_reviews[index]["comment"]}";
+            } else {
+              reviewTextHeader = "";
+              reviewTextBody = "";
+            }
             return Container(
               margin: const EdgeInsets.only(bottom: 5, top: 5),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "From: ${_reviews[index]["author"]} ${_reviews[index]["date"]}",
+                    reviewTextHeader,
                     style: const TextStyle(
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  Text("${_reviews[index]["comment"]}"),
+                  Text(reviewTextBody),
                 ],
               ),
             );

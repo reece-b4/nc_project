@@ -20,7 +20,7 @@ class EditPetPage extends StatefulWidget {
 }
 
 class EditPetPageState extends State<EditPetPage> {
-  final _EditPetStateKey = GlobalKey<FormState>();
+  final _editPetStateKey = GlobalKey<FormState>();
   double? _deviceHeight;
   double? _deviceWidth;
   String? _name;
@@ -69,13 +69,8 @@ class EditPetPageState extends State<EditPetPage> {
 
   @override
   Widget build(BuildContext context) {
-    _name = widget.petObject['petName'];
-    _age = widget.petObject['petAge'].toString();
-    _breed = widget.petObject['breed'];
-    _notes = widget.petObject['notes'];
-    _imgUrl = widget.petObject['petImg'];
-    _species = widget.petObject['species'];
     _petId = widget.petObject['petId'];
+    _imgUrl = widget.petObject['img'];
 
     _deviceHeight = MediaQuery.of(context).size.height;
     _deviceWidth = MediaQuery.of(context).size.width;
@@ -99,9 +94,7 @@ class EditPetPageState extends State<EditPetPage> {
                   const SizedBox(
                     height: 20,
                   ),
-                  image != null
-                      ? Image.file(image!)
-                      : Image.network(_imgUrl),
+                  image != null ? Image.file(image!) : Image.network(_imgUrl),
                   _editPetButton(),
                 ],
               ),
@@ -116,7 +109,7 @@ class EditPetPageState extends State<EditPetPage> {
     return SizedBox(
       height: _deviceHeight! * 0.75,
       child: Form(
-        key: _EditPetStateKey,
+        key: _editPetStateKey,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           mainAxisSize: MainAxisSize.max,
@@ -135,7 +128,7 @@ class EditPetPageState extends State<EditPetPage> {
 
   Widget _nameTextField() {
     return TextFormField(
-      initialValue: _name,
+      initialValue: widget.petObject['name'],
       decoration: const InputDecoration(hintText: "Whats your pet's name?"),
       autovalidateMode: AutovalidateMode.onUserInteraction,
       validator: (_value) =>
@@ -150,7 +143,7 @@ class EditPetPageState extends State<EditPetPage> {
 
   Widget _ageTextField() {
     return TextFormField(
-      initialValue: widget.petObject['petAge'].toString(),
+      initialValue: widget.petObject['age'].toString(),
       decoration:
           const InputDecoration(hintText: "Please enter your pet's age"),
       autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -201,7 +194,7 @@ class EditPetPageState extends State<EditPetPage> {
     return TextFormField(
       decoration:
           const InputDecoration(hintText: "Please add short description"),
-      initialValue: widget.petObject['notes'],
+      initialValue: widget.petObject['desc'],
       autovalidateMode: AutovalidateMode.onUserInteraction,
       validator: (_value) =>
           _value!.length > 20 ? null : "Must be greater than 20 characters",
@@ -289,18 +282,11 @@ class EditPetPageState extends State<EditPetPage> {
           textStyle: const TextStyle(fontSize: 18),
         ),
         onPressed: () {
-          if (_EditPetStateKey.currentState!.validate()) {
+          if (_editPetStateKey.currentState!.validate()) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Editing pet...')),
             );
-            editPet(
-              _name,
-              _notes,
-              _age,
-              _species,
-              _breed,
-              _petId,
-            );
+            editPet();
           }
         },
         child: const Text("Edit Pet"),
@@ -308,40 +294,36 @@ class EditPetPageState extends State<EditPetPage> {
     );
   }
 
-  void editPet(
-    _name,
-    _notes,
-    _age,
-    _species,
-    _breed,
-    _petId,
-  ) async {
+  void editPet() async {
     final uid = auth.currentUser!.uid;
-    _age = int.parse(_age);
+    // _age = int.parse(_age);
+    String apiURL = 'https://nc-project-api.herokuapp.com/api/pets/$_petId';
+
     String _fileName = Timestamp.now().millisecondsSinceEpoch.toString() +
         p.extension(image!.path);
 
     UploadTask _task =
         FirebaseStorage.instance.ref("images/$uid/$_fileName").putFile(image!);
-
+//conditionals for when image does not change
     return _task.then((_snapshot) async {
       String _downloadURL = await _snapshot.ref.getDownloadURL();
 
-      await http.patch(
-        Uri.parse('https://nc-project-api.herokuapp.com/api/pets/$_petId'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(<String, dynamic>{
-          "petName": _name!,
-          "availability": true,
-          "notes": _notes!,
-          "petAge": _age!,
-          "petImg": _downloadURL,
-          "species": _species!,
-          "breed": _breed,
-        }),
-      );
+      await http.patch(Uri.parse(apiURL),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          body: jsonEncode(<String, dynamic>{
+            "updatedInfo": {
+              "name": _name!,
+              "availability": true,
+              "desc": _notes!,
+              "age": _age!,
+              "img": _downloadURL,
+              "species": _species!,
+              "breed": _breed,
+            },
+            "userId": uid,
+          }));
       Navigator.pushNamed(context, 'profile');
     });
   }

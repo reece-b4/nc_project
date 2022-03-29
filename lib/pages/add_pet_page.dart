@@ -311,13 +311,14 @@ class _AddPetState extends State<AddPetPage> {
           'Content-Type': 'application/json; charset=UTF-8',
         },
         body: jsonEncode(<String, dynamic>{
-          "petName": _name!,
+          "name": _name!,
           "availability": true,
-          "notes": _notes!,
-          "petAge": _age!,
-          "petImg": _downloadURL,
+          "desc": _notes!,
+          "age": _age!,
+          "img": _downloadURL,
           "species": _species!,
           "breed": _breed,
+          // "petId": uid + Timestamp.now().millisecondsSinceEpoch.toString(),
         }),
       );
       Navigator.pushNamed(context, 'profile');
