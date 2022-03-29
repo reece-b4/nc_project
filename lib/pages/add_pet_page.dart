@@ -320,6 +320,7 @@ class _AddPetState extends State<AddPetPage> {
           "breed": _breed,
         }),
       );
+      Navigator.pushNamed(context, 'profile');
     });
   }
 }
