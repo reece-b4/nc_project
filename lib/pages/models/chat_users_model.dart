@@ -3,7 +3,7 @@ class ChatUsers {
   String name;
   String messageText;
   String imageURL;
-  String time;
+  int time;
   ChatUsers({
     required this.userId,
     required this.name,

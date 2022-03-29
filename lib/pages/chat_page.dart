@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:nc_project/pages/widgets/conversations_list.dart';
 
@@ -11,43 +13,36 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
-  List<ChatUsers> chatUsers = [
-    ChatUsers(
-      userId: "JaneRussel",
-      name: "Jane Russel",
-      messageText: "Awesome Setup",
-      imageURL: "https://i.pravatar.cc/300",
-      time: "Now",
-    ),
-    ChatUsers(
-      userId: "GladysMurphy",
-      name: "Glady's Murphy",
-      messageText: "That's Great",
-      imageURL: "https://i.pravatar.cc/300",
-      time: "Yesterday",
-    ),
-    ChatUsers(
-      userId: "JorgeHenry",
-      name: "Jorge Henry",
-      messageText: "Hey where are you?",
-      imageURL: "https://i.pravatar.cc/300",
-      time: "31 Mar",
-    ),
-    ChatUsers(
-      userId: "PhillipFox",
-      name: "Philip Fox",
-      messageText: "Busy! Call me in 20 mins",
-      imageURL: "https://i.pravatar.cc/300",
-      time: "28 Mar",
-    ),
-    ChatUsers(
-      userId: "DebraHawkins",
-      name: "Debra Hawkins",
-      messageText: "Thankyou, It's awesome",
-      imageURL: "https://i.pravatar.cc/300",
-      time: "23 Mar",
-    ),
-  ];
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
+  final FirebaseAuth auth = FirebaseAuth.instance;
+  List _conversations = [];
+
+  @override
+  void initState() {
+    super.initState();
+    getInitialConversations();
+  }
+
+  void getInitialConversations() async {
+    try {
+      var doc = await _db.collection("users").doc(auth.currentUser!.uid).get();
+      List dbConvos = doc.get("conversations");
+      List convertedConvos = dbConvos.map((convo) {
+        return ChatUsers(
+          userId: convo["userId"],
+          name: convo["name"],
+          time: convo["time"],
+          imageURL: convo["img"],
+          messageText: convo["lastMessage"],
+        );
+      }).toList();
+      setState(() {
+        _conversations = convertedConvos;
+      });
+    } catch (error) {
+      print(error);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -79,17 +74,17 @@ class _ChatPageState extends State<ChatPage> {
                 ),
               ),
               ListView.builder(
-                itemCount: chatUsers.length,
+                itemCount: _conversations.length,
                 shrinkWrap: true,
                 padding: const EdgeInsets.only(top: 16),
                 physics: const NeverScrollableScrollPhysics(),
                 itemBuilder: (context, index) {
                   return ConversationList(
-                    userId: chatUsers[index].userId,
-                    name: chatUsers[index].name,
-                    messageText: chatUsers[index].messageText,
-                    imageUrl: chatUsers[index].imageURL,
-                    time: chatUsers[index].time,
+                    userId: _conversations[index].userId,
+                    name: _conversations[index].name,
+                    messageText: _conversations[index].messageText,
+                    imageUrl: _conversations[index].imageURL,
+                    time: _conversations[index].time,
                     isMessageRead: (index == 0 || index == 3) ? true : false,
                   );
                 },

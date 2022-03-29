@@ -6,7 +6,7 @@ class ConversationList extends StatefulWidget {
   final String name;
   final String messageText;
   final String imageUrl;
-  final String time;
+  final int time;
   final bool isMessageRead;
   const ConversationList(
       {Key? key,
@@ -75,7 +75,7 @@ class _ConversationListState extends State<ConversationList> {
               ),
             ),
             Text(
-              widget.time,
+              widget.time.toString(),
               style: TextStyle(
                   fontSize: 12,
                   fontWeight: widget.isMessageRead
