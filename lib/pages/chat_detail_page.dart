@@ -1,13 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:nc_project/pages/models/chat_message_mode.dart';
 
 class ChatDetailPage extends StatefulWidget {
   final String name;
   final String otherUser;
+  final String image;
 
-  const ChatDetailPage({Key? key, required this.name, required this.otherUser})
+  const ChatDetailPage(
+      {Key? key,
+      required this.name,
+      required this.otherUser,
+      required this.image})
       : super(key: key);
 
   @override
@@ -18,6 +24,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
   final myController = TextEditingController();
   final FirebaseAuth auth = FirebaseAuth.instance;
   final FirebaseFirestore _db = FirebaseFirestore.instance;
+  Map userInfo = {};
   String _conversationId = '';
   List _messages = [];
   Stream<DocumentSnapshot>? _messageStream;
@@ -25,8 +32,24 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
   @override
   void initState() {
     super.initState();
+    getUserInfo();
     subToStream(widget.otherUser);
     getInitialMessages();
+  }
+
+  void getUserInfo() async {
+    try {
+      DocumentSnapshot doc =
+          await _db.collection("users").doc(auth.currentUser!.uid).get();
+      String image = doc.get("img");
+      String name = doc.get("username");
+      userInfo = {
+        "image": image,
+        "name": name,
+      };
+    } catch (error) {
+      print(error);
+    }
   }
 
   void subToStream(otherUserId) async {
@@ -39,6 +62,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
       final bool _conversationExists = await checkConversationExists();
       if (!_conversationExists) {
         createConversation();
+        addConversationToUsersDocs();
       }
       _messageStream = FirebaseFirestore.instance
           .collection('conversations')
@@ -64,6 +88,39 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
         .set({"messages": []});
   }
 
+  void addConversationToUsersDocs() async {
+    int currentTime = DateTime.now().millisecondsSinceEpoch;
+    try {
+      await _db.collection("users").doc(auth.currentUser!.uid).update({
+        "conversations": FieldValue.arrayUnion(
+          [
+            {
+              "name": widget.name,
+              "userId": widget.otherUser,
+              "time": currentTime,
+              "img": widget.image,
+              "lastMessage": "",
+            }
+          ],
+        )
+      });
+      await _db.collection("users").doc(widget.otherUser).update({
+        "conversations": FieldValue.arrayUnion(
+          [
+            {
+              "name": userInfo["name"],
+              "userId": auth.currentUser!.uid,
+              "time": currentTime,
+              "img": userInfo["image"],
+            }
+          ],
+        )
+      });
+    } catch (error) {
+      print(error);
+    }
+  }
+
   List convertMessages(List messages) {
     return messages
         .map((message) {
@@ -80,7 +137,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
 
   void getInitialMessages() async {
     try {
-      var doc =
+      DocumentSnapshot doc =
           await _db.collection("conversations").doc(_conversationId).get();
       if (doc.exists) {
         setState(() {
@@ -132,8 +189,8 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                 const SizedBox(
                   width: 2,
                 ),
-                const CircleAvatar(
-                  backgroundImage: NetworkImage("https://i.pravatar.cc/300"),
+                CircleAvatar(
+                  backgroundImage: NetworkImage(widget.image),
                   maxRadius: 20,
                 ),
                 const SizedBox(

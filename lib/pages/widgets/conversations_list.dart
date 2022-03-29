@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:nc_project/pages/chat_detail_page.dart';
 
 class ConversationList extends StatefulWidget {
@@ -26,9 +27,16 @@ class _ConversationListState extends State<ConversationList> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return ChatDetailPage(name: widget.name, otherUser: widget.userId);
-        }));
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) {
+            return ChatDetailPage(
+              name: widget.name,
+              otherUser: widget.userId,
+              image: widget.imageUrl,
+            );
+          }),
+        );
       },
       child: Container(
         padding:
@@ -75,7 +83,7 @@ class _ConversationListState extends State<ConversationList> {
               ),
             ),
             Text(
-              widget.time.toString(),
+              DateFormat("dd-MM-yy kk:mm:ss").format(DateTime(widget.time)),
               style: TextStyle(
                   fontSize: 12,
                   fontWeight: widget.isMessageRead
