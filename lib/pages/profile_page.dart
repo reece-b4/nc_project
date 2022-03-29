@@ -229,7 +229,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 )),
                             TextSpan(
                                 text:
-                                    "\nAge: ${_pets[index]["age"]}\nSpecies: ${_pets[index]["species"]}\nAvailability: ${_pets[index]["availability"]}\nNotes: ${_pets[index]["notes"]}"),
+                                    "\nAge: ${_pets[index]["petAge"]}\nSpecies: ${_pets[index]["species"]}\nAvailability: ${_pets[index]["availability"]}\nNotes: ${_pets[index]["notes"]}"),
                           ],
                         ),
                       ),

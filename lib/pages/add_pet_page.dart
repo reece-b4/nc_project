@@ -2,6 +2,12 @@ import "package:flutter/material.dart";
 import 'package:flutter/services.dart';
 import "dart:io";
 import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:path/path.dart' as p;
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AddPetPage extends StatefulWidget {
   const AddPetPage({Key? key}) : super(key: key);
@@ -17,10 +23,13 @@ class _AddPetState extends State<AddPetPage> {
   double? _deviceHeight;
   double? _deviceWidth;
   String? _name;
-  int? _age;
+  String? _age;
   String? _breed;
-  String? _description;
+  String? _notes;
   File? image;
+  String? _species;
+
+  final FirebaseAuth auth = FirebaseAuth.instance;
 
   Future pickImageFromGallery() async {
     try {
@@ -101,7 +110,7 @@ class _AddPetState extends State<AddPetPage> {
             _ageTextField(),
             _speciesTextField(),
             _breedTextField(),
-            _descriptionTextField(),
+            _notesTextField(),
           ],
         ),
       ),
@@ -114,7 +123,7 @@ class _AddPetState extends State<AddPetPage> {
       autovalidateMode: AutovalidateMode.onUserInteraction,
       validator: (_value) =>
           _value!.length > 1 ? null : "Must be greater than 1 character",
-      onSaved: (_value) {
+      onChanged: (_value) {
         setState(() {
           _name = _value;
         });
@@ -127,6 +136,11 @@ class _AddPetState extends State<AddPetPage> {
       autovalidateMode: AutovalidateMode.onUserInteraction,
       validator: (_value) =>
           _value!.isNotEmpty ? null : "Must be greater than 0",
+      onChanged: (_value) {
+        setState(() {
+          _age = _value;
+        });
+      },
       keyboardType: TextInputType.number,
       inputFormatters: [
         FilteringTextInputFormatter.digitsOnly,
@@ -143,9 +157,9 @@ class _AddPetState extends State<AddPetPage> {
       autovalidateMode: AutovalidateMode.onUserInteraction,
       validator: (_value) =>
           _value!.length > 2 ? null : "Must be greater than 2 characters",
-      onSaved: (_value) {
+      onChanged: (_value) {
         setState(() {
-          _age = _value as int?;
+          _species = _value;
         });
       },
     );
@@ -156,7 +170,7 @@ class _AddPetState extends State<AddPetPage> {
       decoration: const InputDecoration(
           hintText: "If applicable, what breed is your pet?"),
       autovalidateMode: AutovalidateMode.onUserInteraction,
-      onSaved: (_value) {
+      onChanged: (_value) {
         setState(() {
           _breed = _value;
         });
@@ -164,17 +178,17 @@ class _AddPetState extends State<AddPetPage> {
     );
   }
 
-  Widget _descriptionTextField() {
+  Widget _notesTextField() {
     return TextFormField(
       decoration:
           const InputDecoration(hintText: "Please add short description"),
       autovalidateMode: AutovalidateMode.onUserInteraction,
       validator: (_value) =>
           _value!.length > 20 ? null : "Must be greater than 20 characters",
-      onSaved: (_value) {
+      onChanged: (_value) {
         setState(
           () {
-            _description = _value;
+            _notes = _value;
           },
         );
       },
@@ -259,10 +273,53 @@ class _AddPetState extends State<AddPetPage> {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Adding pet...')),
             );
+            addPet(
+              _name,
+              _notes,
+              _age,
+              _species,
+              _breed,
+            );
           }
         },
         child: const Text("Add Pet"),
       ),
     );
+  }
+
+  void addPet(
+    _name,
+    _notes,
+    _age,
+    _species,
+    _breed,
+  ) async {
+    final uid = auth.currentUser!.uid;
+    _age = int.parse(_age);
+    String _fileName = Timestamp.now().millisecondsSinceEpoch.toString() +
+        p.extension(image!.path);
+
+    UploadTask _task =
+        FirebaseStorage.instance.ref("images/$uid/$_fileName").putFile(image!);
+
+    return _task.then((_snapshot) async {
+      String _downloadURL = await _snapshot.ref.getDownloadURL();
+
+      await http.post(
+        Uri.parse('https://nc-project-api.herokuapp.com/api/users/$uid/pets'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, dynamic>{
+          "petName": _name!,
+          "availability": true,
+          "notes": _notes!,
+          "petAge": _age!,
+          "petImg": _downloadURL,
+          "species": _species!,
+          "breed": _breed,
+        }),
+      );
+    });
   }
 }
