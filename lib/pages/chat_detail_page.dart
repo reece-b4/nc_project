@@ -26,6 +26,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
   void initState() {
     super.initState();
     subToStream(widget.otherUser);
+    getInitialMessages();
   }
 
   void subToStream(otherUserId) async {
@@ -75,6 +76,20 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
         .toList()
         .reversed
         .toList();
+  }
+
+  void getInitialMessages() async {
+    try {
+      var doc =
+          await _db.collection("conversations").doc(_conversationId).get();
+      if (doc.exists) {
+        setState(() {
+          _messages = convertMessages(doc.get("messages"));
+        });
+      }
+    } catch (error) {
+      print(error);
+    }
   }
 
   void sendMessage(ChatMessage message) async {
@@ -161,8 +176,6 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
               builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
                 if (snapshot.hasData) {
                   _messages = convertMessages(snapshot.data!.get("messages"));
-                } else {
-                  _messages = [];
                 }
                 return ListView.builder(
                   reverse: true,
