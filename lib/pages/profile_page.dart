@@ -160,7 +160,6 @@ class _ProfilePageState extends State<ProfilePage> {
             _isBreed = _pets[index]["breed"] == null
                 ? ""
                 : "\nBreed: ${_pets[index]["breed"]}";
-            print(_isBreed);
             return FlipCard(
               fill: Fill
                   .fillBack, // Fill the back side of the card to make in the same size as the front.
@@ -235,7 +234,13 @@ class _ProfilePageState extends State<ProfilePage> {
                                 )),
                             TextSpan(
                                 text:
-                                    "\nAge: ${_pets[index]["petAge"]}\nSpecies: ${_pets[index]["species"]} $_isBreed\nAvailability: ${_pets[index]["availability"]}\nNotes: ${_pets[index]["notes"]}"),
+                                    "\nAge: ${_pets[index]["petAge"]}\nSpecies: ${_pets[index]["species"]}"),
+                            TextSpan(
+                              text: _isBreed,
+                            ),
+                            TextSpan(
+                                text:
+                                    "\nAvailability: ${_pets[index]["availability"]}\nNotes: ${_pets[index]["notes"]}"),
                           ],
                         ),
                       ),
