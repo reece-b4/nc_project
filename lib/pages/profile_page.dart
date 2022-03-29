@@ -3,6 +3,7 @@ import "package:flip_card/flip_card.dart";
 import 'package:firebase_auth/firebase_auth.dart';
 import "dart:convert";
 import "package:http/http.dart" as http;
+import 'package:nc_project/pages/edit_pet_page.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -249,7 +250,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         child: Row(
                           children: [
                             InkWell(
-                              onTap: () {},
+                              onTap: () => {},
                               child: const Icon(
                                 Icons.delete,
                                 color: Colors.red,
@@ -258,7 +259,12 @@ class _ProfilePageState extends State<ProfilePage> {
                             Padding(
                               padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
                               child: InkWell(
-                                onTap: () {},
+                                onTap: () {
+                                  Navigator.push(context,
+                                      MaterialPageRoute(builder: (context) {
+                                    return EditPetPage(_pets[index]);
+                                  }));
+                                },
                                 child: const Icon(
                                   Icons.edit,
                                   color: Colors.blue,
