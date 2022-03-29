@@ -1,7 +1,6 @@
 import "package:flutter/material.dart";
 import "package:flip_card/flip_card.dart";
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:nc_project/services/firebase_service.dart';
 import "dart:convert";
 import "package:http/http.dart" as http;
 
