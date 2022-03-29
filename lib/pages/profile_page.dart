@@ -157,9 +157,9 @@ class _ProfilePageState extends State<ProfilePage> {
               const Divider(),
           scrollDirection: Axis.horizontal,
           itemBuilder: (BuildContext context, int index) {
-            _isBreed = _pets[index]["breed"]
-                ? "\nBreed: ${_pets[index]["breed"]}"
-                : "";
+            _isBreed = _pets[index]["breed"] == null
+                ? ""
+                : "\nBreed: ${_pets[index]["breed"]}";
             print(_isBreed);
             return FlipCard(
               fill: Fill
@@ -224,7 +224,8 @@ class _ProfilePageState extends State<ProfilePage> {
                       RichText(
                         text: TextSpan(
                           style: DefaultTextStyle.of(context).style,
-                          children: <TextSpan>[ //turn to widget
+                          children: <TextSpan>[
+                            //turn to widget
                             //change to Text widgets
                             TextSpan(
                                 text: "${_pets[index]["petName"]}",
