@@ -79,7 +79,9 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
 
   void sendMessage(ChatMessage message) async {
     String content = message.messageContent;
-    String writtenBy = message.messageType;
+    String writtenBy = message.messageType == "sender"
+        ? auth.currentUser!.uid
+        : widget.otherUser;
     try {
       await _db.collection("conversations").doc(_conversationId).update({
         "messages": FieldValue.arrayUnion([
