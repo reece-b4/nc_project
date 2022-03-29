@@ -20,6 +20,7 @@ class _ProfilePageState extends State<ProfilePage> {
   String _img = "";
   List _pets = [];
   List _reviews = [];
+  String _isBreed = "";
 
   final FirebaseAuth auth = FirebaseAuth.instance;
   @override
@@ -156,6 +157,10 @@ class _ProfilePageState extends State<ProfilePage> {
               const Divider(),
           scrollDirection: Axis.horizontal,
           itemBuilder: (BuildContext context, int index) {
+            _isBreed = _pets[index]["breed"]
+                ? "\nBreed: ${_pets[index]["breed"]}"
+                : "";
+            print(_isBreed);
             return FlipCard(
               fill: Fill
                   .fillBack, // Fill the back side of the card to make in the same size as the front.
@@ -219,7 +224,8 @@ class _ProfilePageState extends State<ProfilePage> {
                       RichText(
                         text: TextSpan(
                           style: DefaultTextStyle.of(context).style,
-                          children: <TextSpan>[
+                          children: <TextSpan>[ //turn to widget
+                            //change to Text widgets
                             TextSpan(
                                 text: "${_pets[index]["petName"]}",
                                 style: const TextStyle(
@@ -228,7 +234,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 )),
                             TextSpan(
                                 text:
-                                    "\nAge: ${_pets[index]["petAge"]}\nSpecies: ${_pets[index]["species"]}\nBreed: ${_pets[index]["breed"]}\nAvailability: ${_pets[index]["availability"]}\nNotes: ${_pets[index]["notes"]}"),
+                                    "\nAge: ${_pets[index]["petAge"]}\nSpecies: ${_pets[index]["species"]} $_isBreed\nAvailability: ${_pets[index]["availability"]}\nNotes: ${_pets[index]["notes"]}"),
                           ],
                         ),
                       ),
