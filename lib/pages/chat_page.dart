@@ -15,12 +15,25 @@ class ChatPage extends StatefulWidget {
 class _ChatPageState extends State<ChatPage> {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   final FirebaseAuth auth = FirebaseAuth.instance;
+  Stream<DocumentSnapshot>? _conversationStream;
   List _conversations = [];
 
   @override
   void initState() {
     super.initState();
+    subToStream();
     getInitialConversations();
+  }
+
+  void subToStream() async {
+    try {
+      _conversationStream = FirebaseFirestore.instance
+          .collection('users')
+          .doc(auth.currentUser!.uid)
+          .snapshots();
+    } catch (error) {
+      print(error);
+    }
   }
 
   void getInitialConversations() async {
@@ -73,22 +86,30 @@ class _ChatPageState extends State<ChatPage> {
                   ),
                 ),
               ),
-              ListView.builder(
-                itemCount: _conversations.length,
-                shrinkWrap: true,
-                padding: const EdgeInsets.only(top: 16),
-                physics: const NeverScrollableScrollPhysics(),
-                itemBuilder: (context, index) {
-                  return ConversationList(
-                    userId: _conversations[index].userId,
-                    name: _conversations[index].name,
-                    messageText: _conversations[index].messageText,
-                    imageUrl: _conversations[index].imageURL,
-                    time: _conversations[index].time,
-                    isMessageRead: (index == 0 || index == 3) ? true : false,
-                  );
-                },
-              ),
+              StreamBuilder(
+                  stream: _conversationStream,
+                  builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                    if (snapshot.hasData) {
+                      _conversations = snapshot.data!.get("conversations");
+                    }
+                    return ListView.builder(
+                      itemCount: _conversations.length,
+                      shrinkWrap: true,
+                      padding: const EdgeInsets.only(top: 16),
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        return ConversationList(
+                          userId: _conversations[index]["userId"],
+                          name: _conversations[index]["name"],
+                          messageText: _conversations[index]["lastMessage"],
+                          imageUrl: _conversations[index]["img"],
+                          time: _conversations[index]["time"],
+                          isMessageRead:
+                              (index == 0 || index == 3) ? true : false,
+                        );
+                      },
+                    );
+                  }),
             ],
           ),
         ),
