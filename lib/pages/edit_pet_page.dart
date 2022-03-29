@@ -30,6 +30,7 @@ class EditPetPageState extends State<EditPetPage> {
   File? image;
   String? _species;
   String? _petId;
+  String _imgUrl = '';
 
   final FirebaseAuth auth = FirebaseAuth.instance;
   @override
@@ -68,6 +69,14 @@ class EditPetPageState extends State<EditPetPage> {
 
   @override
   Widget build(BuildContext context) {
+    _name = widget.petObject['petName'];
+    _age = widget.petObject['petAge'].toString();
+    _breed = widget.petObject['breed'];
+    _notes = widget.petObject['notes'];
+    _imgUrl = widget.petObject['petImg'];
+    _species = widget.petObject['species'];
+    _petId = widget.petObject['petId'];
+
     _deviceHeight = MediaQuery.of(context).size.height;
     _deviceWidth = MediaQuery.of(context).size.width;
     return Scaffold(
@@ -92,7 +101,7 @@ class EditPetPageState extends State<EditPetPage> {
                   ),
                   image != null
                       ? Image.file(image!)
-                      : const Text("No image selected"),
+                      : Image.network(_imgUrl),
                   _editPetButton(),
                 ],
               ),
@@ -126,7 +135,7 @@ class EditPetPageState extends State<EditPetPage> {
 
   Widget _nameTextField() {
     return TextFormField(
-      initialValue: widget.petObject['petName'],
+      initialValue: _name,
       decoration: const InputDecoration(hintText: "Whats your pet's name?"),
       autovalidateMode: AutovalidateMode.onUserInteraction,
       validator: (_value) =>
@@ -142,7 +151,8 @@ class EditPetPageState extends State<EditPetPage> {
   Widget _ageTextField() {
     return TextFormField(
       initialValue: widget.petObject['petAge'].toString(),
-      decoration: const InputDecoration(hintText: "Please enter your pet's age"),
+      decoration:
+          const InputDecoration(hintText: "Please enter your pet's age"),
       autovalidateMode: AutovalidateMode.onUserInteraction,
       validator: (_value) =>
           _value!.isNotEmpty ? null : "Must be greater than 0",
@@ -318,7 +328,7 @@ class EditPetPageState extends State<EditPetPage> {
       String _downloadURL = await _snapshot.ref.getDownloadURL();
 
       await http.patch(
-        Uri.parse('https://nc-project-api.herokuapp.com/api/pets/'),
+        Uri.parse('https://nc-project-api.herokuapp.com/api/pets/$_petId'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
