@@ -1,12 +1,15 @@
 import "package:flutter/material.dart";
 import "package:flip_card/flip_card.dart";
+import 'package:nc_project/pages/add_review_page.dart';
 import 'package:nc_project/pages/chat_detail_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import "dart:convert";
 import "package:http/http.dart" as http;
 import 'package:nc_project/pages/edit_pet_page.dart';
+import 'package:intl/intl.dart';
 import 'package:get_it/get_it.dart';
 import 'package:nc_project/services/firebase_service.dart';
+
 
 class ProfilePage extends StatefulWidget {
   final String? _passedInData;
@@ -112,6 +115,9 @@ class _ProfilePageState extends State<ProfilePage> {
                     _myPetsTitle(),
                     _userPetsCard(),
                     _myReviewsTitle(),
+                    widget._passedInData != null
+                        ? _addReviewButton()
+                        : const Text(''),
                     _userReviewsCard(),
                     _logoutButton(),
                   ],
@@ -289,9 +295,6 @@ class _ProfilePageState extends State<ProfilePage> {
                         text: TextSpan(
                           style: DefaultTextStyle.of(context).style,
                           children: <TextSpan>[
-                            //turn to widget
-                            //change to Text widgets
-
                             TextSpan(
                                 text:
                                     "\nAge: ${_pets[index]["age"]}\nSpecies: ${_pets[index]["species"]}"),
@@ -505,31 +508,93 @@ class _ProfilePageState extends State<ProfilePage> {
           itemBuilder: (BuildContext context, int index) {
             String reviewTextHeader;
             String reviewTextBody;
-            if (_reviews.isEmpty) {
+            if (_reviews.isEmpty == false) {
+              DateTime date = DateTime.fromMillisecondsSinceEpoch(
+                  _reviews[index]["timestamp"]);
+              String formattedDate = DateFormat("dd-MM-yy kk:mm").format(date);
               reviewTextHeader =
-                  "From: ${_reviews[index]["author"]} ${_reviews[index]["date"]}";
-              reviewTextBody = "${_reviews[index]["comment"]}";
+                  "From: ${_reviews[index]["username"]} \n$formattedDate";
+              reviewTextBody = "${_reviews[index]["content"]}";
             } else {
               reviewTextHeader = "";
               reviewTextBody = "";
             }
             return Container(
               margin: const EdgeInsets.only(bottom: 5, top: 5),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: Wrap(
                 children: [
-                  Text(
+                  Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                 children: [ 
+                   Text(
                     reviewTextHeader,
                     style: const TextStyle(
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  Text(reviewTextBody),
+                  Text(
+                  reviewTextBody,
+                    )
+                 ]
+                  ),
+                  widget._passedInData != null ?     
+            InkWell(
+              onTap: () {
+                setState(() {
+                deleteReview(index);
+                _reviews.removeAt(index);
+                });
+              },
+              child: const Icon(
+                Icons.delete,
+                color: Colors.red,
+              ),
+                    )
+                    : const Text(''),
                 ],
               ),
             );
           }),
     );
+  }
+
+  Widget _addReviewButton() {
+    return SizedBox.fromSize(
+      size: const Size(50, 50),
+      child: ClipOval(
+        child: Material(
+          color: Colors.green,
+          child: InkWell(
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return AddReviewPage(widget._passedInData);
+              }));
+            },
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                Icon(
+                  Icons.rate_review,
+                  color: Colors.white,
+                ),
+                Text('Add', style: TextStyle(color: Colors.white)),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void deleteReview(reviewIndex) async {
+    await http.delete(
+        Uri.parse('https://nc-project-api.herokuapp.com/api/users/${widget._passedInData}/reviews'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, dynamic>{
+          "index": reviewIndex,
+        }));
   }
 
   void deletePet(_petId) async {
