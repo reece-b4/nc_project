@@ -130,7 +130,8 @@ class _ProfilePageState extends State<ProfilePage> {
           fit: BoxFit.cover,
           image: _img.isNotEmpty
               ? NetworkImage(_img)
-              : const NetworkImage("https://i.pravatar.cc/300"),
+              : const NetworkImage(
+                  "https://cdn.pixabay.com/photo/2019/09/14/09/44/cat-4475583_960_720.png"),
         ),
       ),
     );

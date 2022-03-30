@@ -331,7 +331,7 @@ class EditPetPageState extends State<EditPetPage> {
               },
               "userId": uid,
             }));
-        Navigator.pushNamed(context, 'nav');
+        Navigator.pushNamed(context, 'profile');
       });
     } else {
       await http.patch(Uri.parse(apiURL),
@@ -350,7 +350,7 @@ class EditPetPageState extends State<EditPetPage> {
             },
             "userId": uid,
           }));
-      Navigator.pushNamed(context, 'nav');
+      Navigator.pushNamed(context, 'profile');
     }
     //if image IS null
   }
