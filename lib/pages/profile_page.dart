@@ -30,7 +30,7 @@ class _ProfilePageState extends State<ProfilePage> {
   List _pets = [];
   List _reviews = [];
   String _isBreed = "";
-  String? _passedInUid = "CJ1SJqwOFKgRmygbAywtaTx70uh2";
+  // String? _passedInUid = "CJ1SJqwOFKgRmygbAywtaTx70uh2";
 
   final FirebaseAuth auth = FirebaseAuth.instance;
 
@@ -38,20 +38,20 @@ class _ProfilePageState extends State<ProfilePage> {
     try {
       final uid = auth.currentUser!.uid; //need logic for other users HERE
 
-      if (_passedInUid == uid) {
-        bool isCurrentUser = true;
-      } else {
-        bool isCurrenUser = false;
-      }
+      // if (_passedInUid == uid) {
+      //   bool isCurrentUser = true;
+      // } else {
+      //   bool isCurrenUser = false;
+      // }
 
-      if (_passedInUid != null) {
-        String _idToUse = _passedInUid;
-      } else {
-        String _idToUse = uid;
-      }
+      // if (_passedInUid != null) {
+      //   String _idToUse = _passedInUid;
+      // } else {
+      //   String _idToUse = uid;
+      // }
 
       final response = await http.get(Uri.parse(
-          'https://nc-project-api.herokuapp.com/api/users/$_idToUse'));
+          'https://nc-project-api.herokuapp.com/api/users/$uid'));
       final jsonData = jsonDecode(response.body) as Map;
       setState(() {
         _userJson = jsonData;
