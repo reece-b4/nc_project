@@ -70,7 +70,7 @@ class FirebaseService {
     return _doc.data() as Map;
   }
 
-  Future<bool> loginUser({
+  Future<Map> loginUser({
     required String email,
     required String password,
   }) async {
@@ -79,13 +79,12 @@ class FirebaseService {
           email: email, password: password);
       if (_userCredential.user != null) {
         currentUser = await getUserData(uid: _userCredential.user!.uid);
-        return true;
+        return {"isValid": true, "error": null};
       } else {
-        return false;
+        return {"isValid": false, "error": "WHY would this trigger?"};
       }
     } catch (e) {
-      print(e);
-      return false;
+      return {"isValid": false, "error": "Incorrect email or password"};
     }
   }
 }
