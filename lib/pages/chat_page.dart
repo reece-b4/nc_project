@@ -3,8 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:nc_project/pages/widgets/conversations_list.dart';
 
-import 'models/chat_users_model.dart';
-
 class ChatPage extends StatefulWidget {
   const ChatPage({Key? key}) : super(key: key);
 
@@ -15,48 +13,40 @@ class ChatPage extends StatefulWidget {
 class _ChatPageState extends State<ChatPage> {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   final FirebaseAuth auth = FirebaseAuth.instance;
-  Stream<DocumentSnapshot>? _conversationStream;
   List _conversations = [];
 
   @override
   void initState() {
     super.initState();
-    subToStream();
-    getInitialConversations();
+    getConversations();
   }
 
-  void subToStream() async {
-    try {
-      _conversationStream = FirebaseFirestore.instance
-          .collection('users')
-          .doc(auth.currentUser!.uid)
-          .snapshots();
-    } catch (error) {
-      rethrow;
-    }
-  }
-
-  void getInitialConversations() async {
-    try {
-      var doc = await _db.collection("users").doc(auth.currentUser!.uid).get();
-      List dbConvos = doc.get("conversations");
-      List convertedConvos = dbConvos.map((convo) {
-        return ChatUsers(
-          userId: convo["userId"],
-          name: convo["name"],
-          time: convo["time"],
-          imageURL: convo["img"],
-          messageText: convo["lastMessage"],
-        );
-      }).toList();
-      setState(() {
-        convertedConvos
-            .sort(((b, a) => a.time.toString().compareTo(b.time.toString())));
-        _conversations = convertedConvos;
+  void getConversations() async {
+    var doc = await _db.collection("users").doc(auth.currentUser!.uid).get();
+    List dbConvos = await doc.get("conversations");
+    var convertedConvos = dbConvos.map((convo) async {
+      List chatees = [auth.currentUser!.uid, convo["userId"]];
+      chatees.sort((a, b) {
+        return a.compareTo(b);
       });
-    } catch (error) {
-      rethrow;
-    }
+      String convId = chatees.join("");
+      DocumentSnapshot convInfo =
+          await _db.collection("conversations").doc(convId).get();
+      Map convData = convInfo.data() as Map;
+      return {
+        "userId": convo["userId"],
+        "name": convo["name"],
+        "img": convo["img"],
+        "lastMessage": convData["lastMessage"],
+        "time": convData["time"],
+      };
+    }).toList();
+    var awaitedConvos = await Future.wait(convertedConvos);
+    awaitedConvos
+        .sort(((b, a) => a["time"].toString().compareTo(b["time"].toString())));
+    setState(() {
+      _conversations = awaitedConvos;
+    });
   }
 
   @override
@@ -88,39 +78,22 @@ class _ChatPageState extends State<ChatPage> {
                   ),
                 ),
               ),
-              StreamBuilder(
-                  stream: _conversationStream,
-                  builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-                    if (snapshot.hasData) {
-                      try {
-                        List unsortedConversations =
-                            snapshot.data!.get("conversations");
-                        unsortedConversations.sort((b, a) => a["time"]
-                            .toString()
-                            .compareTo(b["time"].toString()));
-                        _conversations = unsortedConversations;
-                      } catch (e) {
-                        _conversations = [];
-                      }
-                    }
-                    return ListView.builder(
-                      itemCount: _conversations.length,
-                      shrinkWrap: true,
-                      padding: const EdgeInsets.only(top: 16),
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        return ConversationList(
-                          userId: _conversations[index]["userId"],
-                          name: _conversations[index]["name"],
-                          messageText: _conversations[index]["lastMessage"],
-                          imageUrl: _conversations[index]["img"],
-                          time: _conversations[index]["time"],
-                          isMessageRead:
-                              (index == 0 || index == 3) ? true : false,
-                        );
-                      },
-                    );
-                  }),
+              ListView.builder(
+                itemCount: _conversations.length,
+                shrinkWrap: true,
+                padding: const EdgeInsets.only(top: 16),
+                physics: const NeverScrollableScrollPhysics(),
+                itemBuilder: (context, index) {
+                  return ConversationList(
+                    userId: _conversations[index]["userId"],
+                    name: _conversations[index]["name"],
+                    imageUrl: _conversations[index]["img"],
+                    messageText: _conversations[index]["lastMessage"],
+                    time: _conversations[index]["time"],
+                    isMessageRead: (index == 0 || index == 3) ? true : false,
+                  );
+                },
+              ),
             ],
           ),
         ),

@@ -4,6 +4,7 @@ import 'package:nc_project/pages/add_pet_page.dart';
 import 'package:nc_project/pages/login_page.dart';
 import 'package:nc_project/pages/nav_home_page.dart';
 import 'package:nc_project/pages/register_page.dart';
+import 'package:nc_project/pages/chat_page.dart';
 import "package:firebase_core/firebase_core.dart";
 import "package:get_it/get_it.dart";
 import 'package:nc_project/services/firebase_service.dart';
@@ -34,6 +35,7 @@ class MyApp extends StatelessWidget {
         "register": (context) => const RegisterPage(),
         "login": (context) => const LoginPage(),
         "addpet": (context) => const AddPetPage(),
+        "chat": (context) => const ChatPage(),
       },
     );
   }

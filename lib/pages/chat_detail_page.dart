@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:nc_project/pages/chat_page.dart';
 import 'package:nc_project/pages/models/chat_message_mode.dart';
 
 class ChatDetailPage extends StatefulWidget {
@@ -88,7 +89,6 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
   }
 
   void addConversationToUsersDocs() async {
-    int currentTime = DateTime.now().millisecondsSinceEpoch;
     try {
       await _db.collection("users").doc(auth.currentUser!.uid).update({
         "conversations": FieldValue.arrayUnion(
@@ -96,9 +96,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
             {
               "name": widget.name,
               "userId": widget.otherUser,
-              "time": currentTime,
               "img": widget.image,
-              "lastMessage": "",
             }
           ],
         )
@@ -109,7 +107,6 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
             {
               "name": userInfo["name"],
               "userId": auth.currentUser!.uid,
-              "time": currentTime,
               "img": userInfo["image"],
             }
           ],
@@ -135,16 +132,12 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
   }
 
   void getInitialMessages() async {
-    try {
-      DocumentSnapshot doc =
-          await _db.collection("conversations").doc(_conversationId).get();
-      if (doc.exists) {
-        setState(() {
-          _messages = convertMessages(doc.get("messages"));
-        });
-      }
-    } catch (error) {
-      print(error);
+    DocumentSnapshot doc =
+        await _db.collection("conversations").doc(_conversationId).get();
+    if (doc.exists) {
+      setState(() {
+        _messages = convertMessages(doc.get("messages"));
+      });
     }
   }
 
@@ -153,15 +146,13 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     String writtenBy = message.messageType == "sender"
         ? auth.currentUser!.uid
         : widget.otherUser;
-    try {
-      await _db.collection("conversations").doc(_conversationId).update({
-        "messages": FieldValue.arrayUnion([
-          {"written_by": writtenBy, "message_content": content}
-        ])
-      });
-    } catch (error) {
-      print(error);
-    }
+    await _db.collection("conversations").doc(_conversationId).update({
+      "time": DateTime.now().millisecondsSinceEpoch,
+      "lastMessage": content,
+      "messages": FieldValue.arrayUnion([
+        {"written_by": writtenBy, "message_content": content}
+      ])
+    });
   }
 
   @override
@@ -178,7 +169,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
               children: <Widget>[
                 IconButton(
                   onPressed: () {
-                    Navigator.pop(context);
+                    Navigator.pushNamed(context, "chat");
                   },
                   icon: const Icon(
                     Icons.arrow_back,
