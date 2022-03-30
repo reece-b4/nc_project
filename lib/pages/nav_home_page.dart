@@ -17,7 +17,7 @@ class _NavHomePageState extends State<NavHomePage> {
   final List<Widget> _pages = <Widget>[
     const HomePage(),
     const ChatPage(),
-    const ProfilePage(),
+    const ProfilePage(null),
   ];
 
   void _onItemTapped(int index) {

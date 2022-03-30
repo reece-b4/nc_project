@@ -5,10 +5,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import "dart:convert";
 import "package:http/http.dart" as http;
 import 'package:nc_project/pages/edit_pet_page.dart';
-import 'package:nc_project/pages/ChatDetailPage.dart';
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({Key? key}) : super(key: key);
+  final String? _passedInData;
+  const ProfilePage(this._passedInData, {Key? key}) : super(key: key);
 
   @override
   State<ProfilePage> createState() {
@@ -29,9 +29,15 @@ class _ProfilePageState extends State<ProfilePage> {
 
   void fetchUser() async {
     try {
-      final uid = auth.currentUser!.uid; //need logic for other users HERE
-      final response = await http.get(
-          Uri.parse('https://nc-project-api.herokuapp.com/api/users/$uid'));
+      final uid = auth.currentUser!.uid;
+      String _idToUse;
+
+      widget._passedInData != null
+          ? _idToUse = widget._passedInData!
+          : _idToUse = uid;
+
+      final response = await http.get(Uri.parse(
+          'https://nc-project-api.herokuapp.com/api/users/$_idToUse'));
       final jsonData = jsonDecode(response.body) as Map;
       setState(() {
         _userJson = jsonData;
@@ -252,37 +258,41 @@ class _ProfilePageState extends State<ProfilePage> {
                           ],
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
-                        child: Row(
-                          children: [
-                            InkWell(
-                              onTap: () {
-                                deletePet(_pets[index]["petId"]);
-                              },
-                              child: const Icon(
-                                Icons.delete,
-                                color: Colors.red,
+                      widget._passedInData == null
+                          ? Padding(
+                              padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
+                              child: Row(
+                                children: [
+                                  InkWell(
+                                    onTap: () {
+                                      deletePet(_pets[index]["petId"]);
+                                    },
+                                    child: const Icon(
+                                      Icons.delete,
+                                      color: Colors.red,
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding:
+                                        const EdgeInsets.fromLTRB(30, 0, 0, 0),
+                                    child: InkWell(
+                                      onTap: () {
+                                        Navigator.push(context,
+                                            MaterialPageRoute(
+                                                builder: (context) {
+                                          return EditPetPage(_pets[index]);
+                                        }));
+                                      },
+                                      child: const Icon(
+                                        Icons.edit,
+                                        color: Colors.blue,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
-                              child: InkWell(
-                                onTap: () {
-                                  Navigator.push(context,
-                                      MaterialPageRoute(builder: (context) {
-                                    return EditPetPage(_pets[index]);
-                                  }));
-                                },
-                                child: const Icon(
-                                  Icons.edit,
-                                  color: Colors.blue,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                            )
+                          : const Text(''),
                     ],
                   ),
                 ),
@@ -304,11 +314,12 @@ class _ProfilePageState extends State<ProfilePage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Text("My Pets",
+          const Text("Pets",
               style: TextStyle(fontSize: 22.5, fontWeight: FontWeight.w600)),
           const Padding(padding: EdgeInsets.all(5)),
-          _addButton(),
-          _messageButton(auth.currentUser!.uid, _username, _img),
+          widget._passedInData == null
+              ? _addButton()
+              : _messageButton(auth.currentUser!.uid, _username, _img)
         ],
       ),
     );
@@ -338,7 +349,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _messageButton(uid, _username, _img) {
+  Widget _messageButton(_idToUse, _username, _img) {
     return SizedBox.fromSize(
       size: const Size(50, 50),
       child: ClipOval(
@@ -349,10 +360,10 @@ class _ProfilePageState extends State<ProfilePage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) {
-                  return const ChatDetailPage(
-                    name: "Test Testington",
-                    otherUser: uid,
-                    image: "https://i.pravatar.cc/300",
+                  return ChatDetailPage(
+                    name: _username,
+                    otherUser: _idToUse,
+                    image: _img,
                   );
                 }),
               );
@@ -383,7 +394,7 @@ class _ProfilePageState extends State<ProfilePage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: const [
-          Text("My Reviews",
+          Text("Reviews",
               style: TextStyle(fontSize: 22.5, fontWeight: FontWeight.w600)),
           Padding(
             padding: EdgeInsets.all(5),
