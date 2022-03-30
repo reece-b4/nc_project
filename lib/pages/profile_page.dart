@@ -6,6 +6,12 @@ import "package:http/http.dart" as http;
 import 'package:nc_project/pages/edit_pet_page.dart';
 import 'package:nc_project/pages/ChatDetailPage.dart';
 
+//owners profile button on pet card from home page navigates here and passes in said pets owner uid using pets[index]["owner"]
+
+// variable uid = passed in owners uid
+//if uid == auth.currentuser { variable currentuser = true } else { variable currentuser = false }
+//in builder, uid data is used to populate profile info
+// on specific widgets, if currentuser == true display add pet button else display message user button etc
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -24,14 +30,28 @@ class _ProfilePageState extends State<ProfilePage> {
   List _pets = [];
   List _reviews = [];
   String _isBreed = "";
+  String? _passedInUid = "CJ1SJqwOFKgRmygbAywtaTx70uh2";
 
   final FirebaseAuth auth = FirebaseAuth.instance;
 
   void fetchUser() async {
     try {
       final uid = auth.currentUser!.uid; //need logic for other users HERE
-      final response = await http.get(
-          Uri.parse('https://nc-project-api.herokuapp.com/api/users/$uid'));
+
+      if (_passedInUid == uid) {
+        bool isCurrentUser = true;
+      } else {
+        bool isCurrenUser = false;
+      }
+
+      if (_passedInUid != null) {
+        String _idToUse = _passedInUid;
+      } else {
+        String _idToUse = uid;
+      }
+
+      final response = await http.get(Uri.parse(
+          'https://nc-project-api.herokuapp.com/api/users/$_idToUse'));
       final jsonData = jsonDecode(response.body) as Map;
       setState(() {
         _userJson = jsonData;
