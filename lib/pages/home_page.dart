@@ -98,47 +98,53 @@ class _HomePageState extends State<HomePage> {
   // ];
   String dropdownPetValue = "All pets";
   String dropdownDistanceValue = "Any distance";
+  String _searchValue = "Search";
   bool _folded = true;
   List? _allPets;
-  var _allSpeciesFromCards = ["All pets"];
+  final _allSpeciesFromCards = ["All pets"];
 
   final FirebaseAuth auth = FirebaseAuth.instance;
   @override
   void initState() {
     super.initState();
-    fetchPets(dropdownPetValue, dropdownDistanceValue);
+    fetchPets(dropdownPetValue, dropdownDistanceValue, _searchValue);
   }
 
   //?species=str - DONE
-  //?limit=
-  //?search=
-  //&&
+  //?limit=- DONE
+  //?search=- DONE
+  //&&- DONE
   //loop
 
-  void fetchPets(dropdownPetValue, dropdownDistanceValue) async {
+  void fetchPets(dropdownPetValue, dropdownDistanceValue, _searchValue) async {
     try {
       final user = auth.currentUser;
       final uid = user!.uid;
-      print(dropdownPetValue);
+      print(_searchValue);
 
       var splitValue = dropdownDistanceValue!.split(' ');
       var dropdownDistanceNumber = splitValue[0];
       var httpAddress = 'https://nc-project-api.herokuapp.com/api/pets';
-      if (dropdownPetValue != "All pets") {
-        httpAddress = httpAddress + '?species=' + dropdownPetValue;
-      }
-      if (dropdownDistanceValue != "Any distance" &&
-          dropdownPetValue != "All pets") {
-        httpAddress = httpAddress +
-            '?species=' +
-            dropdownPetValue +
-            '&&limit=' +
-            dropdownDistanceNumber;
-      }
 
-      if (dropdownDistanceValue != "Any distance" &&
-          dropdownPetValue == "All pets") {
-        httpAddress = httpAddress + '?limit=' + dropdownDistanceNumber;
+      if (dropdownPetValue != "All pets" ||
+          dropdownDistanceValue != "Any distance" ||
+          _searchValue != "Search") {
+        httpAddress = httpAddress + '?';
+      }
+      if (dropdownPetValue != "All pets") {
+        httpAddress = httpAddress + 'species=' + dropdownPetValue + '&&';
+      }
+      if (dropdownDistanceValue != "Any distance") {
+        httpAddress = httpAddress + 'limit=' + dropdownDistanceNumber + '&&';
+      }
+      if (_searchValue != "Search") {
+        httpAddress = httpAddress + 'search=' + _searchValue;
+      }
+      var splitHttpAddress = httpAddress.split('');
+      if (splitHttpAddress.last == '&') {
+        splitHttpAddress.removeLast();
+        splitHttpAddress.removeLast();
+        httpAddress = splitHttpAddress.join('');
       }
 
       print(httpAddress);
@@ -154,7 +160,6 @@ class _HomePageState extends State<HomePage> {
       final jsonData = jsonDecode(response.body) as Map;
       setState(() {
         _allPets = [...jsonData["pets"]];
-
         [...jsonData["pets"]].forEach((pet) => _allSpeciesFromCards.add(
             "${pet["species"][0].toUpperCase()}${pet["species"].substring(1).toLowerCase()}"));
       });
@@ -173,31 +178,42 @@ class _HomePageState extends State<HomePage> {
         child: SingleChildScrollView(
           child: Column(
             children: <Widget>[
-              Container(
-                color: const Color.fromARGB(255, 240, 240, 240),
-                height: _deviceHeight! * 0.08,
-                width: _deviceWidth!,
-                child: Stack(children: <Widget>[
-                  SizedBox(
-                    child: Align(
-                      alignment: Alignment.centerLeft,
+              Stack(
+                // alignment: WrapAlignment.spaceEvenly,
+
+                children: <Widget>[
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: SizedBox(
                       child: Visibility(
                           visible: _folded ? true : false,
                           child: filterDropDown()),
                     ),
                   ),
-                  SizedBox(
-                    child: Align(
-                      alignment: Alignment.center,
+                  Align(
+                    alignment: Alignment.center,
+                    child: Container(
+                      margin: EdgeInsets.fromLTRB(0, 0, 100, 0),
                       child: Visibility(
                           visible: _folded ? true : false,
                           child: distanceDropDown()),
                     ),
                   ),
-                  SizedBox(
-                      child: Align(
-                          alignment: Alignment.centerRight, child: searchBar()))
-                ]),
+                  Align(
+                    alignment: Alignment.center,
+                    child: Container(
+                      margin: EdgeInsets.fromLTRB(100, 0, 0, 0),
+                      child: Visibility(
+                          visible: _folded ? true : false, child: searchTerm()),
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: SizedBox(
+                      child: searchBar(),
+                    ),
+                  )
+                ],
               ),
               Container(
                 decoration: const BoxDecoration(
@@ -220,12 +236,27 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  Widget searchTerm() {
+    return SizedBox(
+        width: 100,
+        child: TextButton(
+          style: ButtonStyle(
+            overlayColor: MaterialStateProperty.resolveWith<Color?>(
+                (Set<MaterialState> states) {
+              if (states.contains(MaterialState.focused)) return Colors.red;
+              return null; // Defer to the widget's default.
+            }),
+          ),
+          onPressed: () {},
+          child: Text('TextButton'),
+        ));
+  }
+
   Widget filterDropDown() {
     List<String> _uniqueAllSpeciesFromCards =
         _allSpeciesFromCards.toSet().toList();
-
     return SizedBox(
-      width: 120,
+      width: 130,
       child: DropdownButtonHideUnderline(
         child: Padding(
           padding: const EdgeInsets.all(0.0),
@@ -254,7 +285,8 @@ class _HomePageState extends State<HomePage> {
                   setState(
                     () {
                       dropdownPetValue = newValue!;
-                      fetchPets(dropdownPetValue, dropdownDistanceValue);
+                      fetchPets(dropdownPetValue, dropdownDistanceValue,
+                          _searchValue);
                     },
                   );
                 },
@@ -276,10 +308,10 @@ class _HomePageState extends State<HomePage> {
 
   Widget distanceDropDown() {
     return SizedBox(
-      width: 120,
+      width: 130,
       child: DropdownButtonHideUnderline(
         child: Padding(
-          padding: const EdgeInsets.all(0.0),
+          padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
           child: DecoratedBox(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(40),
@@ -304,7 +336,8 @@ class _HomePageState extends State<HomePage> {
                   setState(
                     () {
                       dropdownDistanceValue = newValue!;
-                      fetchPets(dropdownPetValue, dropdownDistanceValue);
+                      fetchPets(dropdownPetValue, dropdownDistanceValue,
+                          _searchValue);
                     },
                   );
                 },
@@ -348,12 +381,19 @@ class _HomePageState extends State<HomePage> {
               child: Container(
                 padding: const EdgeInsets.only(left: 16, bottom: 5),
                 child: !_folded
-                    ? const TextField(
-                        decoration: InputDecoration(
+                    ? TextField(
+                        decoration: const InputDecoration(
                             hintText: "Search",
                             hintStyle:
                                 TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
                             border: InputBorder.none),
+                        onSubmitted: (value) {
+                          setState(() {
+                            _searchValue = value;
+                            fetchPets(dropdownPetValue, dropdownDistanceValue,
+                                _searchValue);
+                          });
+                        },
                       )
                     : null,
               ),
