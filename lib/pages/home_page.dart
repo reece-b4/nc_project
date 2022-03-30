@@ -438,6 +438,7 @@ class _HomePageState extends State<HomePage> {
                   fit: BoxFit.cover,
                 ),
               ),
+
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(40),
@@ -493,6 +494,7 @@ class _HomePageState extends State<HomePage> {
                               color: Color.fromARGB(255, 228, 93, 69),
                               size: 40.0,
                               semanticLabel: "Heart",
+
                             ),
                           ),
                         ],
@@ -510,6 +512,7 @@ class _HomePageState extends State<HomePage> {
                 color: const Color.fromARGB(255, 253, 247, 227),
                 borderRadius: BorderRadius.circular(40),
               ),
+
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(40),
@@ -580,6 +583,7 @@ class _HomePageState extends State<HomePage> {
                             color: Color.fromARGB(255, 0, 0, 0),
                           ),
                         ),
+
                       ),
                       Padding(
                         padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),

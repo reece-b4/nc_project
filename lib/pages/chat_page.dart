@@ -32,7 +32,12 @@ class _ChatPageState extends State<ChatPage> {
 
   void getConversations() async {
     var doc = await _db.collection("users").doc(auth.currentUser!.uid).get();
-    List dbConvos = await doc.get("conversations");
+    List dbConvos;
+    try {
+      dbConvos = await doc.get("conversations");
+    } catch (error) {
+      dbConvos = [];
+    }
     var convertedConvos = dbConvos.map((convo) async {
       List chatees = [auth.currentUser!.uid, convo["userId"]];
       chatees.sort((a, b) {
