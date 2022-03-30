@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import "dart:convert";
 import "package:http/http.dart" as http;
 import 'package:nc_project/pages/edit_pet_page.dart';
-import 'package:nc_project/pages/ChatDetailPage.dart';
+// import 'package:nc_project/pages/ChatDetailPage.dart';
 
 //owners profile button on pet card from home page navigates here and passes in said pets owner uid using pets[index]["owner"]
 
@@ -30,28 +30,24 @@ class _ProfilePageState extends State<ProfilePage> {
   List _pets = [];
   List _reviews = [];
   String _isBreed = "";
-  // String? _passedInUid = "CJ1SJqwOFKgRmygbAywtaTx70uh2";
+  String _passedInUid = "OAUZRZuauxfPKXZdslTGmrehFnA2";
 
   final FirebaseAuth auth = FirebaseAuth.instance;
 
   void fetchUser() async {
     try {
       final uid = auth.currentUser!.uid; //need logic for other users HERE
+      bool isCurrentUser;
+      String _idToUse;
 
-      // if (_passedInUid == uid) {
-      //   bool isCurrentUser = true;
-      // } else {
-      //   bool isCurrenUser = false;
-      // }
-
-      // if (_passedInUid != null) {
-      //   String _idToUse = _passedInUid;
-      // } else {
-      //   String _idToUse = uid;
-      // }
+      _passedInUid == uid ? isCurrentUser = true : isCurrentUser = false;
+      _passedInUid != null ? _idToUse = _passedInUid : _idToUse = uid;
+      print(_passedInUid);
+      print(_idToUse);
+      print(isCurrentUser);
 
       final response = await http.get(Uri.parse(
-          'https://nc-project-api.herokuapp.com/api/users/$uid'));
+          'https://nc-project-api.herokuapp.com/api/users/$_idToUse'));
       final jsonData = jsonDecode(response.body) as Map;
       setState(() {
         _userJson = jsonData;
@@ -366,16 +362,16 @@ class _ProfilePageState extends State<ProfilePage> {
           color: Colors.blue,
           child: InkWell(
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) {
-                  return const ChatDetailPage(
-                    name: "Test Testington",
-                    otherUser: uid,
-                    image: "https://i.pravatar.cc/300",
-                  );
-                }),
-              );
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(builder: (context) {
+              //     return const ChatDetailPage(
+              //       name: "Test Testington",
+              //       otherUser: uid,
+              //       image: "https://i.pravatar.cc/300",
+              //     );
+              //   }),
+              // );
             },
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
