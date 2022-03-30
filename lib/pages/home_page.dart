@@ -5,7 +5,6 @@ import "dart:convert";
 import "package:http/http.dart" as http;
 import 'package:nc_project/pages/profile_page.dart';
 
-
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -246,7 +245,6 @@ class _HomePageState extends State<HomePage> {
                         fetchPets(_dropdownPetValue, _dropdownDistanceValue,
                             _searchValue);
                       },
-
                     );
                   },
                   items: <String>[
@@ -331,7 +329,6 @@ class _HomePageState extends State<HomePage> {
                 child: !_foldedSearchBar
                     ? TextField(
                         decoration: const InputDecoration(
-
                             hintText: "Search",
                             hintStyle:
                                 TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
@@ -442,7 +439,6 @@ class _HomePageState extends State<HomePage> {
                             ),
                             Text(
                               "${_allPets?[index]["distance"]} miles away",
-
                               style: const TextStyle(
                                   fontFamily: "Roboto",
                                   decoration: TextDecoration.none,
@@ -498,7 +494,6 @@ class _HomePageState extends State<HomePage> {
                             padding: const EdgeInsets.fromLTRB(40, 0, 0, 0),
                             child: Text(
                               "${_allPets?[index]["name"]}",
-
                               style: const TextStyle(
                                 fontFamily: "Roboto",
                                 decoration: TextDecoration.none,
@@ -516,7 +511,6 @@ class _HomePageState extends State<HomePage> {
                                 image: DecorationImage(
                                   image: NetworkImage(
                                       "${_allPets?[index]["img"]}"),
-
                                   fit: BoxFit.fill,
                                 ),
                                 shape: BoxShape.circle,
@@ -544,10 +538,9 @@ class _HomePageState extends State<HomePage> {
                         width: 180,
                         child: ElevatedButton(
                             onPressed: () {
-                              print(entries[index]["owner"]);
                               Navigator.push(context,
                                   MaterialPageRoute(builder: (context) {
-                                return ProfilePage(entries[index]["owner"]);
+                                return ProfilePage(_allPets![index]["owner"]);
                               }));
                             },
                             style: ButtonStyle(
