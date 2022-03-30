@@ -286,7 +286,6 @@ class _RegisterPageState extends State<RegisterPage> {
         password: _password!,
         postcode: _postcode!,
         image: imageProfile!);
-    print(imageProfile);
     if (_result) Navigator.pop(context);
   }
 }

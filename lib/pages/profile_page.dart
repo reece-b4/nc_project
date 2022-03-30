@@ -1,103 +1,70 @@
 import "package:flutter/material.dart";
 import "package:flip_card/flip_card.dart";
 import 'package:nc_project/pages/chat_detail_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import "dart:convert";
+import "package:http/http.dart" as http;
+import 'package:nc_project/pages/edit_pet_page.dart';
+import 'package:nc_project/pages/ChatDetailPage.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() {
+  State<ProfilePage> createState() {
     return _ProfilePageState();
   }
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  Map _userJson = {};
+  String _username = "";
+  String _postcode = "";
+  String _img = "";
+  List _pets = [];
+  List _reviews = [];
+  String _isBreed = "";
+
+  final FirebaseAuth auth = FirebaseAuth.instance;
+
+  void fetchUser() async {
+    try {
+      final uid = auth.currentUser!.uid; //need logic for other users HERE
+      final response = await http.get(
+          Uri.parse('https://nc-project-api.herokuapp.com/api/users/$uid'));
+      final jsonData = jsonDecode(response.body) as Map;
+      setState(() {
+        _userJson = jsonData;
+        _username = _userJson['user']['username'];
+        _postcode = _userJson['user']['postcode'];
+        _img = _userJson['user']['img'];
+        try {
+          _pets = _userJson['user']['pets'];
+        } catch (error) {
+          _pets = [];
+        }
+        try {
+          _reviews = _userJson['user']['reviews'];
+        } catch (error) {
+          _reviews = [];
+        }
+      });
+    } catch (error) {
+      print(error);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUser();
+  }
+
   double? _deviceHeight;
-  double? _deviceWidth;
-  final List<Map> entries = <Map>[
-    {
-      "username": "Jess64",
-      "location": "Leeds",
-      "profileURL":
-          "https://images.unsplash.com/photo-1514315384763-ba401779410f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=383&q=80",
-      "pets": [
-        {
-          "pet_name": "Rover",
-          "age": 3,
-          "species": "dogs",
-          "image":
-              "https://images.unsplash.com/photo-1644614398468-06fad5e8f8f6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=502&q=80",
-          "availability": true,
-          "distance": "0.5 miles away",
-          "notes": "Likes chicken"
-        },
-        {
-          "pet_name": "Timmy",
-          "age": 87,
-          "species": "tortoises and turtles",
-          "image":
-              "https://images.unsplash.com/photo-1508455858334-95337ba25607?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=876&q=80",
-          "availability": true,
-          "distance": "2 miles away",
-          "notes": "A game of fetch takes forever"
-        },
-        {
-          "pet_name": "Blobby",
-          "age": 7,
-          "species": "other",
-          "image":
-              "https://images.unsplash.com/photo-1575485670541-824ff288aaf8?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=774&q=80",
-          "availability": true,
-          "distance": "3 miles away",
-          "notes": "Will bite you if provoked."
-        },
-        {
-          "pet_name": "Joshua",
-          "age": 6,
-          "species": "other",
-          "image":
-              "https://images.unsplash.com/photo-1615087240969-eeff2fa558f2?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=580&q=80",
-          "availability": true,
-          "distance": "8 miles away",
-          "notes": "Does not like being alone"
-        },
-        {
-          "pet_name": "Apple",
-          "age": 87,
-          "species": "hamsters",
-          "image":
-              "https://images.unsplash.com/photo-1425082661705-1834bfd09dca?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=876&q=80",
-          "availability": true,
-          "distance": "10 miles away",
-          "notes": "Sensitive"
-        }
-      ],
-      "reviews": [
-        {
-          "fromUser": "Andy123",
-          "date": "25/02/2022",
-          "comment":
-              "Rover is the devil. He ate my piglet! Avoid at all cost. Jess is hot though",
-        },
-        {
-          "fromUser": "TomUser",
-          "date": "1/02/2022",
-          "comment": "Great person! ",
-        },
-        {
-          "fromUser": "Andy123",
-          "date": "25/02/2022",
-          "comment":
-              "In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the visual form of a document or a typeface without relying on meaningful content. Lorem ipsum may be used as a placeholder before the final copy is available.",
-        }
-      ],
-    },
-  ];
 
   @override
   Widget build(BuildContext context) {
     _deviceHeight = MediaQuery.of(context).size.height;
-    _deviceWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       body: SafeArea(
         child: Container(
@@ -155,7 +122,9 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
         image: DecorationImage(
           fit: BoxFit.cover,
-          image: NetworkImage("${entries[0]["profileURL"]}"),
+          image: _img.isNotEmpty
+              ? NetworkImage(_img)
+              : const NetworkImage("https://i.pravatar.cc/300"),
         ),
       ),
     );
@@ -168,10 +137,10 @@ class _ProfilePageState extends State<ProfilePage> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
-          "${entries[0]["username"]}",
+          _username,
           style: const TextStyle(fontSize: 30, fontWeight: FontWeight.w600),
         ),
-        Text("${entries[0]["location"]}",
+        Text(_postcode,
             style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600))
       ],
     );
@@ -193,11 +162,15 @@ class _ProfilePageState extends State<ProfilePage> {
       child: Padding(
         padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
         child: ListView.separated(
-          itemCount: entries[0]["pets"].length,
+          itemCount: _pets.length,
           separatorBuilder: (BuildContext context, int index) =>
               const Divider(),
           scrollDirection: Axis.horizontal,
           itemBuilder: (BuildContext context, int index) {
+            _isBreed = _pets[index]["breed"] == null
+                ? ""
+                : "\nBreed: ${_pets[index]["breed"]}";
+
             return FlipCard(
               fill: Fill
                   .fillBack, // Fill the back side of the card to make in the same size as the front.
@@ -212,8 +185,9 @@ class _ProfilePageState extends State<ProfilePage> {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(40),
                   image: DecorationImage(
-                    image:
-                        NetworkImage("${entries[0]["pets"][index]["image"]}"),
+                    image: _pets[index]["img"].isNotEmpty
+                        ? NetworkImage(_pets[index]["img"])
+                        : const NetworkImage("https://i.pravatar.cc/300"),
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -232,7 +206,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   child: Align(
                     alignment: Alignment.bottomCenter,
                     child: Text(
-                      "${entries[0]["pets"][index]["pet_name"]}",
+                      "${_pets[index]["name"]}",
                       maxLines: 3,
                       textAlign: TextAlign.center,
                       style: const TextStyle(
@@ -263,16 +237,18 @@ class _ProfilePageState extends State<ProfilePage> {
                         text: TextSpan(
                           style: DefaultTextStyle.of(context).style,
                           children: <TextSpan>[
+                            //turn to widget
+                            //change to Text widgets
+
                             TextSpan(
                                 text:
-                                    "${entries[0]["pets"][index]["pet_name"]}",
-                                style: const TextStyle(
-                                  color: Color.fromARGB(255, 0, 0, 0),
-                                  fontSize: 30,
-                                )),
+                                    "\nAge: ${_pets[index]["age"]}\nSpecies: ${_pets[index]["species"]}"),
+                            TextSpan(
+                              text: _isBreed,
+                            ),
                             TextSpan(
                                 text:
-                                    "\nAge: ${entries[0]["pets"][index]["age"]}\nSpecies: ${entries[0]["pets"][index]["species"]}\nAvailability: ${entries[0]["pets"][index]["availability"]}\nNotes: ${entries[0]["pets"][index]["notes"]}"),
+                                    "\nAvailability: ${_pets[index]["availability"]}\nNotes: ${_pets[index]["desc"]}"),
                           ],
                         ),
                       ),
@@ -281,7 +257,9 @@ class _ProfilePageState extends State<ProfilePage> {
                         child: Row(
                           children: [
                             InkWell(
-                              onTap: () {},
+                              onTap: () {
+                                deletePet(_pets[index]["petId"]);
+                              },
                               child: const Icon(
                                 Icons.delete,
                                 color: Colors.red,
@@ -290,7 +268,12 @@ class _ProfilePageState extends State<ProfilePage> {
                             Padding(
                               padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
                               child: InkWell(
-                                onTap: () {},
+                                onTap: () {
+                                  Navigator.push(context,
+                                      MaterialPageRoute(builder: (context) {
+                                    return EditPetPage(_pets[index]);
+                                  }));
+                                },
                                 child: const Icon(
                                   Icons.edit,
                                   color: Colors.blue,
@@ -324,7 +307,8 @@ class _ProfilePageState extends State<ProfilePage> {
           const Text("My Pets",
               style: TextStyle(fontSize: 22.5, fontWeight: FontWeight.w600)),
           const Padding(padding: EdgeInsets.all(5)),
-          _addButton()
+          _addButton(),
+          _messageButton(auth.currentUser!.uid, _username, _img),
         ],
       ),
     );
@@ -337,18 +321,7 @@ class _ProfilePageState extends State<ProfilePage> {
         child: Material(
           color: const Color.fromARGB(255, 236, 68, 68),
           child: InkWell(
-            onTap: () => {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) {
-                  return const ChatDetailPage(
-                    name: "Test Testington",
-                    otherUser: "qknyM2w5J7ypiI4B2mOp",
-                    image: "https://i.pravatar.cc/300",
-                  );
-                }),
-              )
-            },
+            onTap: () => Navigator.pushNamed(context, "addpet"),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: const [
@@ -357,6 +330,41 @@ class _ProfilePageState extends State<ProfilePage> {
                   color: Colors.white,
                 ), // <-- Icon
                 Text("Add", style: TextStyle(color: Colors.white)), // <-- Text
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _messageButton(uid, _username, _img) {
+    return SizedBox.fromSize(
+      size: const Size(50, 50),
+      child: ClipOval(
+        child: Material(
+          color: Colors.blue,
+          child: InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) {
+                  return const ChatDetailPage(
+                    name: "Test Testington",
+                    otherUser: uid,
+                    image: "https://i.pravatar.cc/300",
+                  );
+                }),
+              );
+            },
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                Icon(
+                  Icons.chat,
+                  color: Colors.white,
+                ), // <-- Icon
+                Text("Chat", style: TextStyle(color: Colors.white)), // <-- Text
               ],
             ),
           ),
@@ -403,27 +411,50 @@ class _ProfilePageState extends State<ProfilePage> {
       height: _deviceHeight! * 0.4,
       padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
       child: ListView.separated(
-          itemCount: entries[0]["reviews"].length,
+          itemCount: _reviews.length,
           separatorBuilder: (BuildContext context, int index) =>
               const Divider(),
           scrollDirection: Axis.vertical,
           itemBuilder: (BuildContext context, int index) {
+            String reviewTextHeader;
+            String reviewTextBody;
+            if (_reviews.isEmpty) {
+              reviewTextHeader =
+                  "From: ${_reviews[index]["author"]} ${_reviews[index]["date"]}";
+              reviewTextBody = "${_reviews[index]["comment"]}";
+            } else {
+              reviewTextHeader = "";
+              reviewTextBody = "";
+            }
             return Container(
               margin: const EdgeInsets.only(bottom: 5, top: 5),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "From: ${entries[0]["reviews"][index]["fromUser"]} ${entries[0]["reviews"][index]["date"]}",
+                    reviewTextHeader,
                     style: const TextStyle(
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  Text("${entries[0]["reviews"][index]["comment"]}"),
+                  Text(reviewTextBody),
                 ],
               ),
             );
           }),
     );
+  }
+
+  void deletePet(_petId) async {
+    final uid = auth.currentUser!.uid;
+    await http.delete(
+        Uri.parse('https://nc-project-api.herokuapp.com/api/pets/$_petId'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, dynamic>{
+          "userId": uid,
+        }));
+    setState(() {});
   }
 }

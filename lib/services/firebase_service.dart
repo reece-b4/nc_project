@@ -79,7 +79,6 @@ class FirebaseService {
           email: email, password: password);
       if (_userCredential.user != null) {
         currentUser = await getUserData(uid: _userCredential.user!.uid);
-        print(currentUser);
         return true;
       } else {
         return false;
