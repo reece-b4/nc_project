@@ -36,7 +36,6 @@ class EditPetPageState extends State<EditPetPage> {
   @override
   void initState() {
     super.initState();
-    final uid = auth.currentUser!.uid;
     _name = widget.petObject['name'];
     _age = widget.petObject['age'];
     _breed = widget.petObject['breed'];

@@ -24,14 +24,13 @@ class _ProfilePageState extends State<ProfilePage> {
   List _pets = [];
   List _reviews = [];
   String _isBreed = "";
+  String _idToUse = "";
 
   final FirebaseAuth auth = FirebaseAuth.instance;
 
   void fetchUser() async {
     try {
       final uid = auth.currentUser!.uid;
-      String _idToUse;
-
       widget._passedInData != null
           ? _idToUse = widget._passedInData!
           : _idToUse = uid;
@@ -56,7 +55,7 @@ class _ProfilePageState extends State<ProfilePage> {
         }
       });
     } catch (error) {
-      print(error);
+      rethrow;
     }
   }
 
@@ -322,7 +321,7 @@ class _ProfilePageState extends State<ProfilePage> {
           const Padding(padding: EdgeInsets.all(5)),
           widget._passedInData == null
               ? _addButton()
-              : _messageButton(auth.currentUser!.uid, _username, _img)
+              : _messageButton(_username, _img)
         ],
       ),
     );
@@ -352,7 +351,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _messageButton(_idToUse, _username, _img) {
+  Widget _messageButton(_username, _img) {
     return SizedBox.fromSize(
       size: const Size(50, 50),
       child: ClipOval(
