@@ -27,16 +27,21 @@ class EditPetPageState extends State<EditPetPage> {
   String? _age;
   String? _breed;
   String? _notes;
-  File? image;
   String? _species;
   String? _petId;
-  String _imgUrl = '';
+  File? image;
 
   final FirebaseAuth auth = FirebaseAuth.instance;
+
   @override
   void initState() {
     super.initState();
     final uid = auth.currentUser!.uid;
+    _name = widget.petObject['name'];
+    _age = widget.petObject['age'];
+    _breed = widget.petObject['breed'];
+    _notes = widget.petObject['desc'];
+    _species = widget.petObject['species'];
   }
 
   Future pickImageFromGallery() async {
@@ -70,7 +75,6 @@ class EditPetPageState extends State<EditPetPage> {
   @override
   Widget build(BuildContext context) {
     _petId = widget.petObject['petId'];
-    _imgUrl = widget.petObject['img'];
 
     _deviceHeight = MediaQuery.of(context).size.height;
     _deviceWidth = MediaQuery.of(context).size.width;
@@ -94,7 +98,9 @@ class EditPetPageState extends State<EditPetPage> {
                   const SizedBox(
                     height: 20,
                   ),
-                  image != null ? Image.file(image!) : Image.network(_imgUrl),
+                  image != null
+                      ? Image.file(image!)
+                      : Image.network(widget.petObject['img']),
                   _editPetButton(),
                 ],
               ),
@@ -298,16 +304,36 @@ class EditPetPageState extends State<EditPetPage> {
     final uid = auth.currentUser!.uid;
     // _age = int.parse(_age);
     String apiURL = 'https://nc-project-api.herokuapp.com/api/pets/$_petId';
+    if (image != null) {
+      String _fileName = Timestamp.now().millisecondsSinceEpoch.toString() +
+          p.extension(image!.path);
 
-    String _fileName = Timestamp.now().millisecondsSinceEpoch.toString() +
-        p.extension(image!.path);
+      UploadTask _task = FirebaseStorage.instance
+          .ref("images/$uid/$_fileName")
+          .putFile(image!);
 
-    UploadTask _task =
-        FirebaseStorage.instance.ref("images/$uid/$_fileName").putFile(image!);
-//conditionals for when image does not change
-    return _task.then((_snapshot) async {
-      String _downloadURL = await _snapshot.ref.getDownloadURL();
+      return _task.then((_snapshot) async {
+        String _downloadURL = await _snapshot.ref.getDownloadURL();
 
+        await http.patch(Uri.parse(apiURL),
+            headers: <String, String>{
+              'Content-Type': 'application/json; charset=UTF-8',
+            },
+            body: jsonEncode(<String, dynamic>{
+              "updatedInfo": {
+                "name": _name!,
+                "availability": true,
+                "desc": _notes!,
+                "age": _age!,
+                "img": _downloadURL,
+                "species": _species!,
+                "breed": _breed,
+              },
+              "userId": uid,
+            }));
+        Navigator.pushNamed(context, 'nav');
+      });
+    } else {
       await http.patch(Uri.parse(apiURL),
           headers: <String, String>{
             'Content-Type': 'application/json; charset=UTF-8',
@@ -318,13 +344,14 @@ class EditPetPageState extends State<EditPetPage> {
               "availability": true,
               "desc": _notes!,
               "age": _age!,
-              "img": _downloadURL,
+              "img": widget.petObject['img'],
               "species": _species!,
               "breed": _breed,
             },
             "userId": uid,
           }));
-      Navigator.pushNamed(context, 'profile');
-    });
+      Navigator.pushNamed(context, 'nav');
+    }
+    //if image IS null
   }
 }
