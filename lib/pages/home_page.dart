@@ -13,6 +13,15 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  int _selectedIndex = 0;
+  final List<String> _pages = <String>["home", "chat", "profile"];
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    Navigator.popAndPushNamed(context, _pages[_selectedIndex]);
+  }
+
   double? _deviceHeight;
   double? _deviceWidth;
   bool _foldedSearchBar = true;
@@ -23,6 +32,8 @@ class _HomePageState extends State<HomePage> {
   String _searchValue = "Search";
 
   final FirebaseAuth auth = FirebaseAuth.instance;
+
+  static set home(String home) {}
   @override
   void initState() {
     super.initState();
@@ -84,6 +95,11 @@ class _HomePageState extends State<HomePage> {
     _deviceHeight = MediaQuery.of(context).size.height;
     _deviceWidth = MediaQuery.of(context).size.width;
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 83, 167, 245),
+        centerTitle: true,
+        title: Image.asset('ptp_logolong.png', height: 40, fit: BoxFit.cover),
+      ),
       resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: SingleChildScrollView(
@@ -107,7 +123,7 @@ class _HomePageState extends State<HomePage> {
                     Align(
                       alignment: Alignment.center,
                       child: Container(
-                        margin: EdgeInsets.fromLTRB(0, 0, 100, 0),
+                        margin: const EdgeInsets.fromLTRB(0, 0, 100, 0),
                         child: Visibility(
                             visible: _foldedSearchBar ? true : false,
                             child: distanceDropDown()),
@@ -116,7 +132,7 @@ class _HomePageState extends State<HomePage> {
                     Align(
                       alignment: Alignment.center,
                       child: Container(
-                        margin: EdgeInsets.fromLTRB(100, 0, 0, 0),
+                        margin: const EdgeInsets.fromLTRB(100, 0, 0, 0),
                         child: Visibility(
                             visible: _foldedSearchBar ? true : false,
                             child: searchTerm()),
@@ -148,6 +164,25 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
         ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.question_answer_outlined),
+            label: 'Chat',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.face),
+            label: 'Profile',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: const Color.fromARGB(255, 83, 167, 245),
+        onTap: _onItemTapped,
       ),
     );
   }
@@ -282,12 +317,12 @@ class _HomePageState extends State<HomePage> {
             child: DecoratedBox(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(40),
-                color: Color.fromARGB(255, 230, 112, 112),
+                color: const Color.fromARGB(255, 230, 112, 112),
               ),
               child: TextButton(
                 style: ButtonStyle(
                     foregroundColor: MaterialStateProperty.all<Color>(
-                        Color.fromARGB(255, 255, 255, 255))),
+                        const Color.fromARGB(255, 255, 255, 255))),
                 onPressed: () {
                   setState(
                     () {
@@ -431,13 +466,14 @@ class _HomePageState extends State<HomePage> {
                             mainAxisSize: MainAxisSize.min,
                             children: <Widget>[
                               Text(
-                                (_allPets?[index]["name"].length > 6
-                                    ? "${_allPets?[index]["name"].substring(0, 7)}... ${_allPets?[index]["age"]}"
-                                    : "${_allPets?[index]["name"]}, ${_allPets?[index]["age"]}"),
-                                style: const TextStyle(
+                                ("${_allPets?[index]["name"]}, ${_allPets?[index]["age"]}"),
+                                style: TextStyle(
                                     fontFamily: "Roboto",
                                     decoration: TextDecoration.none,
-                                    fontSize: 40,
+                                    fontSize:
+                                        (_allPets![index]["name"].length > 7
+                                            ? 35
+                                            : 40),
                                     color: Colors.white),
                               ),
                               Text(
@@ -471,7 +507,7 @@ class _HomePageState extends State<HomePage> {
               width: _deviceWidth! * 0.5,
               margin: const EdgeInsets.all(15.0),
               decoration: BoxDecoration(
-                color: Color.fromARGB(255, 253, 247, 227),
+                color: const Color.fromARGB(255, 253, 247, 227),
                 borderRadius: BorderRadius.circular(40),
               ),
               child: Container(
@@ -507,7 +543,7 @@ class _HomePageState extends State<HomePage> {
                                         (_allPets![index]["name"].length > 7
                                             ? 30
                                             : 40),
-                                    color: Color.fromARGB(255, 0, 0, 0),
+                                    color: const Color.fromARGB(255, 0, 0, 0),
                                   ),
                                 ),
                               ),
@@ -551,7 +587,6 @@ class _HomePageState extends State<HomePage> {
                           width: 180,
                           child: ElevatedButton(
                               onPressed: () {
-                                print(_allPets![index]["owner"]);
                                 Navigator.push(context,
                                     MaterialPageRoute(builder: (context) {
                                   return ProfilePage(_allPets![index]["owner"]);

@@ -17,6 +17,15 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  int _selectedIndex = 2;
+  final List<String> _pages = <String>["home", "chat", "profile"];
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    Navigator.popAndPushNamed(context, _pages[_selectedIndex]);
+  }
+
   Map _userJson = {};
   String _username = "";
   String _postcode = "";
@@ -72,6 +81,11 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     _deviceHeight = MediaQuery.of(context).size.height;
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 83, 167, 245),
+        centerTitle: true,
+        title: Image.asset('ptp_logolong.png', height: 40, fit: BoxFit.cover),
+      ),
       body: SafeArea(
         child: Container(
           color: const Color.fromARGB(255, 245, 245, 245),
@@ -94,6 +108,25 @@ class _ProfilePageState extends State<ProfilePage> {
             ],
           ),
         ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.question_answer_outlined),
+            label: 'Chat',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.face),
+            label: 'Profile',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: const Color.fromARGB(255, 83, 167, 245),
+        onTap: _onItemTapped,
       ),
     );
   }

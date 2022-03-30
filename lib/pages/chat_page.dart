@@ -11,6 +11,15 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
+  int _selectedIndex = 1;
+  final List<String> _pages = <String>["home", "chat", "profile"];
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    Navigator.popAndPushNamed(context, _pages[_selectedIndex]);
+  }
+
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   final FirebaseAuth auth = FirebaseAuth.instance;
   List _conversations = [];
@@ -52,6 +61,11 @@ class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 83, 167, 245),
+        centerTitle: true,
+        title: Image.asset('ptp_logolong.png', height: 40, fit: BoxFit.cover),
+      ),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
         child: Center(
@@ -97,6 +111,26 @@ class _ChatPageState extends State<ChatPage> {
             ],
           ),
         ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.question_answer_outlined),
+            label: 'Chat',
+            backgroundColor: Colors.purple,
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.face),
+            label: 'Profile',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: const Color.fromARGB(255, 83, 167, 245),
+        onTap: _onItemTapped,
       ),
     );
   }

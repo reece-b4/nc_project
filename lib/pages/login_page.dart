@@ -29,10 +29,8 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    _deviceHeight =
-        MediaQuery.of(context).size.height;
-    _deviceWidth =
-        MediaQuery.of(context).size.width;
+    _deviceHeight = MediaQuery.of(context).size.height;
+    _deviceWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       resizeToAvoidBottomInset: true,
       body: SafeArea(
@@ -40,22 +38,19 @@ class _LoginPageState extends State<LoginPage> {
           decoration: const BoxDecoration(
               gradient: LinearGradient(
                   colors: [
-                    Color(0xfffcaf0f8),
-                    Color(0xfff90e0ef),
+                    Color.fromARGB(255, 172, 205, 237),
+                    Color.fromARGB(255, 83, 167, 245),
                   ],
                   begin: Alignment.center,
                   stops: [0.1, 1000],
                   end: Alignment.bottomCenter)),
-          padding: const EdgeInsets.fromLTRB(
-              20, 0, 20, 0),
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
           child: Center(
               child: SingleChildScrollView(
             child: Column(
-              mainAxisAlignment:
-                  MainAxisAlignment.spaceAround,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               mainAxisSize: MainAxisSize.max,
-              crossAxisAlignment:
-                  CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 // _titleWidget(),
                 _logoWidget(),
@@ -72,8 +67,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _logoWidget() {
     return Container(
-      margin:
-          const EdgeInsets.fromLTRB(0, 0, 0, 10),
+      margin: const EdgeInsets.fromLTRB(0, 0, 0, 10),
       child: SizedBox(
           height: _deviceHeight! * 0.5,
           child: Image.asset(
@@ -85,18 +79,15 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _loginForm() {
     return Padding(
-      padding:
-          const EdgeInsets.fromLTRB(0, 0, 0, 20),
+      padding: const EdgeInsets.fromLTRB(0, 0, 0, 20),
       child: SizedBox(
         height: _deviceHeight! * 0.22,
         child: Form(
           key: _loginFormKey,
           child: Column(
-            mainAxisAlignment:
-                MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             mainAxisSize: MainAxisSize.max,
-            crossAxisAlignment:
-                CrossAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               _emailTextField(),
               _passwordTextField(),
@@ -113,8 +104,7 @@ class _LoginPageState extends State<LoginPage> {
           filled: true,
           fillColor: Colors.white,
           enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(
-                color: Colors.grey, width: 0.0),
+            borderSide: BorderSide(color: Colors.grey, width: 0.0),
           ),
           hintText: "Email..."),
       onSaved: (_value) {
@@ -127,9 +117,7 @@ class _LoginPageState extends State<LoginPage> {
           RegExp(
               r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"),
         );
-        return _result
-            ? null
-            : "Please enter a valid email";
+        return _result ? null : "Please enter a valid email";
       },
     );
   }
@@ -141,8 +129,7 @@ class _LoginPageState extends State<LoginPage> {
           filled: true,
           fillColor: Colors.white,
           enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(
-                color: Colors.grey, width: 0.0),
+            borderSide: BorderSide(color: Colors.grey, width: 0.0),
           ),
           hintText: "Password..."),
       onSaved: (_value) {
@@ -158,8 +145,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _loginButton() {
     return Container(
-      margin: const EdgeInsets.only(
-          top: 10.0, bottom: 5),
+      margin: const EdgeInsets.only(top: 10.0, bottom: 5),
       child: MaterialButton(
         onPressed: _loginUser,
         minWidth: _deviceWidth! * 0.30,
@@ -182,7 +168,7 @@ class _LoginPageState extends State<LoginPage> {
       _loginFormKey.currentState!.save();
       bool _result = await _firebaseService!
           .loginUser(email: _email!, password: _password!);
-      if (_result) Navigator.popAndPushNamed(context, 'nav');
+      if (_result) Navigator.popAndPushNamed(context, 'home');
     }
   }
 
