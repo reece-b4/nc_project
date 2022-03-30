@@ -24,7 +24,6 @@ class _ProfilePageState extends State<ProfilePage> {
   List _pets = [];
   List _reviews = [];
   String _isBreed = "";
-  // final String _passedInUid = widget._passedInData;
 
   final FirebaseAuth auth = FirebaseAuth.instance;
 
