@@ -422,20 +422,23 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget _logoutButton() {
     return Container(
       margin: const EdgeInsets.only(top: 10.0, bottom: 5),
-      child: MaterialButton(
-        onPressed: () async {
-          await _firebaseService!.logout();
-          Navigator.popAndPushNamed(context, 'login');
-        },
-        minWidth: _deviceWidth! * 0.30,
-        height: _deviceHeight! * 0.05,
-        color: Colors.red,
-        child: const Text(
-          "Logout",
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 25,
-            fontWeight: FontWeight.w600,
+      child: Visibility(
+        visible: widget._passedInData != null ? false : true,
+        child: MaterialButton(
+          onPressed: () async {
+            await _firebaseService!.logout();
+            Navigator.popAndPushNamed(context, 'login');
+          },
+          minWidth: _deviceWidth! * 0.30,
+          height: _deviceHeight! * 0.05,
+          color: Colors.red,
+          child: const Text(
+            "Logout",
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 25,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
       ),
