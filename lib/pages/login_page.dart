@@ -38,8 +38,8 @@ class _LoginPageState extends State<LoginPage> {
           decoration: const BoxDecoration(
               gradient: LinearGradient(
                   colors: [
-                    Color(0xfffcaf0f8),
-                    Color(0xfff90e0ef),
+                    Color.fromARGB(255, 172, 205, 237),
+                    Color.fromARGB(255, 83, 167, 245),
                   ],
                   begin: Alignment.center,
                   stops: [0.1, 1000],
@@ -168,29 +168,7 @@ class _LoginPageState extends State<LoginPage> {
       _loginFormKey.currentState!.save();
       Map _result = await _firebaseService!
           .loginUser(email: _email!, password: _password!);
-      if (_result["isValid"]) {
-        Navigator.popAndPushNamed(context, 'nav');
-      } else {
-        setState(() {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: const Text("Login Error"),
-                content: Text(_result["error"]),
-                actions: <Widget>[
-                  ElevatedButton(
-                    child: const Text("OK"),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ],
-              );
-            },
-          );
-        });
-      }
+      if (_result) Navigator.popAndPushNamed(context, 'home');
     }
   }
 
