@@ -4,6 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import "dart:convert";
 import "package:http/http.dart" as http;
 import 'package:nc_project/pages/edit_pet_page.dart';
+import 'package:nc_project/pages/ChatDetailPage.dart';
+
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -27,7 +29,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   void fetchUser() async {
     try {
-      final uid = auth.currentUser!.uid;
+      final uid = auth.currentUser!.uid; //need logic for other users HERE
       final response = await http.get(
           Uri.parse('https://nc-project-api.herokuapp.com/api/users/$uid'));
       final jsonData = jsonDecode(response.body) as Map;
@@ -168,6 +170,7 @@ class _ProfilePageState extends State<ProfilePage> {
             _isBreed = _pets[index]["breed"] == null
                 ? ""
                 : "\nBreed: ${_pets[index]["breed"]}";
+
             return FlipCard(
               fill: Fill
                   .fillBack, // Fill the back side of the card to make in the same size as the front.
@@ -254,7 +257,9 @@ class _ProfilePageState extends State<ProfilePage> {
                         child: Row(
                           children: [
                             InkWell(
-                              onTap: () => {},
+                              onTap: () {
+                                deletePet(_pets[index]["petId"]);
+                              },
                               child: const Icon(
                                 Icons.delete,
                                 color: Colors.red,
@@ -302,7 +307,8 @@ class _ProfilePageState extends State<ProfilePage> {
           const Text("My Pets",
               style: TextStyle(fontSize: 22.5, fontWeight: FontWeight.w600)),
           const Padding(padding: EdgeInsets.all(5)),
-          _addButton()
+          _addButton(),
+          _messageButton(auth.currentUser!.uid, _username, _img),
         ],
       ),
     );
@@ -324,6 +330,41 @@ class _ProfilePageState extends State<ProfilePage> {
                   color: Colors.white,
                 ), // <-- Icon
                 Text("Add", style: TextStyle(color: Colors.white)), // <-- Text
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _messageButton(uid, _username, _img) {
+    return SizedBox.fromSize(
+      size: const Size(50, 50),
+      child: ClipOval(
+        child: Material(
+          color: Colors.blue,
+          child: InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) {
+                  return const ChatDetailPage(
+                    name: "Test Testington",
+                    otherUser: uid,
+                    image: "https://i.pravatar.cc/300",
+                  );
+                }),
+              );
+            },
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                Icon(
+                  Icons.chat,
+                  color: Colors.white,
+                ), // <-- Icon
+                Text("Chat", style: TextStyle(color: Colors.white)), // <-- Text
               ],
             ),
           ),
@@ -402,5 +443,18 @@ class _ProfilePageState extends State<ProfilePage> {
             );
           }),
     );
+  }
+
+  void deletePet(_petId) async {
+    final uid = auth.currentUser!.uid;
+    await http.delete(
+        Uri.parse('https://nc-project-api.herokuapp.com/api/pets/$_petId'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, dynamic>{
+          "userId": uid,
+        }));
+    setState(() {});
   }
 }

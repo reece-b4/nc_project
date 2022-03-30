@@ -295,7 +295,7 @@ class _AddPetState extends State<AddPetPage> {
     _breed,
   ) async {
     final uid = auth.currentUser!.uid;
-    _age = int.parse(_age);
+    // _age = int.parse(_age);
     String _fileName = Timestamp.now().millisecondsSinceEpoch.toString() +
         p.extension(image!.path);
 
