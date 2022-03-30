@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nc_project/pages/add_pet_page.dart';
+import 'package:nc_project/pages/add_review_page.dart';
 // import 'package:nc_project/pages/loading_page.dart';
 import 'package:nc_project/pages/login_page.dart';
 import 'package:nc_project/pages/nav_home_page.dart';
@@ -31,6 +32,7 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: "login",
       routes: {
+      
         // "/": (context) => LoadingPage(),
         "nav": (context) => const NavHomePage(),
         "register": (context) => const RegisterPage(),
@@ -38,6 +40,7 @@ class MyApp extends StatelessWidget {
         "addpet": (context) => const AddPetPage(),
         "chat": (context) => const ChatPage(),
         "profile": (context) => const ProfilePage(null),
+        "addreview": (context) => const AddReviewPage(null),
       },
     );
   }
