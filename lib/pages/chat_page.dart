@@ -32,7 +32,7 @@ class _ChatPageState extends State<ChatPage> {
           .doc(auth.currentUser!.uid)
           .snapshots();
     } catch (error) {
-      print(error);
+      rethrow;
     }
   }
 
@@ -50,10 +50,12 @@ class _ChatPageState extends State<ChatPage> {
         );
       }).toList();
       setState(() {
+        convertedConvos
+            .sort(((b, a) => a.time.toString().compareTo(b.time.toString())));
         _conversations = convertedConvos;
       });
     } catch (error) {
-      print(error);
+      rethrow;
     }
   }
 
@@ -90,7 +92,16 @@ class _ChatPageState extends State<ChatPage> {
                   stream: _conversationStream,
                   builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
                     if (snapshot.hasData) {
-                      _conversations = snapshot.data!.get("conversations");
+                      try {
+                        List unsortedConversations =
+                            snapshot.data!.get("conversations");
+                        unsortedConversations.sort((b, a) => a["time"]
+                            .toString()
+                            .compareTo(b["time"].toString()));
+                        _conversations = unsortedConversations;
+                      } catch (e) {
+                        _conversations = [];
+                      }
                     }
                     return ListView.builder(
                       itemCount: _conversations.length,

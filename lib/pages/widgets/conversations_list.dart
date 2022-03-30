@@ -83,7 +83,8 @@ class _ConversationListState extends State<ConversationList> {
               ),
             ),
             Text(
-              DateFormat("dd-MM-yy kk:mm:ss").format(DateTime(widget.time)),
+              DateFormat("dd-MM-yy kk:mm:ss")
+                  .format(DateTime.fromMillisecondsSinceEpoch(widget.time)),
               style: TextStyle(
                   fontSize: 12,
                   fontWeight: widget.isMessageRead
