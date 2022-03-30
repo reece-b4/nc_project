@@ -1,6 +1,10 @@
 import "package:flutter/material.dart";
 import "package:flip_card/flip_card.dart";
+import "package:firebase_auth/firebase_auth.dart";
+import "dart:convert";
+import "package:http/http.dart" as http;
 import 'package:nc_project/pages/profile_page.dart';
+
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -12,93 +16,69 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   double? _deviceHeight;
   double? _deviceWidth;
-  final List<Map> entries = <Map>[
-    {
-      "pet_name": "Rover",
-      "age": 3,
-      "species": "dogs",
-      "image":
-          "https://images.unsplash.com/photo-1644614398468-06fad5e8f8f6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=502&q=80",
-      "availabilty": true,
-      "distance": "0.5 miles away",
-      "owner": "OAUZRZuauxfPKXZdslTGmrehFnA2",
-      "notes": "Likes chicken"
-    },
-    {
-      "pet_name": "Timmy",
-      "age": 87,
-      "species": "tortoises and turtles",
-      "image":
-          "https://images.unsplash.com/photo-1508455858334-95337ba25607?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=876&q=80",
-      "availabilty": true,
-      "distance": "2 miles away",
-      "notes": "A game of fetch takes forever"
-    },
-    {
-      "pet_name": "Blobby",
-      "age": 7,
-      "species": "other",
-      "image":
-          "https://images.unsplash.com/photo-1575485670541-824ff288aaf8?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=774&q=80",
-      "availabilty": true,
-      "distance": "3 miles away",
-      "notes": "Will bite you if provoked."
-    },
-    {
-      "pet_name": "Joshua",
-      "age": 6,
-      "species": "other",
-      "image":
-          "https://images.unsplash.com/photo-1615087240969-eeff2fa558f2?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=580&q=80",
-      "availabilty": true,
-      "distance": "8 miles away",
-      "notes": "Does not like being alone"
-    },
-    {
-      "pet_name": "Apple",
-      "age": 87,
-      "species": "hamsters",
-      "image":
-          "https://images.unsplash.com/photo-1425082661705-1834bfd09dca?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=876&q=80",
-      "availabilty": true,
-      "distance": "10 miles away",
-      "notes": "Sensitive"
-    },
-    {
-      "pet_name": "Fang",
-      "age": 4,
-      "species": "dogs",
-      "image":
-          "https://images.unsplash.com/photo-1558349699-1e1c38c05eeb?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80",
-      "availabilty": true,
-      "distance": "51 miles away",
-      "notes": "High blood sugar."
-    },
-    {
-      "pet_name": "Jimmy",
-      "age": 8,
-      "species": "other",
-      "image":
-          "https://images.unsplash.com/photo-1518796745738-41048802f99a?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=869&q=80",
-      "availabilty": true,
-      "distance": "6 miles away",
-      "notes": "Likes eating flowers"
-    },
-    {
-      "pet_name": "Oscar",
-      "age": 10,
-      "species": "guinea pigs",
-      "image":
-          "https://images.unsplash.com/photo-1533152162573-93ad94eb20f6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80",
-      "availabilty": true,
-      "distance": "4 miles away",
-      "notes": "Loves a bit of fuss."
-    },
-  ];
-  String dropdownPetValue = "All pets";
-  String dropdownDistanceValue = "Any distance";
-  bool _folded = true;
-  List filteredEntries = [];
+  bool _foldedSearchBar = true;
+  List? _allPets;
+  final _allSpeciesFromCards = ["All pets"];
+  String _dropdownPetValue = "All pets";
+  String _dropdownDistanceValue = "Any distance";
+  String _searchValue = "Search";
+
+  final FirebaseAuth auth = FirebaseAuth.instance;
+  @override
+  void initState() {
+    super.initState();
+    fetchPets(_dropdownPetValue, _dropdownDistanceValue, _searchValue);
+  }
+
+  void fetchPets(
+      _dropdownPetValue, _dropdownDistanceValue, _searchValue) async {
+    try {
+      final user = auth.currentUser;
+      final uid = user!.uid;
+      var splitValue = _dropdownDistanceValue!.split(" ");
+      var dropdownDistanceNumber = splitValue[0];
+      var httpAddress = 'https://nc-project-api.herokuapp.com/api/pets';
+
+      if (_dropdownPetValue != "All pets" ||
+          _dropdownDistanceValue != "Any distance" ||
+          _searchValue != "Search") {
+        httpAddress = httpAddress + '?';
+      }
+      if (_dropdownPetValue != "All pets") {
+        httpAddress = httpAddress + 'species=' + _dropdownPetValue + '&&';
+      }
+      if (_dropdownDistanceValue != "Any distance") {
+        httpAddress = httpAddress + 'limit=' + dropdownDistanceNumber + '&&';
+      }
+      if (_searchValue != "Search") {
+        httpAddress = httpAddress + 'search=' + _searchValue;
+      }
+      var splitHttpAddress = httpAddress.split('');
+      if (splitHttpAddress.last == '&') {
+        splitHttpAddress.removeLast();
+        splitHttpAddress.removeLast();
+        httpAddress = splitHttpAddress.join('');
+      }
+
+      final response = await http.patch(
+        Uri.parse(httpAddress),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, dynamic>{
+          "userId": uid,
+        }),
+      );
+      final jsonData = jsonDecode(response.body) as Map;
+      setState(() {
+        _allPets = [...jsonData["pets"]];
+        [...jsonData["pets"]].forEach((pet) => _allSpeciesFromCards.add(
+            "${pet["species"][0].toUpperCase()}${pet["species"].substring(1).toLowerCase()}"));
+      });
+    } catch (error) {
+      print(error);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -111,31 +91,47 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             children: <Widget>[
               Container(
-                  color: const Color.fromARGB(255, 240, 240, 240),
-                  height: _deviceHeight! * 0.08,
-                  width: _deviceWidth!,
-                  child: Stack(children: <Widget>[
-                    SizedBox(
-                      child: Align(
-                        alignment: Alignment.centerLeft,
+                decoration: const BoxDecoration(
+                  color: Color.fromARGB(255, 215, 216, 218),
+                ),
+                child: Stack(
+                  children: <Widget>[
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: SizedBox(
                         child: Visibility(
-                            visible: _folded ? true : false,
-                            child: filterDropDown()),
+                          visible: _foldedSearchBar ? true : false,
+                          child: filterDropDown(),
+                        ),
                       ),
                     ),
-                    SizedBox(
-                      child: Align(
-                        alignment: Alignment.center,
+                    Align(
+                      alignment: Alignment.center,
+                      child: Container(
+                        margin: EdgeInsets.fromLTRB(0, 0, 100, 0),
                         child: Visibility(
-                            visible: _folded ? true : false,
+                            visible: _foldedSearchBar ? true : false,
                             child: distanceDropDown()),
                       ),
                     ),
-                    SizedBox(
-                        child: Align(
-                            alignment: Alignment.centerRight,
-                            child: searchBar()))
-                  ])),
+                    Align(
+                      alignment: Alignment.center,
+                      child: Container(
+                        margin: EdgeInsets.fromLTRB(100, 0, 0, 0),
+                        child: Visibility(
+                            visible: _foldedSearchBar ? true : false,
+                            child: searchTerm()),
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: SizedBox(
+                        child: searchBar(),
+                      ),
+                    )
+                  ],
+                ),
+              ),
               Container(
                 decoration: const BoxDecoration(
                     gradient: LinearGradient(
@@ -158,80 +154,55 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget filterDropDown() {
-    return SizedBox(
-      width: 120,
-      child: DropdownButtonHideUnderline(
-        child: Padding(
-          padding: const EdgeInsets.all(0.0),
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(40),
-              color: const Color.fromARGB(255, 255, 255, 255),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-              child: DropdownButton<String>(
-                value: dropdownPetValue,
-                isExpanded: true,
-                icon: Image.asset(
-                  "paw_icon.png",
-                  color: Colors.grey,
-                  height: 20,
-                ),
-                elevation: 60,
-                style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
-                underline: Container(
-                  height: 2,
-                  color: const Color.fromARGB(255, 0, 0, 0),
-                ),
-                onChanged: (String? newValue) {
-                  setState(
-                    () {
-                      dropdownPetValue = newValue!;
-                      filteredEntries = entries
-                          .where((pet) =>
-                              dropdownPetValue.contains(pet["species"]))
-                          .toList();
-                      if (filteredEntries.isEmpty &&
-                          dropdownPetValue != "All pets") {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: const Text("Sorry!"),
-                              content: Text(
-                                  "There are currently no $dropdownPetValue"),
-                              actions: <Widget>[
-                                ElevatedButton(
-                                  child: const Text("OK"),
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      }
-                    },
-                  );
-                },
-                items: <String>[
-                  "All pets",
-                  "dogs",
-                  "birds",
-                  "hamsters",
-                  "guinea pigs",
-                  "tortoises and turtles",
-                  "other"
-                ].map<DropdownMenuItem<String>>(
-                  (String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
+    List<String> _uniqueAllSpeciesFromCards =
+        _allSpeciesFromCards.toSet().toList();
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+      child: SizedBox(
+        width: 100,
+        child: DropdownButtonHideUnderline(
+          child: Padding(
+            padding: const EdgeInsets.all(0.0),
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(40),
+                color: const Color.fromARGB(255, 255, 255, 255),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                child: DropdownButton<String>(
+                  value: _dropdownPetValue,
+                  isExpanded: true,
+                  icon: Image.asset(
+                    "paw_icon.png",
+                    color: Colors.grey,
+                    height: 20,
+                  ),
+                  elevation: 60,
+                  style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+                  underline: Container(
+                    height: 2,
+                    color: const Color.fromARGB(255, 0, 0, 0),
+                  ),
+                  onChanged: (String? newValue) {
+                    setState(
+                      () {
+                        _dropdownPetValue = newValue!;
+                        fetchPets(_dropdownPetValue, _dropdownDistanceValue,
+                            _searchValue);
+                      },
                     );
                   },
-                ).toList(),
+                  items:
+                      _uniqueAllSpeciesFromCards.map<DropdownMenuItem<String>>(
+                    (String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    },
+                  ).toList(),
+                ),
               ),
             ),
           ),
@@ -241,50 +212,59 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget distanceDropDown() {
-    return SizedBox(
-      width: 120,
-      child: DropdownButtonHideUnderline(
-        child: Padding(
-          padding: const EdgeInsets.all(0.0),
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(40),
-              color: const Color.fromARGB(255, 255, 255, 255),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-              child: DropdownButton<String>(
-                value: dropdownDistanceValue,
-                isExpanded: true,
-                icon: const Icon(
-                  Icons.map_outlined,
-                  color: Colors.grey,
-                ),
-                elevation: 60,
-                style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
-                underline: Container(
-                  height: 2,
-                  color: const Color.fromARGB(255, 0, 0, 0),
-                ),
-                onChanged: (String? newValue) {
-                  setState(
-                    () {},
-                  );
-                },
-                items: <String>[
-                  "Any distance",
-                  "near me",
-                  "a few miles",
-                  "quite far",
-                  "miles away",
-                ].map<DropdownMenuItem<String>>(
-                  (String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(60, 5, 5, 5),
+      child: SizedBox(
+        width: 130,
+        child: DropdownButtonHideUnderline(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(40),
+                color: const Color.fromARGB(255, 255, 255, 255),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                child: DropdownButton<String>(
+                  value: _dropdownDistanceValue,
+                  isExpanded: true,
+                  icon: const Icon(
+                    Icons.map_outlined,
+                    color: Colors.grey,
+                  ),
+                  elevation: 60,
+                  style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+                  underline: Container(
+                    height: 2,
+                    color: const Color.fromARGB(255, 0, 0, 0),
+                  ),
+                  onChanged: (String? newValue) {
+                    setState(
+                      () {
+                        _dropdownDistanceValue = newValue!;
+                        fetchPets(_dropdownPetValue, _dropdownDistanceValue,
+                            _searchValue);
+                      },
+
                     );
                   },
-                ).toList(),
+                  items: <String>[
+                    "Any distance",
+                    "3 miles",
+                    "6 miles",
+                    "10 miles",
+                    "50 miles",
+                    "100 miles"
+                  ].map<DropdownMenuItem<String>>(
+                    (String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    },
+                  ).toList(),
+                ),
               ),
             ),
           ),
@@ -293,12 +273,50 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  Widget searchTerm() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(55, 10, 10, 10),
+      child: SizedBox(
+          width: 90,
+          height: 40,
+          child: Visibility(
+            visible: _searchValue != 'Search' ? true : false,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(40),
+                color: Color.fromARGB(255, 230, 112, 112),
+              ),
+              child: TextButton(
+                style: ButtonStyle(
+                    foregroundColor: MaterialStateProperty.all<Color>(
+                        Color.fromARGB(255, 255, 255, 255))),
+                onPressed: () {
+                  setState(
+                    () {
+                      _searchValue = 'Search';
+                      fetchPets(_dropdownPetValue, _dropdownDistanceValue,
+                          _searchValue);
+                    },
+                  );
+                },
+                child: Row(children: <Widget>[
+                  const Icon(Icons.clear),
+                  Text((_searchValue.length > 3
+                      ? _searchValue.substring(0, 4) + '...'
+                      : _searchValue))
+                ]),
+              ),
+            ),
+          )),
+    );
+  }
+
   Widget searchBar() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(2, 2, 2, 2),
+      padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 400),
-        width: _folded ? 56 : _deviceWidth!,
+        width: _foldedSearchBar ? 56 : _deviceWidth!,
         height: 50,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(32),
@@ -310,13 +328,24 @@ class _HomePageState extends State<HomePage> {
             Expanded(
               child: Container(
                 padding: const EdgeInsets.only(left: 16, bottom: 5),
-                child: !_folded
-                    ? const TextField(
-                        decoration: InputDecoration(
+                child: !_foldedSearchBar
+                    ? TextField(
+                        decoration: const InputDecoration(
+
                             hintText: "Search",
                             hintStyle:
                                 TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
                             border: InputBorder.none),
+                        onSubmitted: (value) {
+                          setState(
+                            () {
+                              _searchValue = value;
+                              fetchPets(_dropdownPetValue,
+                                  _dropdownDistanceValue, _searchValue);
+                              _foldedSearchBar = !_foldedSearchBar;
+                            },
+                          );
+                        },
                       )
                     : null,
               ),
@@ -327,22 +356,22 @@ class _HomePageState extends State<HomePage> {
                 type: MaterialType.transparency,
                 child: InkWell(
                   borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(_folded ? 32 : 0),
+                    topLeft: Radius.circular(_foldedSearchBar ? 32 : 0),
                     topRight: const Radius.circular(32),
-                    bottomLeft: Radius.circular(_folded ? 32 : 0),
+                    bottomLeft: Radius.circular(_foldedSearchBar ? 32 : 0),
                     bottomRight: const Radius.circular(32),
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(16),
                     child: Icon(
-                      _folded ? Icons.search : Icons.close,
+                      _foldedSearchBar ? Icons.search : Icons.close,
                       color: const Color.fromARGB(255, 0, 0, 0),
                     ),
                   ),
                   onTap: () {
                     setState(
                       () {
-                        _folded = !_folded;
+                        _foldedSearchBar = !_foldedSearchBar;
                       },
                     );
                   },
@@ -357,8 +386,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget petCards() {
     return ListView.separated(
-      itemCount:
-          (filteredEntries.isEmpty ? entries.length : filteredEntries.length),
+      itemCount: _allPets?.length ?? 0,
       separatorBuilder: (BuildContext context, int index) => const Divider(),
       itemBuilder: (BuildContext context, int index) {
         return FlipCard(
@@ -371,11 +399,7 @@ class _HomePageState extends State<HomePage> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(40),
               image: DecorationImage(
-                image: NetworkImage(
-                  (filteredEntries.isEmpty
-                      ? "${entries[index]["image"]}"
-                      : "${filteredEntries[index]["image"]}"),
-                ),
+                image: NetworkImage("${_allPets?[index]["img"]}"),
                 fit: BoxFit.cover,
               ),
             ),
@@ -407,9 +431,9 @@ class _HomePageState extends State<HomePage> {
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
                             Text(
-                              (filteredEntries.isEmpty
-                                  ? "${entries[index]["pet_name"]}, ${entries[index]["age"]}"
-                                  : "${filteredEntries[index]["pet_name"]}, ${filteredEntries[index]["age"]}"),
+                              (_allPets?[index]["name"].length > 6
+                                  ? "${_allPets?[index]["name"].substring(0, 7)}... ${_allPets?[index]["age"]}"
+                                  : "${_allPets?[index]["name"]}, ${_allPets?[index]["age"]}"),
                               style: const TextStyle(
                                   fontFamily: "Roboto",
                                   decoration: TextDecoration.none,
@@ -417,9 +441,8 @@ class _HomePageState extends State<HomePage> {
                                   color: Colors.white),
                             ),
                             Text(
-                              filteredEntries.isEmpty
-                                  ? "${entries[index]["distance"]}"
-                                  : "${filteredEntries[index]["distance"]}",
+                              "${_allPets?[index]["distance"]} miles away",
+
                               style: const TextStyle(
                                   fontFamily: "Roboto",
                                   decoration: TextDecoration.none,
@@ -455,6 +478,14 @@ class _HomePageState extends State<HomePage> {
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(40),
+                gradient: const LinearGradient(
+                    colors: [
+                      Color.fromARGB(255, 255, 245, 216),
+                      Color.fromARGB(255, 233, 224, 199),
+                    ],
+                    begin: Alignment.center,
+                    stops: [0.4, 1],
+                    end: Alignment.bottomCenter),
               ),
               padding: const EdgeInsets.all(8),
               child: Center(
@@ -466,9 +497,8 @@ class _HomePageState extends State<HomePage> {
                           Padding(
                             padding: const EdgeInsets.fromLTRB(40, 0, 0, 0),
                             child: Text(
-                              (filteredEntries.isEmpty
-                                  ? "${entries[index]["pet_name"]}"
-                                  : "${filteredEntries[index]["pet_name"]}"),
+                              "${_allPets?[index]["name"]}",
+
                               style: const TextStyle(
                                 fontFamily: "Roboto",
                                 decoration: TextDecoration.none,
@@ -484,9 +514,9 @@ class _HomePageState extends State<HomePage> {
                               width: 100.0,
                               decoration: BoxDecoration(
                                 image: DecorationImage(
-                                  image: NetworkImage((filteredEntries.isEmpty
-                                      ? "${entries[index]["image"]}"
-                                      : "${filteredEntries[index]["image"]}")),
+                                  image: NetworkImage(
+                                      "${_allPets?[index]["img"]}"),
+
                                   fit: BoxFit.fill,
                                 ),
                                 shape: BoxShape.circle,
@@ -499,9 +529,7 @@ class _HomePageState extends State<HomePage> {
                     SizedBox(
                       width: 250,
                       child: Text(
-                        filteredEntries.isEmpty
-                            ? "Distance: ${entries[index]["distance"]}\nAge: ${entries[index]["age"]}\nSpecies: ${entries[index]["species"]}\nAvailabilty: ${entries[index]["availabilty"]}\nNotes: ${entries[index]["notes"]}"
-                            : "Distance: ${filteredEntries[index]["distance"]}\nAge: ${filteredEntries[index]["age"]}\nSpecies: ${filteredEntries[index]["species"]}\nAvailabilty: ${filteredEntries[index]["availabilty"]}\nNotes: ${filteredEntries[index]["notes"]}",
+                        "Distance: ${_allPets![index]["distance"]} miles\nAge: ${_allPets![index]["age"]}\nSpecies: ${_allPets![index]["species"]}\nBreed: ${_allPets![index]["breed"]}\nAvailability: ${_allPets![index]["availability"]}\nNotes: ${_allPets![index]["desc"]}",
                         style: const TextStyle(
                           fontFamily: "Roboto",
                           decoration: TextDecoration.none,
