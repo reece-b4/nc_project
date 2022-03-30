@@ -106,7 +106,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    fetchPets(dropdownPetValue);
+    fetchPets(dropdownPetValue, dropdownDistanceValue);
   }
 
   //?species=str - DONE
@@ -115,15 +115,30 @@ class _HomePageState extends State<HomePage> {
   //&&
   //loop
 
-  void fetchPets(dropdownPetValue) async {
+  void fetchPets(dropdownPetValue, dropdownDistanceValue) async {
     try {
       final user = auth.currentUser;
       final uid = user!.uid;
       print(dropdownPetValue);
 
+      var splitValue = dropdownDistanceValue!.split(' ');
+      var dropdownDistanceNumber = splitValue[0];
       var httpAddress = 'https://nc-project-api.herokuapp.com/api/pets';
       if (dropdownPetValue != "All pets") {
         httpAddress = httpAddress + '?species=' + dropdownPetValue;
+      }
+      if (dropdownDistanceValue != "Any distance" &&
+          dropdownPetValue != "All pets") {
+        httpAddress = httpAddress +
+            '?species=' +
+            dropdownPetValue +
+            '&&limit=' +
+            dropdownDistanceNumber;
+      }
+
+      if (dropdownDistanceValue != "Any distance" &&
+          dropdownPetValue == "All pets") {
+        httpAddress = httpAddress + '?limit=' + dropdownDistanceNumber;
       }
 
       print(httpAddress);
@@ -239,7 +254,7 @@ class _HomePageState extends State<HomePage> {
                   setState(
                     () {
                       dropdownPetValue = newValue!;
-                      fetchPets(dropdownPetValue);
+                      fetchPets(dropdownPetValue, dropdownDistanceValue);
                     },
                   );
                 },
@@ -287,15 +302,18 @@ class _HomePageState extends State<HomePage> {
                 ),
                 onChanged: (String? newValue) {
                   setState(
-                    () {},
+                    () {
+                      dropdownDistanceValue = newValue!;
+                      fetchPets(dropdownPetValue, dropdownDistanceValue);
+                    },
                   );
                 },
                 items: <String>[
                   "Any distance",
-                  "near me",
-                  "a few miles",
-                  "quite far",
-                  "miles away",
+                  "3 miles",
+                  "6 miles",
+                  "10 miles",
+                  "50 miles",
                 ].map<DropdownMenuItem<String>>(
                   (String value) {
                     return DropdownMenuItem<String>(
