@@ -1,54 +1,101 @@
-import 'dart:convert';
-import 'dart:math';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
-import 'package:flutter_chat_ui/flutter_chat_ui.dart';
+import 'package:nc_project/pages/widgets/conversations_list.dart';
 
-// For the testing purposes, you should probably use https://pub.dev/packages/uuid
-String randomString() {
-  final random = Random.secure();
-  final values = List<int>.generate(16, (i) => random.nextInt(255));
-  return base64UrlEncode(values);
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key}) : super(key: key);
+class ChatPage extends StatefulWidget {
+  const ChatPage({Key? key}) : super(key: key);
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _ChatPageState createState() => _ChatPageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  final List<types.Message> _messages = [];
-  final _user = const types.User(id: '06c33e8b-e835-4736-80f4-63f44b66666c');
+class _ChatPageState extends State<ChatPage> {
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
+  final FirebaseAuth auth = FirebaseAuth.instance;
+  List _conversations = [];
 
-  void _addMessage(types.Message message) {
-    setState(() {
-      _messages.insert(0, message);
-    });
+  @override
+  void initState() {
+    super.initState();
+    getConversations();
   }
 
-  void _handleSendPressed(types.PartialText message) {
-    final textMessage = types.TextMessage(
-      author: _user,
-      createdAt: DateTime.now().millisecondsSinceEpoch,
-      id: randomString(),
-      text: message.text,
-    );
-
-    _addMessage(textMessage);
+  void getConversations() async {
+    var doc = await _db.collection("users").doc(auth.currentUser!.uid).get();
+    List dbConvos = await doc.get("conversations");
+    var convertedConvos = dbConvos.map((convo) async {
+      List chatees = [auth.currentUser!.uid, convo["userId"]];
+      chatees.sort((a, b) {
+        return a.compareTo(b);
+      });
+      String convId = chatees.join("");
+      DocumentSnapshot convInfo =
+          await _db.collection("conversations").doc(convId).get();
+      Map convData = convInfo.data() as Map;
+      return {
+        "userId": convo["userId"],
+        "name": convo["name"],
+        "img": convo["img"],
+        "lastMessage": convData["lastMessage"],
+        "time": convData["time"],
+      };
+    }).toList();
+    var awaitedConvos = await Future.wait(convertedConvos);
+    awaitedConvos
+        .sort(((b, a) => a["time"].toString().compareTo(b["time"].toString())));
+    setState(() {
+      _conversations = awaitedConvos;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        bottom: false,
-        child: Chat(
-          theme: const DarkChatTheme(),
-          messages: _messages,
-          onSendPressed: _handleSendPressed,
-          user: _user,
+      body: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+        child: Center(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 16, left: 16, right: 16),
+                child: TextField(
+                  decoration: InputDecoration(
+                    hintText: "Search...",
+                    hintStyle: TextStyle(color: Colors.grey.shade600),
+                    prefixIcon: Icon(
+                      Icons.search,
+                      color: Colors.grey.shade600,
+                      size: 20,
+                    ),
+                    filled: true,
+                    fillColor: Colors.grey.shade100,
+                    contentPadding: const EdgeInsets.all(8),
+                    enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20),
+                        borderSide: BorderSide(color: Colors.grey.shade100)),
+                  ),
+                ),
+              ),
+              ListView.builder(
+                itemCount: _conversations.length,
+                shrinkWrap: true,
+                padding: const EdgeInsets.only(top: 16),
+                physics: const NeverScrollableScrollPhysics(),
+                itemBuilder: (context, index) {
+                  return ConversationList(
+                    userId: _conversations[index]["userId"],
+                    name: _conversations[index]["name"],
+                    imageUrl: _conversations[index]["img"],
+                    messageText: _conversations[index]["lastMessage"],
+                    time: _conversations[index]["time"],
+                    isMessageRead: (index == 0 || index == 3) ? true : false,
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:nc_project/pages/add_pet_page.dart';
-import 'package:nc_project/pages/chat_page.dart';
 // import 'package:nc_project/pages/loading_page.dart';
 import 'package:nc_project/pages/login_page.dart';
 import 'package:nc_project/pages/nav_home_page.dart';
 import 'package:nc_project/pages/profile_page.dart';
 import 'package:nc_project/pages/register_page.dart';
+import 'package:nc_project/pages/chat_page.dart';
 import "package:firebase_core/firebase_core.dart";
 import "package:get_it/get_it.dart";
 import 'package:nc_project/services/firebase_service.dart';
@@ -25,19 +25,19 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Partial Pets',
+      title: 'Part-Time Pets',
       theme: ThemeData(
         primarySwatch: Colors.purple,
       ),
       initialRoute: "login",
       routes: {
         // "/": (context) => LoadingPage(),
-        "chat": (context) => const MyHomePage(),
         "nav": (context) => const NavHomePage(),
         "register": (context) => const RegisterPage(),
         "login": (context) => const LoginPage(),
         "addpet": (context) => const AddPetPage(),
-        // "profile": (context) => const ProfilePage(),
+        "chat": (context) => const ChatPage(),
+        "profile": (context) => const ProfilePage(),
       },
     );
   }
