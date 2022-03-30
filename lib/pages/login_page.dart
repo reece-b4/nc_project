@@ -168,7 +168,7 @@ class _LoginPageState extends State<LoginPage> {
       _loginFormKey.currentState!.save();
       Map _result = await _firebaseService!
           .loginUser(email: _email!, password: _password!);
-      if (_result) Navigator.popAndPushNamed(context, 'home');
+      if (_result["isValid"]) Navigator.popAndPushNamed(context, 'home');
     }
   }
 
