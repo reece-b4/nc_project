@@ -364,6 +364,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     name: _username,
                     otherUser: _idToUse,
                     image: _img,
+                    fromChat: false,
                   );
                 }),
               );

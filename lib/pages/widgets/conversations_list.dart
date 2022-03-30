@@ -34,6 +34,7 @@ class _ConversationListState extends State<ConversationList> {
               name: widget.name,
               otherUser: widget.userId,
               image: widget.imageUrl,
+              fromChat: true,
             );
           }),
         );
