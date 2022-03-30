@@ -87,4 +87,7 @@ class FirebaseService {
       return {"isValid": false, "error": "Incorrect email or password"};
     }
   }
+  Future<void> logout() async {
+    await _auth.signOut();
+  }
 }

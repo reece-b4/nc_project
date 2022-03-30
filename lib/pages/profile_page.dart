@@ -5,6 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import "dart:convert";
 import "package:http/http.dart" as http;
 import 'package:nc_project/pages/edit_pet_page.dart';
+import 'package:get_it/get_it.dart';
+import 'package:nc_project/services/firebase_service.dart';
 
 class ProfilePage extends StatefulWidget {
   final String? _passedInData;
@@ -25,6 +27,7 @@ class _ProfilePageState extends State<ProfilePage> {
   List _reviews = [];
   String _isBreed = "";
   String _idToUse = "";
+  FirebaseService? _firebaseService;
 
   final FirebaseAuth auth = FirebaseAuth.instance;
 
@@ -63,13 +66,16 @@ class _ProfilePageState extends State<ProfilePage> {
   void initState() {
     super.initState();
     fetchUser();
+    _firebaseService = GetIt.instance.get<FirebaseService>();
   }
 
   double? _deviceHeight;
+  double? _deviceWidth;
 
   @override
   Widget build(BuildContext context) {
     _deviceHeight = MediaQuery.of(context).size.height;
+    _deviceWidth = MediaQuery.of(context).size.height;
     return Scaffold(
       body: SafeArea(
         child: Container(
@@ -87,6 +93,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     _userPetsCard(),
                     _myReviewsTitle(),
                     _userReviewsCard(),
+                    _logoutButton(),
                   ],
                 ),
               ),
@@ -408,6 +415,29 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _logoutButton() {
+    return Container(
+      margin: const EdgeInsets.only(top: 10.0, bottom: 5),
+      child: MaterialButton(
+        onPressed: () async {
+          await _firebaseService!.logout();
+          Navigator.popAndPushNamed(context, 'login');
+        },
+        minWidth: _deviceWidth! * 0.30,
+        height: _deviceHeight! * 0.05,
+        color: Colors.red,
+        child: const Text(
+          "Logout",
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 25,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ),
     );
   }
