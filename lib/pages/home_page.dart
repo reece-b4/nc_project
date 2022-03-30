@@ -4,6 +4,7 @@ import "package:firebase_auth/firebase_auth.dart";
 import "dart:convert";
 import "package:http/http.dart" as http;
 import 'package:nc_project/pages/profile_page.dart';
+import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -18,6 +19,7 @@ class _HomePageState extends State<HomePage> {
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+      print(index);
     });
     Navigator.popAndPushNamed(context, _pages[_selectedIndex]);
   }
@@ -165,24 +167,34 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
+      bottomNavigationBar: BottomNavyBar(
+        selectedIndex: _selectedIndex,
+        showElevation: true,
+        itemCornerRadius: 24,
+        curve: Curves.easeIn,
+        onItemSelected: _onItemTapped,
+        items: <BottomNavyBarItem>[
+          BottomNavyBarItem(
+            icon: const Icon(Icons.home),
+            title: const Text('Home'),
+            activeColor: Colors.blueAccent,
+            textAlign: TextAlign.center,
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.question_answer_outlined),
-            label: 'Chat',
+          BottomNavyBarItem(
+            icon: Icon(Icons.message),
+            title: const Text(
+              'Messages',
+            ),
+            activeColor: Colors.pink,
+            textAlign: TextAlign.center,
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.face),
-            label: 'Profile',
+          BottomNavyBarItem(
+            icon: const Icon(Icons.person),
+            title: const Text('Profile'),
+            activeColor: Colors.black,
+            textAlign: TextAlign.center,
           ),
         ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: const Color.fromARGB(255, 83, 167, 245),
-        onTap: _onItemTapped,
       ),
     );
   }
@@ -438,7 +450,6 @@ class _HomePageState extends State<HomePage> {
                   fit: BoxFit.cover,
                 ),
               ),
-
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(40),
@@ -494,7 +505,6 @@ class _HomePageState extends State<HomePage> {
                               color: Color.fromARGB(255, 228, 93, 69),
                               size: 40.0,
                               semanticLabel: "Heart",
-
                             ),
                           ),
                         ],
@@ -512,7 +522,6 @@ class _HomePageState extends State<HomePage> {
                 color: const Color.fromARGB(255, 253, 247, 227),
                 borderRadius: BorderRadius.circular(40),
               ),
-
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(40),
@@ -583,7 +592,6 @@ class _HomePageState extends State<HomePage> {
                             color: Color.fromARGB(255, 0, 0, 0),
                           ),
                         ),
-
                       ),
                       Padding(
                         padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),

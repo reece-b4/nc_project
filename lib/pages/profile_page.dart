@@ -7,6 +7,7 @@ import "package:http/http.dart" as http;
 import 'package:nc_project/pages/edit_pet_page.dart';
 import 'package:get_it/get_it.dart';
 import 'package:nc_project/services/firebase_service.dart';
+import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 
 class ProfilePage extends StatefulWidget {
   final String? _passedInData;
@@ -24,6 +25,7 @@ class _ProfilePageState extends State<ProfilePage> {
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+      print(index);
     });
     Navigator.popAndPushNamed(context, _pages[_selectedIndex]);
   }
@@ -121,24 +123,34 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
+      bottomNavigationBar: BottomNavyBar(
+        selectedIndex: _selectedIndex,
+        showElevation: true,
+        itemCornerRadius: 24,
+        curve: Curves.easeIn,
+        onItemSelected: _onItemTapped,
+        items: <BottomNavyBarItem>[
+          BottomNavyBarItem(
+            icon: const Icon(Icons.home),
+            title: const Text('Home'),
+            activeColor: Colors.blueAccent,
+            textAlign: TextAlign.center,
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.question_answer_outlined),
-            label: 'Chat',
+          BottomNavyBarItem(
+            icon: Icon(Icons.message),
+            title: const Text(
+              'Messages',
+            ),
+            activeColor: Colors.pink,
+            textAlign: TextAlign.center,
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.face),
-            label: 'Profile',
+          BottomNavyBarItem(
+            icon: const Icon(Icons.person),
+            title: const Text('Profile'),
+            activeColor: Colors.black,
+            textAlign: TextAlign.center,
           ),
         ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: const Color.fromARGB(255, 83, 167, 245),
-        onTap: _onItemTapped,
       ),
     );
   }
