@@ -17,7 +17,7 @@ class _NavHomePageState
 
   static const List<Widget> _pages = <Widget>[
     HomePage(),
-    ProfilePage(),
+    // ProfilePage(),
   ];
 
   void _onItemTapped(int index) {

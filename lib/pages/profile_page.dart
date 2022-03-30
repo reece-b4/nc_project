@@ -4,17 +4,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import "dart:convert";
 import "package:http/http.dart" as http;
 import 'package:nc_project/pages/edit_pet_page.dart';
-// import 'package:nc_project/pages/ChatDetailPage.dart';
-
-//owners profile button on pet card from home page navigates here and passes in said pets owner uid using pets[index]["owner"]
-
-// variable uid = passed in owners uid
-//if uid == auth.currentuser { variable currentuser = true } else { variable currentuser = false }
-//in builder, uid data is used to populate profile info
-// on specific widgets, if currentuser == true display add pet button else display message user button etc
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({Key? key}) : super(key: key);
+  final String? _passedInData;
+  const ProfilePage(this._passedInData, {Key? key}) : super(key: key);
 
   @override
   State<ProfilePage> createState() {
@@ -30,21 +23,16 @@ class _ProfilePageState extends State<ProfilePage> {
   List _pets = [];
   List _reviews = [];
   String _isBreed = "";
-  String _passedInUid = "OAUZRZuauxfPKXZdslTGmrehFnA2";
+  // final String _passedInUid = widget._passedInData;
 
   final FirebaseAuth auth = FirebaseAuth.instance;
 
   void fetchUser() async {
     try {
-      final uid = auth.currentUser!.uid; //need logic for other users HERE
-      bool isCurrentUser;
+      final uid = auth.currentUser!.uid;
       String _idToUse;
 
-      _passedInUid == uid ? isCurrentUser = true : isCurrentUser = false;
-      _passedInUid != null ? _idToUse = _passedInUid : _idToUse = uid;
-      print(_passedInUid);
-      print(_idToUse);
-      print(isCurrentUser);
+      widget._passedInData != null ? _idToUse = widget._passedInData! : _idToUse = uid;
 
       final response = await http.get(Uri.parse(
           'https://nc-project-api.herokuapp.com/api/users/$_idToUse'));
@@ -268,37 +256,41 @@ class _ProfilePageState extends State<ProfilePage> {
                           ],
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
-                        child: Row(
-                          children: [
-                            InkWell(
-                              onTap: () {
-                                deletePet(_pets[index]["petId"]);
-                              },
-                              child: const Icon(
-                                Icons.delete,
-                                color: Colors.red,
+                      widget._passedInData == null
+                          ? Padding(
+                              padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
+                              child: Row(
+                                children: [
+                                  InkWell(
+                                    onTap: () {
+                                      deletePet(_pets[index]["petId"]);
+                                    },
+                                    child: const Icon(
+                                      Icons.delete,
+                                      color: Colors.red,
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding:
+                                        const EdgeInsets.fromLTRB(30, 0, 0, 0),
+                                    child: InkWell(
+                                      onTap: () {
+                                        Navigator.push(context,
+                                            MaterialPageRoute(
+                                                builder: (context) {
+                                          return EditPetPage(_pets[index]);
+                                        }));
+                                      },
+                                      child: const Icon(
+                                        Icons.edit,
+                                        color: Colors.blue,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
-                              child: InkWell(
-                                onTap: () {
-                                  Navigator.push(context,
-                                      MaterialPageRoute(builder: (context) {
-                                    return EditPetPage(_pets[index]);
-                                  }));
-                                },
-                                child: const Icon(
-                                  Icons.edit,
-                                  color: Colors.blue,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                            )
+                          : const Text(''),
                     ],
                   ),
                 ),
@@ -320,11 +312,12 @@ class _ProfilePageState extends State<ProfilePage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Text("My Pets",
+          const Text("Pets",
               style: TextStyle(fontSize: 22.5, fontWeight: FontWeight.w600)),
           const Padding(padding: EdgeInsets.all(5)),
-          _addButton(),
-          _messageButton(auth.currentUser!.uid, _username, _img),
+          widget._passedInData == null
+              ? _addButton()
+              : _messageButton(auth.currentUser!.uid, _username, _img)
         ],
       ),
     );
@@ -399,7 +392,7 @@ class _ProfilePageState extends State<ProfilePage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: const [
-          Text("My Reviews",
+          Text("Reviews",
               style: TextStyle(fontSize: 22.5, fontWeight: FontWeight.w600)),
           Padding(
             padding: EdgeInsets.all(5),

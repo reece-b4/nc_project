@@ -37,7 +37,7 @@ class MyApp extends StatelessWidget {
         "register": (context) => const RegisterPage(),
         "login": (context) => const LoginPage(),
         "addpet": (context) => const AddPetPage(),
-        "profile": (context) => const ProfilePage(),
+        // "profile": (context) => const ProfilePage(),
       },
     );
   }
