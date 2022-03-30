@@ -9,27 +9,40 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path/path.dart' as p;
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class AddPetPage extends StatefulWidget {
-  const AddPetPage({Key? key}) : super(key: key);
+class EditPetPage extends StatefulWidget {
+  final Map petObject;
+  const EditPetPage(this.petObject, {Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
-    return _AddPetState();
+    return EditPetPageState();
   }
 }
 
-class _AddPetState extends State<AddPetPage> {
-  final _addPetStateKey = GlobalKey<FormState>();
+class EditPetPageState extends State<EditPetPage> {
+  final _editPetStateKey = GlobalKey<FormState>();
   double? _deviceHeight;
   double? _deviceWidth;
   String? _name;
   String? _age;
   String? _breed;
   String? _notes;
-  File? image;
   String? _species;
+  String? _petId;
+  File? image;
 
   final FirebaseAuth auth = FirebaseAuth.instance;
+
+  @override
+  void initState() {
+    super.initState();
+    final uid = auth.currentUser!.uid;
+    _name = widget.petObject['name'];
+    _age = widget.petObject['age'];
+    _breed = widget.petObject['breed'];
+    _notes = widget.petObject['desc'];
+    _species = widget.petObject['species'];
+  }
 
   Future pickImageFromGallery() async {
     try {
@@ -61,11 +74,13 @@ class _AddPetState extends State<AddPetPage> {
 
   @override
   Widget build(BuildContext context) {
+    _petId = widget.petObject['petId'];
+
     _deviceHeight = MediaQuery.of(context).size.height;
     _deviceWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Add a Pet"),
+        title: const Text("Edit a Pet"),
       ),
       body: SafeArea(
         child: Container(
@@ -78,15 +93,15 @@ class _AddPetState extends State<AddPetPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 mainAxisSize: MainAxisSize.max,
                 children: <Widget>[
-                  _addPetForm(),
+                  _editPetForm(),
                   _pictureButtons(),
                   const SizedBox(
                     height: 20,
                   ),
                   image != null
                       ? Image.file(image!)
-                      : const Text("No image selected"),
-                  _addPetButton(),
+                      : Image.network(widget.petObject['img']),
+                  _editPetButton(),
                 ],
               ),
             ),
@@ -96,11 +111,11 @@ class _AddPetState extends State<AddPetPage> {
     );
   }
 
-  Widget _addPetForm() {
+  Widget _editPetForm() {
     return SizedBox(
       height: _deviceHeight! * 0.75,
       child: Form(
-        key: _addPetStateKey,
+        key: _editPetStateKey,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           mainAxisSize: MainAxisSize.max,
@@ -119,6 +134,7 @@ class _AddPetState extends State<AddPetPage> {
 
   Widget _nameTextField() {
     return TextFormField(
+      initialValue: widget.petObject['name'],
       decoration: const InputDecoration(hintText: "Whats your pet's name?"),
       autovalidateMode: AutovalidateMode.onUserInteraction,
       validator: (_value) =>
@@ -133,6 +149,9 @@ class _AddPetState extends State<AddPetPage> {
 
   Widget _ageTextField() {
     return TextFormField(
+      initialValue: widget.petObject['age'].toString(),
+      decoration:
+          const InputDecoration(hintText: "Please enter your pet's age"),
       autovalidateMode: AutovalidateMode.onUserInteraction,
       validator: (_value) =>
           _value!.isNotEmpty ? null : "Must be greater than 0",
@@ -145,15 +164,13 @@ class _AddPetState extends State<AddPetPage> {
       inputFormatters: [
         FilteringTextInputFormatter.digitsOnly,
       ],
-      decoration: const InputDecoration(
-        hintText: "Please enter your pet's age",
-      ),
     );
   }
 
   Widget _speciesTextField() {
     return TextFormField(
       decoration: const InputDecoration(hintText: "What species is your pet?"),
+      initialValue: widget.petObject['species'],
       autovalidateMode: AutovalidateMode.onUserInteraction,
       validator: (_value) =>
           _value!.length > 2 ? null : "Must be greater than 2 characters",
@@ -169,6 +186,7 @@ class _AddPetState extends State<AddPetPage> {
     return TextFormField(
       decoration: const InputDecoration(
           hintText: "If applicable, what breed is your pet?"),
+      initialValue: widget.petObject['breed'],
       autovalidateMode: AutovalidateMode.onUserInteraction,
       onChanged: (_value) {
         setState(() {
@@ -182,6 +200,7 @@ class _AddPetState extends State<AddPetPage> {
     return TextFormField(
       decoration:
           const InputDecoration(hintText: "Please add short description"),
+      initialValue: widget.petObject['desc'],
       autovalidateMode: AutovalidateMode.onUserInteraction,
       validator: (_value) =>
           _value!.length > 20 ? null : "Must be greater than 20 characters",
@@ -259,7 +278,7 @@ class _AddPetState extends State<AddPetPage> {
     );
   }
 
-  Widget _addPetButton() {
+  Widget _editPetButton() {
     return SizedBox(
       width: _deviceWidth! * 0.5,
       child: ElevatedButton(
@@ -269,59 +288,70 @@ class _AddPetState extends State<AddPetPage> {
           textStyle: const TextStyle(fontSize: 18),
         ),
         onPressed: () {
-          if (_addPetStateKey.currentState!.validate()) {
+          if (_editPetStateKey.currentState!.validate()) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Adding pet...')),
+              const SnackBar(content: Text('Editing pet...')),
             );
-            addPet(
-              _name,
-              _notes,
-              _age,
-              _species,
-              _breed,
-            );
+            editPet();
           }
         },
-        child: const Text("Add Pet"),
+        child: const Text("Edit Pet"),
       ),
     );
   }
 
-  void addPet(
-    _name,
-    _notes,
-    _age,
-    _species,
-    _breed,
-  ) async {
+  void editPet() async {
     final uid = auth.currentUser!.uid;
     // _age = int.parse(_age);
-    String _fileName = Timestamp.now().millisecondsSinceEpoch.toString() +
-        p.extension(image!.path);
+    String apiURL = 'https://nc-project-api.herokuapp.com/api/pets/$_petId';
+    if (image != null) {
+      String _fileName = Timestamp.now().millisecondsSinceEpoch.toString() +
+          p.extension(image!.path);
 
-    UploadTask _task =
-        FirebaseStorage.instance.ref("images/$uid/$_fileName").putFile(image!);
+      UploadTask _task = FirebaseStorage.instance
+          .ref("images/$uid/$_fileName")
+          .putFile(image!);
 
-    return _task.then((_snapshot) async {
-      String _downloadURL = await _snapshot.ref.getDownloadURL();
+      return _task.then((_snapshot) async {
+        String _downloadURL = await _snapshot.ref.getDownloadURL();
 
-      await http.post(
-        Uri.parse('https://nc-project-api.herokuapp.com/api/users/$uid/pets'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(<String, dynamic>{
-          "name": _name!,
-          "availability": true,
-          "desc": _notes!,
-          "age": _age!,
-          "img": _downloadURL,
-          "species": _species!,
-          "breed": _breed,
-          // "petId": uid + Timestamp.now().millisecondsSinceEpoch.toString(),
-        }),
-      );
-      Navigator.pushNamed(context, 'profile');
-    });
+        await http.patch(Uri.parse(apiURL),
+            headers: <String, String>{
+              'Content-Type': 'application/json; charset=UTF-8',
+            },
+            body: jsonEncode(<String, dynamic>{
+              "updatedInfo": {
+                "name": _name!,
+                "availability": true,
+                "desc": _notes!,
+                "age": _age!,
+                "img": _downloadURL,
+                "species": _species!,
+                "breed": _breed,
+              },
+              "userId": uid,
+            }));
+        Navigator.pushNamed(context, 'nav');
+      });
+    } else {
+      await http.patch(Uri.parse(apiURL),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          body: jsonEncode(<String, dynamic>{
+            "updatedInfo": {
+              "name": _name!,
+              "availability": true,
+              "desc": _notes!,
+              "age": _age!,
+              "img": widget.petObject['img'],
+              "species": _species!,
+              "breed": _breed,
+            },
+            "userId": uid,
+          }));
+      Navigator.pushNamed(context, 'nav');
+    }
+    //if image IS null
   }
 }

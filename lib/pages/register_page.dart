@@ -5,7 +5,6 @@ import "dart:io"; //
 import 'package:flutter/services.dart';
 import 'package:nc_project/services/firebase_service.dart';
 
-
 class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);
 
@@ -287,7 +286,6 @@ class _RegisterPageState extends State<RegisterPage> {
         password: _password!,
         postcode: _postcode!,
         image: imageProfile!);
-    print(imageProfile);
     if (_result) Navigator.pop(context);
   }
 }

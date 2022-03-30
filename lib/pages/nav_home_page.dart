@@ -1,23 +1,23 @@
 import "package:flutter/material.dart";
 import 'package:nc_project/pages/home_page.dart';
+import 'package:nc_project/pages/chat_page.dart';
 import 'package:nc_project/pages/profile_page.dart';
 
 class NavHomePage extends StatefulWidget {
   const NavHomePage({Key? key}) : super(key: key);
 
   @override
-  State<NavHomePage> createState() =>
-      _NavHomePageState();
+  State<NavHomePage> createState() => _NavHomePageState();
 }
 
-class _NavHomePageState
-    extends State<NavHomePage> {
+class _NavHomePageState extends State<NavHomePage> {
   int _selectedIndex = 0;
   String _appBarName = "Home";
 
-  static const List<Widget> _pages = <Widget>[
-    HomePage(),
-    ProfilePage(),
+  final List<Widget> _pages = <Widget>[
+    const HomePage(),
+    const ChatPage(),
+    const ProfilePage(null),
   ];
 
   void _onItemTapped(int index) {
@@ -28,6 +28,9 @@ class _NavHomePageState
           _appBarName = "Home";
           break;
         case 1:
+          _appBarName = "Conversations";
+          break;
+        case 2:
           _appBarName = "Profile";
           break;
       }
@@ -39,19 +42,13 @@ class _NavHomePageState
     return Scaffold(
       appBar: (_appBarName == "Home")
           ? AppBar(
-              backgroundColor:
-                  const Color.fromARGB(
-                      255, 83, 167, 245),
+              backgroundColor: const Color.fromARGB(255, 83, 167, 245),
               centerTitle: true,
-              title: Image.asset(
-                  'ptp_logolong.png',
-                  height: 40,
-                  fit: BoxFit.cover),
+              title: Image.asset('ptp_logolong.png',
+                  height: 40, fit: BoxFit.cover),
             )
           : AppBar(
-              backgroundColor:
-                  const Color.fromARGB(
-                      255, 83, 167, 245),
+              backgroundColor: const Color.fromARGB(255, 83, 167, 245),
               centerTitle: true,
               title: Text(_appBarName),
             ),
@@ -65,13 +62,17 @@ class _NavHomePageState
             label: 'Home',
           ),
           BottomNavigationBarItem(
+            icon: Icon(Icons.question_answer_outlined),
+            label: 'Chat',
+            backgroundColor: Colors.purple,
+          ),
+          BottomNavigationBarItem(
             icon: Icon(Icons.face),
             label: 'Profile',
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: const Color.fromARGB(
-            255, 83, 167, 245),
+        selectedItemColor: const Color.fromARGB(255, 83, 167, 245),
         onTap: _onItemTapped,
       ),
     );
