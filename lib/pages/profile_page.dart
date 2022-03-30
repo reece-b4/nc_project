@@ -6,7 +6,6 @@ import "dart:convert";
 import "package:http/http.dart" as http;
 import 'package:nc_project/pages/edit_pet_page.dart';
 
-
 class ProfilePage extends StatefulWidget {
   final String? _passedInData;
   const ProfilePage(this._passedInData, {Key? key}) : super(key: key);
@@ -34,7 +33,9 @@ class _ProfilePageState extends State<ProfilePage> {
       final uid = auth.currentUser!.uid;
       String _idToUse;
 
-      widget._passedInData != null ? _idToUse = widget._passedInData! : _idToUse = uid;
+      widget._passedInData != null
+          ? _idToUse = widget._passedInData!
+          : _idToUse = uid;
 
       final response = await http.get(Uri.parse(
           'https://nc-project-api.herokuapp.com/api/users/$_idToUse'));
@@ -349,7 +350,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _messageButton(uid, _username, _img) {
+  Widget _messageButton(_idToUse, _username, _img) {
     return SizedBox.fromSize(
       size: const Size(50, 50),
       child: ClipOval(
@@ -357,16 +358,16 @@ class _ProfilePageState extends State<ProfilePage> {
           color: Colors.blue,
           child: InkWell(
             onTap: () {
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(builder: (context) {
-              //     return const ChatDetailPage(
-              //       name: "Test Testington",
-              //       otherUser: uid,
-              //       image: "https://i.pravatar.cc/300",
-              //     );
-              //   }),
-              // );
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) {
+                  return ChatDetailPage(
+                    name: _username,
+                    otherUser: _idToUse,
+                    image: _img,
+                  );
+                }),
+              );
             },
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
