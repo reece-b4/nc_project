@@ -1,6 +1,6 @@
 import "package:flutter/material.dart";
 import 'package:nc_project/pages/home_page.dart';
-import 'package:nc_project/pages/conversations_page.dart';
+import 'package:nc_project/pages/chat_page.dart';
 import 'package:nc_project/pages/profile_page.dart';
 
 class NavHomePage extends StatefulWidget {
@@ -16,7 +16,7 @@ class _NavHomePageState extends State<NavHomePage> {
 
   final List<Widget> _pages = <Widget>[
     const HomePage(),
-    ConversationsPage(),
+    const ChatPage(),
     const ProfilePage(),
   ];
 
