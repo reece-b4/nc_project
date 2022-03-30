@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:nc_project/pages/models/chat_message_mode.dart';
 
 class ChatDetailPage extends StatefulWidget {
+  final bool fromChat;
   final String name;
   final String otherUser;
   final String image;
@@ -12,7 +13,8 @@ class ChatDetailPage extends StatefulWidget {
       {Key? key,
       required this.name,
       required this.otherUser,
-      required this.image})
+      required this.image,
+      required this.fromChat})
       : super(key: key);
 
   @override
@@ -47,7 +49,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
         "name": name,
       };
     } catch (error) {
-      print(error);
+      rethrow;
     }
   }
 
@@ -68,7 +70,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
           .doc(_conversationId)
           .snapshots();
     } catch (error) {
-      print(error);
+      rethrow;
     }
   }
 
@@ -112,7 +114,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
         )
       });
     } catch (error) {
-      print(error);
+      rethrow;
     }
   }
 
@@ -168,7 +170,11 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
               children: <Widget>[
                 IconButton(
                   onPressed: () {
-                    Navigator.pushNamed(context, "chat");
+                    if (widget.fromChat) {
+                      Navigator.pushNamed(context, "chat");
+                    } else {
+                      Navigator.pop(context);
+                    }
                   },
                   icon: const Icon(
                     Icons.arrow_back,
