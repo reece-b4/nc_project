@@ -7,6 +7,9 @@ import "dart:convert";
 import "package:http/http.dart" as http;
 import 'package:nc_project/pages/edit_pet_page.dart';
 import 'package:intl/intl.dart';
+import 'package:get_it/get_it.dart';
+import 'package:nc_project/services/firebase_service.dart';
+
 
 class ProfilePage extends StatefulWidget {
   final String? _passedInData;
@@ -19,21 +22,31 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  int _selectedIndex = 2;
+  final List<String> _pages = <String>["home", "chat", "profile"];
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    Navigator.popAndPushNamed(context, _pages[_selectedIndex]);
+  }
+
   Map _userJson = {};
   String _username = "";
   String _postcode = "";
+  String _area = "";
   String _img = "";
   List _pets = [];
   List _reviews = [];
   String _isBreed = "";
+  String _idToUse = "";
+  FirebaseService? _firebaseService;
 
   final FirebaseAuth auth = FirebaseAuth.instance;
 
   void fetchUser() async {
     try {
       final uid = auth.currentUser!.uid;
-      String _idToUse;
-
       widget._passedInData != null
           ? _idToUse = widget._passedInData!
           : _idToUse = uid;
@@ -44,8 +57,13 @@ class _ProfilePageState extends State<ProfilePage> {
       setState(() {
         _userJson = jsonData;
         _username = _userJson['user']['username'];
-        _postcode = _userJson['user']['postcode'];
+        _postcode = _userJson['user']['postcode'].substring(0, 3);
         _img = _userJson['user']['img'];
+        try {
+          _area = _userJson['user']['area'];
+        } catch (e) {
+          _area = "";
+        }
         try {
           _pets = _userJson['user']['pets'];
         } catch (error) {
@@ -58,7 +76,7 @@ class _ProfilePageState extends State<ProfilePage> {
         }
       });
     } catch (error) {
-      print(error);
+      rethrow;
     }
   }
 
@@ -66,14 +84,22 @@ class _ProfilePageState extends State<ProfilePage> {
   void initState() {
     super.initState();
     fetchUser();
+    _firebaseService = GetIt.instance.get<FirebaseService>();
   }
 
   double? _deviceHeight;
+  double? _deviceWidth;
 
   @override
   Widget build(BuildContext context) {
     _deviceHeight = MediaQuery.of(context).size.height;
+    _deviceWidth = MediaQuery.of(context).size.height;
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 83, 167, 245),
+        centerTitle: true,
+        title: Image.asset('ptp_logolong.png', height: 40, fit: BoxFit.cover),
+      ),
       body: SafeArea(
         child: Container(
           color: const Color.fromARGB(255, 245, 245, 245),
@@ -93,12 +119,32 @@ class _ProfilePageState extends State<ProfilePage> {
                         ? _addReviewButton()
                         : const Text(''),
                     _userReviewsCard(),
+                    _logoutButton(),
                   ],
                 ),
               ),
             ],
           ),
         ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.question_answer_outlined),
+            label: 'Chat',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.face),
+            label: 'Profile',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: const Color.fromARGB(255, 83, 167, 245),
+        onTap: _onItemTapped,
       ),
     );
   }
@@ -135,7 +181,8 @@ class _ProfilePageState extends State<ProfilePage> {
           fit: BoxFit.cover,
           image: _img.isNotEmpty
               ? NetworkImage(_img)
-              : const NetworkImage("https://i.pravatar.cc/300"),
+              : const NetworkImage(
+                  "https://cdn.pixabay.com/photo/2019/09/14/09/44/cat-4475583_960_720.png"),
         ),
       ),
     );
@@ -151,7 +198,7 @@ class _ProfilePageState extends State<ProfilePage> {
           _username,
           style: const TextStyle(fontSize: 30, fontWeight: FontWeight.w600),
         ),
-        Text(_postcode,
+        Text(_area != "" ? _area : _postcode,
             style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600))
       ],
     );
@@ -324,7 +371,7 @@ class _ProfilePageState extends State<ProfilePage> {
           const Padding(padding: EdgeInsets.all(5)),
           widget._passedInData == null
               ? _addButton()
-              : _messageButton(auth.currentUser!.uid, _username, _img)
+              : _messageButton(_username, _img)
         ],
       ),
     );
@@ -354,7 +401,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _messageButton(_idToUse, _username, _img) {
+  Widget _messageButton(_username, _img) {
     return SizedBox.fromSize(
       size: const Size(50, 50),
       child: ClipOval(
@@ -411,6 +458,32 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _logoutButton() {
+    return Container(
+      margin: const EdgeInsets.only(top: 10.0, bottom: 5),
+      child: Visibility(
+        visible: widget._passedInData != null ? false : true,
+        child: MaterialButton(
+          onPressed: () async {
+            await _firebaseService!.logout();
+            Navigator.popAndPushNamed(context, 'login');
+          },
+          minWidth: _deviceWidth! * 0.30,
+          height: _deviceHeight! * 0.05,
+          color: Colors.red,
+          child: const Text(
+            "Logout",
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 25,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
       ),
     );
   }

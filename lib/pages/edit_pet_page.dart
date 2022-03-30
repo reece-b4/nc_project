@@ -36,7 +36,6 @@ class EditPetPageState extends State<EditPetPage> {
   @override
   void initState() {
     super.initState();
-    final uid = auth.currentUser!.uid;
     _name = widget.petObject['name'];
     _age = widget.petObject['age'];
     _breed = widget.petObject['breed'];
@@ -331,7 +330,7 @@ class EditPetPageState extends State<EditPetPage> {
               },
               "userId": uid,
             }));
-        Navigator.pushNamed(context, 'nav');
+        Navigator.pushNamed(context, 'profile');
       });
     } else {
       await http.patch(Uri.parse(apiURL),
@@ -350,7 +349,7 @@ class EditPetPageState extends State<EditPetPage> {
             },
             "userId": uid,
           }));
-      Navigator.pushNamed(context, 'nav');
+      Navigator.pushNamed(context, 'profile');
     }
     //if image IS null
   }
