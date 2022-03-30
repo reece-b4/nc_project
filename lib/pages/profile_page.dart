@@ -1,11 +1,11 @@
 import "package:flutter/material.dart";
 import "package:flip_card/flip_card.dart";
+import 'package:nc_project/pages/chat_detail_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import "dart:convert";
 import "package:http/http.dart" as http;
 import 'package:nc_project/pages/edit_pet_page.dart';
 import 'package:nc_project/pages/ChatDetailPage.dart';
-
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
