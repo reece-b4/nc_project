@@ -88,4 +88,7 @@ class FirebaseService {
       return false;
     }
   }
+  Future<void> logout() async {
+    await _auth.signOut();
+  }
 }
