@@ -239,16 +239,26 @@ class _HomePageState extends State<HomePage> {
   Widget searchTerm() {
     return SizedBox(
         width: 100,
-        child: TextButton(
-          style: ButtonStyle(
-            overlayColor: MaterialStateProperty.resolveWith<Color?>(
-                (Set<MaterialState> states) {
-              if (states.contains(MaterialState.focused)) return Colors.red;
-              return null; // Defer to the widget's default.
-            }),
+        child: Visibility(
+          visible: _searchValue != 'Search' ? true : false,
+          child: TextButton(
+            style: ButtonStyle(
+                backgroundColor:
+                    MaterialStateProperty.all<Color>(Colors.lightGreen)),
+            onPressed: () {
+              setState(
+                () {
+                  _searchValue = 'Search';
+                  fetchPets(
+                      dropdownPetValue, dropdownDistanceValue, _searchValue);
+                },
+              );
+            },
+            child: Row(children: <Widget>[
+              const Icon(Icons.clear),
+              Text(_searchValue)
+            ]),
           ),
-          onPressed: () {},
-          child: Text('TextButton'),
         ));
   }
 
