@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:nc_project/pages/chat_page.dart';
 import 'package:nc_project/pages/models/chat_message_mode.dart';
 
 class ChatDetailPage extends StatefulWidget {
