@@ -22,6 +22,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Map _userJson = {};
   String _username = "";
   String _postcode = "";
+  String _area = "";
   String _img = "";
   List _pets = [];
   List _reviews = [];
@@ -44,8 +45,13 @@ class _ProfilePageState extends State<ProfilePage> {
       setState(() {
         _userJson = jsonData;
         _username = _userJson['user']['username'];
-        _postcode = _userJson['user']['postcode'];
+        _postcode = _userJson['user']['postcode'].substring(0, 3);
         _img = _userJson['user']['img'];
+        try {
+          _area = _userJson['user']['area'];
+        } catch (e) {
+          _area = "";
+        }
         try {
           _pets = _userJson['user']['pets'];
         } catch (error) {
@@ -152,7 +158,7 @@ class _ProfilePageState extends State<ProfilePage> {
           _username,
           style: const TextStyle(fontSize: 30, fontWeight: FontWeight.w600),
         ),
-        Text(_postcode,
+        Text(_area != "" ? _area : _postcode,
             style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600))
       ],
     );
