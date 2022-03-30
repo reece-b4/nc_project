@@ -265,7 +265,10 @@ class _ProfilePageState extends State<ProfilePage> {
                                 children: [
                                   InkWell(
                                     onTap: () {
-                                      deletePet(_pets[index]["petId"]);
+                                      setState(() {
+                                        deletePet(_pets[index]["petId"]);
+                                        _pets.removeAt(index);
+                                      });
                                     },
                                     child: const Icon(
                                       Icons.delete,
@@ -466,6 +469,5 @@ class _ProfilePageState extends State<ProfilePage> {
         body: jsonEncode(<String, dynamic>{
           "userId": uid,
         }));
-    setState(() {});
   }
 }
