@@ -122,8 +122,9 @@ class EditPetPageState extends State<EditPetPage> {
       initialValue: widget.petObject['name'],
       decoration: const InputDecoration(hintText: "Whats your pet's name?"),
       autovalidateMode: AutovalidateMode.onUserInteraction,
-      validator: (_value) =>
-          _value!.length > 1 ? null : "Must be greater than 1 character",
+      validator: (_value) => _value!.isNotEmpty && _value.length < 16
+          ? null
+          : "Must be between 1 and 15 characters",
       onChanged: (_value) {
         setState(() {
           _name = _value;
@@ -157,8 +158,9 @@ class EditPetPageState extends State<EditPetPage> {
       decoration: const InputDecoration(hintText: "What species is your pet?"),
       initialValue: widget.petObject['species'],
       autovalidateMode: AutovalidateMode.onUserInteraction,
-      validator: (_value) =>
-          _value!.length > 2 ? null : "Must be greater than 2 characters",
+      validator: (_value) => _value!.length > 2 && _value.length < 13
+          ? null
+          : "Must be between 3 and 12 characters",
       onChanged: (_value) {
         setState(() {
           _species = _value;
@@ -187,8 +189,9 @@ class EditPetPageState extends State<EditPetPage> {
           const InputDecoration(hintText: "Please add short description"),
       initialValue: widget.petObject['desc'],
       autovalidateMode: AutovalidateMode.onUserInteraction,
-      validator: (_value) =>
-          _value!.length > 20 ? null : "Must be greater than 20 characters",
+      validator: (_value) => _value!.length > 5 && _value.length < 51
+          ? null
+          : "Must be between 6 and 50 characters",
       onChanged: (_value) {
         setState(
           () {
