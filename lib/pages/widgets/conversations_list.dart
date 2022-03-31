@@ -68,7 +68,9 @@ class _ConversationListState extends State<ConversationList> {
                             height: 6,
                           ),
                           Text(
-                            widget.messageText,
+                            widget.messageText.length > 60
+                                ? widget.messageText.substring(0, 60) + "..."
+                                : widget.messageText,
                             style: TextStyle(
                                 fontSize: 13,
                                 color: Colors.grey.shade600,
