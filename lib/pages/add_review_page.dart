@@ -75,11 +75,11 @@ class _AddReviewState extends State<AddReviewPage> {
   Widget _reviewTextField() {
     return TextFormField(
       maxLines: 5,
-      decoration: const InputDecoration(hintText: "Write a review?"),
+      decoration: const InputDecoration(hintText: "Write a review"),
       autovalidateMode: AutovalidateMode.onUserInteraction,
-      validator: (_value) => _value!.length > 20 && _value.length < 300
+      validator: (_value) => _value!.isNotEmpty && _value.length < 300
           ? null
-          : "Must be greater than 20 and less than 300 characters ",
+          : "Reviews must not be empty or longer than 300 characters",
       onChanged: (_value) {
         setState(() {
           _review = _value;
