@@ -4,7 +4,7 @@ import "package:firebase_auth/firebase_auth.dart";
 import "dart:convert";
 import "package:http/http.dart" as http;
 import 'package:nc_project/pages/profile_page.dart';
-import 'package:bottom_navy_bar/bottom_navy_bar.dart';
+import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -34,6 +34,7 @@ class _HomePageState extends State<HomePage> {
 
   final FirebaseAuth auth = FirebaseAuth.instance;
 
+  static set home(String home) {}
   @override
   void initState() {
     super.initState();
@@ -42,50 +43,52 @@ class _HomePageState extends State<HomePage> {
 
   void fetchPets(
       _dropdownPetValue, _dropdownDistanceValue, _searchValue) async {
-    final user = auth.currentUser;
-    final uid = user!.uid;
-    var splitValue = _dropdownDistanceValue!.split(" ");
-    var dropdownDistanceNumber = splitValue[0];
-    var httpAddress = 'https://nc-project-api.herokuapp.com/api/pets';
+    try {
+      final user = auth.currentUser;
+      final uid = user!.uid;
+      var splitValue = _dropdownDistanceValue!.split(" ");
+      var dropdownDistanceNumber = splitValue[0];
+      var httpAddress = 'https://nc-project-api.herokuapp.com/api/pets';
 
-    if (_dropdownPetValue != "All pets" ||
-        _dropdownDistanceValue != "Any distance" ||
-        _searchValue != "Search") {
-      httpAddress = httpAddress + '?';
-    }
-    if (_dropdownPetValue != "All pets") {
-      httpAddress = httpAddress + 'species=' + _dropdownPetValue + '&&';
-    }
-    if (_dropdownDistanceValue != "Any distance") {
-      httpAddress = httpAddress + 'limit=' + dropdownDistanceNumber + '&&';
-    }
-    if (_searchValue != "Search") {
-      httpAddress = httpAddress + 'search=' + _searchValue;
-    }
-    var splitHttpAddress = httpAddress.split('');
-    if (splitHttpAddress.last == '&') {
-      splitHttpAddress.removeLast();
-      splitHttpAddress.removeLast();
-      httpAddress = splitHttpAddress.join('');
-    }
-
-    final response = await http.patch(
-      Uri.parse(httpAddress),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(<String, dynamic>{
-        "userId": uid,
-      }),
-    );
-    final jsonData = jsonDecode(response.body) as Map;
-    setState(() {
-      _allPets = [...jsonData["pets"]];
-      for (Map pet in _allPets!) {
-        _allSpeciesFromCards.add(
-            "${pet["species"][0].toUpperCase()}${pet["species"].substring(1).toLowerCase()}");
+      if (_dropdownPetValue != "All pets" ||
+          _dropdownDistanceValue != "Any distance" ||
+          _searchValue != "Search") {
+        httpAddress = httpAddress + '?';
       }
-    });
+      if (_dropdownPetValue != "All pets") {
+        httpAddress = httpAddress + 'species=' + _dropdownPetValue + '&&';
+      }
+      if (_dropdownDistanceValue != "Any distance") {
+        httpAddress = httpAddress + 'limit=' + dropdownDistanceNumber + '&&';
+      }
+      if (_searchValue != "Search") {
+        httpAddress = httpAddress + 'search=' + _searchValue;
+      }
+      var splitHttpAddress = httpAddress.split('');
+      if (splitHttpAddress.last == '&') {
+        splitHttpAddress.removeLast();
+        splitHttpAddress.removeLast();
+        httpAddress = splitHttpAddress.join('');
+      }
+
+      final response = await http.patch(
+        Uri.parse(httpAddress),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, dynamic>{
+          "userId": uid,
+        }),
+      );
+      final jsonData = jsonDecode(response.body) as Map;
+      setState(() {
+        _allPets = [...jsonData["pets"]];
+        [...jsonData["pets"]].forEach((pet) => _allSpeciesFromCards.add(
+            "${pet["species"][0].toUpperCase()}${pet["species"].substring(1).toLowerCase()}"));
+      });
+    } catch (error) {
+      print(error);
+    }
   }
 
   @override
@@ -138,7 +141,8 @@ class _HomePageState extends State<HomePage> {
                     ),
                     Align(
                       alignment: Alignment.centerRight,
-                      child: SizedBox(
+                      child: Container(
+                        margin: const EdgeInsets.fromLTRB(0, 0, 1, 0),
                         child: searchBar(),
                       ),
                     )
@@ -163,34 +167,21 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavyBar(
-        selectedIndex: _selectedIndex,
-        showElevation: true,
-        itemCornerRadius: 24,
-        curve: Curves.easeIn,
-        onItemSelected: _onItemTapped,
-        items: <BottomNavyBarItem>[
-          BottomNavyBarItem(
-            icon: const Icon(Icons.home),
-            title: const Text('Home'),
-            activeColor: Colors.blueAccent,
-            textAlign: TextAlign.center,
-          ),
-          BottomNavyBarItem(
-            icon: const Icon(Icons.message),
-            title: const Text(
-              'Messages',
-            ),
-            activeColor: Colors.pink,
-            textAlign: TextAlign.center,
-          ),
-          BottomNavyBarItem(
-            icon: const Icon(Icons.person),
-            title: const Text('Profile'),
-            activeColor: Colors.black,
-            textAlign: TextAlign.center,
+      bottomNavigationBar: ConvexAppBar(
+        // selectedIndex: _selectedIndex,
+        style: TabStyle.react,
+        // onItemSelected: _onItemTapped,
+        backgroundColor: const Color.fromARGB(255, 83, 167, 245),
+        items: const [
+          TabItem(icon: Icon(Icons.home), title: 'Home'),
+          TabItem(icon: Icon(Icons.message), title: 'Message'),
+          TabItem(
+            icon: Icon(Icons.person),
+            title: 'Profile',
           ),
         ],
+        initialActiveIndex: _selectedIndex,
+        onTap: _onItemTapped,
       ),
     );
   }
@@ -202,7 +193,7 @@ class _HomePageState extends State<HomePage> {
     return Padding(
       padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
       child: SizedBox(
-        width: 100,
+        width: 110,
         child: DropdownButtonHideUnderline(
           child: Padding(
             padding: const EdgeInsets.all(0.0),
@@ -256,7 +247,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget distanceDropDown() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(60, 5, 5, 5),
+      padding: const EdgeInsets.fromLTRB(90, 5, 5, 5),
       child: SizedBox(
         width: 130,
         child: DropdownButtonHideUnderline(
@@ -317,7 +308,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget searchTerm() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(55, 10, 10, 10),
+      padding: const EdgeInsets.fromLTRB(85, 10, 10, 10),
       child: SizedBox(
           width: 90,
           height: 40,
@@ -358,10 +349,10 @@ class _HomePageState extends State<HomePage> {
       padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 400),
-        width: _foldedSearchBar ? 56 : _deviceWidth!,
+        width: _foldedSearchBar ? 52 : _deviceWidth!,
         height: 50,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(32),
+          borderRadius: BorderRadius.circular(30),
           color: Colors.white,
           boxShadow: kElevationToShadow[6],
         ),
@@ -406,6 +397,7 @@ class _HomePageState extends State<HomePage> {
                     padding: const EdgeInsets.all(16),
                     child: Icon(
                       _foldedSearchBar ? Icons.search : Icons.close,
+                      size: 18,
                       color: const Color.fromARGB(255, 0, 0, 0),
                     ),
                   ),
@@ -524,8 +516,8 @@ class _HomePageState extends State<HomePage> {
                   borderRadius: BorderRadius.circular(40),
                   gradient: const LinearGradient(
                       colors: [
-                        Color.fromARGB(255, 255, 245, 216),
-                        Color.fromARGB(255, 255, 245, 216),
+                        Color.fromARGB(255, 178, 208, 236),
+                        Color.fromARGB(255, 145, 193, 239),
                       ],
                       begin: Alignment.center,
                       stops: [0.4, 1],
@@ -581,7 +573,7 @@ class _HomePageState extends State<HomePage> {
                       SizedBox(
                         width: 250,
                         child: Text(
-                          "Distance: ${_allPets![index]["distance"]} miles\nAge: ${_allPets![index]["age"]}\nSpecies: ${_allPets![index]["species"]}\nBreed: ${_allPets![index]["breed"]}\nAvailability: ${_allPets![index]["availability"]}\nNotes: ${_allPets![index]["desc"]}",
+                          "Distance: ${_allPets![index]["distance"]} miles\nAge: ${_allPets![index]["age"]}\nSpecies: ${_allPets![index]["species"]}\nBreed: ${_allPets![index]["breed"]}\nNotes: ${_allPets![index]["desc"]}",
                           style: const TextStyle(
                             fontFamily: "Roboto",
                             decoration: TextDecoration.none,
@@ -591,7 +583,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
+                        padding: const EdgeInsets.fromLTRB(0, 30, 0, 0),
                         child: SizedBox(
                           width: 180,
                           child: ElevatedButton(
@@ -602,10 +594,10 @@ class _HomePageState extends State<HomePage> {
                                 }));
                               },
                               style: ButtonStyle(
-                                  backgroundColor: MaterialStateProperty.all<
-                                          Color>(
-                                      const Color.fromARGB(255, 83, 167, 245))),
-                              child: const Text("Contact owner",
+                                  backgroundColor:
+                                      MaterialStateProperty.all<Color>(
+                                          Colors.redAccent)),
+                              child: const Text("Owner profile",
                                   style: TextStyle(
                                       fontFamily: "Roboto",
                                       decoration: TextDecoration.none,

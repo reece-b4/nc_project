@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:nc_project/pages/widgets/conversations_list.dart';
-import 'package:bottom_navy_bar/bottom_navy_bar.dart';
+import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({Key? key}) : super(key: key);
@@ -126,34 +126,21 @@ class _ChatPageState extends State<ChatPage> {
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavyBar(
-        selectedIndex: _selectedIndex,
-        showElevation: true,
-        itemCornerRadius: 24,
-        curve: Curves.easeIn,
-        onItemSelected: _onItemTapped,
-        items: <BottomNavyBarItem>[
-          BottomNavyBarItem(
-            icon: const Icon(Icons.home),
-            title: const Text('Home'),
-            activeColor: Colors.blueAccent,
-            textAlign: TextAlign.center,
-          ),
-          BottomNavyBarItem(
-            icon: const Icon(Icons.message),
-            title: const Text(
-              'Messages',
-            ),
-            activeColor: Colors.pink,
-            textAlign: TextAlign.center,
-          ),
-          BottomNavyBarItem(
-            icon: const Icon(Icons.person),
-            title: const Text('Profile'),
-            activeColor: Colors.black,
-            textAlign: TextAlign.center,
+      bottomNavigationBar: ConvexAppBar(
+        // selectedIndex: _selectedIndex,
+        style: TabStyle.react,
+        // onItemSelected: _onItemTapped,
+        backgroundColor: const Color.fromARGB(255, 83, 167, 245),
+        items: const [
+          TabItem(icon: Icon(Icons.home), title: 'Home'),
+          TabItem(icon: Icon(Icons.message), title: 'Message'),
+          TabItem(
+            icon: Icon(Icons.person),
+            title: 'Profile',
           ),
         ],
+        initialActiveIndex: _selectedIndex,
+        onTap: _onItemTapped,
       ),
     );
   }
