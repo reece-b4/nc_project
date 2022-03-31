@@ -9,7 +9,7 @@ import 'package:nc_project/pages/edit_pet_page.dart';
 import 'package:intl/intl.dart';
 import 'package:get_it/get_it.dart';
 import 'package:nc_project/services/firebase_service.dart';
-import 'package:bottom_navy_bar/bottom_navy_bar.dart';
+import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 
 class ProfilePage extends StatefulWidget {
   final String? _passedInData;
@@ -127,34 +127,21 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavyBar(
-        selectedIndex: _selectedIndex,
-        showElevation: true,
-        itemCornerRadius: 24,
-        curve: Curves.easeIn,
-        onItemSelected: _onItemTapped,
-        items: <BottomNavyBarItem>[
-          BottomNavyBarItem(
-            icon: const Icon(Icons.home),
-            title: const Text('Home'),
-            activeColor: Colors.blueAccent,
-            textAlign: TextAlign.center,
-          ),
-          BottomNavyBarItem(
-            icon: const Icon(Icons.message),
-            title: const Text(
-              'Messages',
-            ),
-            activeColor: Colors.pink,
-            textAlign: TextAlign.center,
-          ),
-          BottomNavyBarItem(
-            icon: const Icon(Icons.person),
-            title: const Text('Profile'),
-            activeColor: Colors.black,
-            textAlign: TextAlign.center,
+      bottomNavigationBar: ConvexAppBar(
+        // selectedIndex: _selectedIndex,
+        style: TabStyle.react,
+        // onItemSelected: _onItemTapped,
+        backgroundColor: const Color.fromARGB(255, 83, 167, 245),
+        items: const [
+          TabItem(icon: Icon(Icons.home), title: 'Home'),
+          TabItem(icon: Icon(Icons.message), title: 'Message'),
+          TabItem(
+            icon: Icon(Icons.person),
+            title: 'Profile',
           ),
         ],
+        initialActiveIndex: _selectedIndex,
+        onTap: _onItemTapped,
       ),
     );
   }
@@ -192,7 +179,7 @@ class _ProfilePageState extends State<ProfilePage> {
           image: _img.isNotEmpty
               ? NetworkImage(_img)
               : const NetworkImage(
-                  "https://cdn.pixabay.com/photo/2019/09/14/09/44/cat-4475583_960_720.png"),
+                  "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAAAA1BMVEX///+nxBvIAAAASElEQVR4nO3BgQAAAADDoPlTX+AIVQEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwDcaiAAFXD1ujAAAAAElFTkSuQmCC"),
         ),
       ),
     );
@@ -293,12 +280,12 @@ class _ProfilePageState extends State<ProfilePage> {
                 height: _deviceHeight! * 0.20,
                 width: _deviceHeight! * 0.20,
                 decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 255, 245, 216),
+                  color: const Color.fromARGB(255, 202, 229, 255),
                   borderRadius: BorderRadius.circular(40),
                 ),
-                padding: const EdgeInsets.fromLTRB(20, 10, 5, 5),
+                padding: const EdgeInsets.fromLTRB(25, 25, 5, 5),
                 child: Align(
-                  alignment: Alignment.topCenter,
+                  alignment: Alignment.center,
                   child: Column(
                     children: [
                       RichText(
@@ -306,20 +293,30 @@ class _ProfilePageState extends State<ProfilePage> {
                           style: DefaultTextStyle.of(context).style,
                           children: <TextSpan>[
                             TextSpan(
-                                text:
-                                    "\nAge: ${_pets[index]["age"]}\nSpecies: ${_pets[index]["species"]}"),
+                                text: "${_pets[index]["name"]}\n",
+                                style: const TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 25,
+                                    fontWeight: FontWeight.w900)),
                             TextSpan(
-                              text: _isBreed,
-                            ),
-                            TextSpan(
                                 text:
-                                    "\nAvailability: ${_pets[index]["availability"]}\nNotes: ${_pets[index]["desc"]}"),
+                                    "\nAge: ${_pets[index]["age"]}\nSpecies: ${_pets[index]["species"]}",
+                                style: const TextStyle(
+                                    color: Colors.black, fontSize: 15)),
+                            TextSpan(
+                                text: _isBreed,
+                                style: const TextStyle(
+                                    color: Colors.black, fontSize: 15)),
+                            TextSpan(
+                                text: "\nNotes: ${_pets[index]["desc"]}",
+                                style: const TextStyle(
+                                    color: Colors.black, fontSize: 15)),
                           ],
                         ),
                       ),
                       widget._passedInData == null
                           ? Padding(
-                              padding: const EdgeInsets.fromLTRB(0, 5, 0, 0),
+                              padding: const EdgeInsets.fromLTRB(0, 15, 0, 0),
                               child: Row(
                                 children: [
                                   InkWell(
@@ -347,7 +344,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                       },
                                       child: const Icon(
                                         Icons.edit,
-                                        color: Colors.blue,
+                                        color: Color.fromARGB(255, 0, 116, 211),
                                       ),
                                     ),
                                   ),
