@@ -19,7 +19,6 @@ class _HomePageState extends State<HomePage> {
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
-      print(index);
     });
     Navigator.popAndPushNamed(context, _pages[_selectedIndex]);
   }
@@ -35,7 +34,6 @@ class _HomePageState extends State<HomePage> {
 
   final FirebaseAuth auth = FirebaseAuth.instance;
 
-  static set home(String home) {}
   @override
   void initState() {
     super.initState();
@@ -44,52 +42,50 @@ class _HomePageState extends State<HomePage> {
 
   void fetchPets(
       _dropdownPetValue, _dropdownDistanceValue, _searchValue) async {
-    try {
-      final user = auth.currentUser;
-      final uid = user!.uid;
-      var splitValue = _dropdownDistanceValue!.split(" ");
-      var dropdownDistanceNumber = splitValue[0];
-      var httpAddress = 'https://nc-project-api.herokuapp.com/api/pets';
+    final user = auth.currentUser;
+    final uid = user!.uid;
+    var splitValue = _dropdownDistanceValue!.split(" ");
+    var dropdownDistanceNumber = splitValue[0];
+    var httpAddress = 'https://nc-project-api.herokuapp.com/api/pets';
 
-      if (_dropdownPetValue != "All pets" ||
-          _dropdownDistanceValue != "Any distance" ||
-          _searchValue != "Search") {
-        httpAddress = httpAddress + '?';
-      }
-      if (_dropdownPetValue != "All pets") {
-        httpAddress = httpAddress + 'species=' + _dropdownPetValue + '&&';
-      }
-      if (_dropdownDistanceValue != "Any distance") {
-        httpAddress = httpAddress + 'limit=' + dropdownDistanceNumber + '&&';
-      }
-      if (_searchValue != "Search") {
-        httpAddress = httpAddress + 'search=' + _searchValue;
-      }
-      var splitHttpAddress = httpAddress.split('');
-      if (splitHttpAddress.last == '&') {
-        splitHttpAddress.removeLast();
-        splitHttpAddress.removeLast();
-        httpAddress = splitHttpAddress.join('');
-      }
-
-      final response = await http.patch(
-        Uri.parse(httpAddress),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(<String, dynamic>{
-          "userId": uid,
-        }),
-      );
-      final jsonData = jsonDecode(response.body) as Map;
-      setState(() {
-        _allPets = [...jsonData["pets"]];
-        [...jsonData["pets"]].forEach((pet) => _allSpeciesFromCards.add(
-            "${pet["species"][0].toUpperCase()}${pet["species"].substring(1).toLowerCase()}"));
-      });
-    } catch (error) {
-      print(error);
+    if (_dropdownPetValue != "All pets" ||
+        _dropdownDistanceValue != "Any distance" ||
+        _searchValue != "Search") {
+      httpAddress = httpAddress + '?';
     }
+    if (_dropdownPetValue != "All pets") {
+      httpAddress = httpAddress + 'species=' + _dropdownPetValue + '&&';
+    }
+    if (_dropdownDistanceValue != "Any distance") {
+      httpAddress = httpAddress + 'limit=' + dropdownDistanceNumber + '&&';
+    }
+    if (_searchValue != "Search") {
+      httpAddress = httpAddress + 'search=' + _searchValue;
+    }
+    var splitHttpAddress = httpAddress.split('');
+    if (splitHttpAddress.last == '&') {
+      splitHttpAddress.removeLast();
+      splitHttpAddress.removeLast();
+      httpAddress = splitHttpAddress.join('');
+    }
+
+    final response = await http.patch(
+      Uri.parse(httpAddress),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, dynamic>{
+        "userId": uid,
+      }),
+    );
+    final jsonData = jsonDecode(response.body) as Map;
+    setState(() {
+      _allPets = [...jsonData["pets"]];
+      for (Map pet in _allPets!) {
+        _allSpeciesFromCards.add(
+            "${pet["species"][0].toUpperCase()}${pet["species"].substring(1).toLowerCase()}");
+      }
+    });
   }
 
   @override
@@ -181,7 +177,7 @@ class _HomePageState extends State<HomePage> {
             textAlign: TextAlign.center,
           ),
           BottomNavyBarItem(
-            icon: Icon(Icons.message),
+            icon: const Icon(Icons.message),
             title: const Text(
               'Messages',
             ),

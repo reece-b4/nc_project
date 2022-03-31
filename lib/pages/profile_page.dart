@@ -11,7 +11,6 @@ import 'package:get_it/get_it.dart';
 import 'package:nc_project/services/firebase_service.dart';
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 
-
 class ProfilePage extends StatefulWidget {
   final String? _passedInData;
   const ProfilePage(this._passedInData, {Key? key}) : super(key: key);
@@ -28,7 +27,6 @@ class _ProfilePageState extends State<ProfilePage> {
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
-      print(index);
     });
     Navigator.popAndPushNamed(context, _pages[_selectedIndex]);
   }
@@ -143,7 +141,7 @@ class _ProfilePageState extends State<ProfilePage> {
             textAlign: TextAlign.center,
           ),
           BottomNavyBarItem(
-            icon: Icon(Icons.message),
+            icon: const Icon(Icons.message),
             title: const Text(
               'Messages',
             ),
@@ -536,33 +534,32 @@ class _ProfilePageState extends State<ProfilePage> {
               child: Wrap(
                 children: [
                   Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                 children: [ 
-                   Text(
-                    reviewTextHeader,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  Text(
-                  reviewTextBody,
-                    )
-                 ]
-                  ),
-                  widget._passedInData != null ?     
-            InkWell(
-              onTap: () {
-                setState(() {
-                deleteReview(index);
-                _reviews.removeAt(index);
-                });
-              },
-              child: const Icon(
-                Icons.delete,
-                color: Colors.red,
-              ),
-                    )
-                    : const Text(''),
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          reviewTextHeader,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        Text(
+                          reviewTextBody,
+                        )
+                      ]),
+                  widget._passedInData != null
+                      ? InkWell(
+                          onTap: () {
+                            setState(() {
+                              deleteReview(index);
+                              _reviews.removeAt(index);
+                            });
+                          },
+                          child: const Icon(
+                            Icons.delete,
+                            color: Colors.red,
+                          ),
+                        )
+                      : const Text(''),
                 ],
               ),
             );
@@ -600,7 +597,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
   void deleteReview(reviewIndex) async {
     await http.delete(
-        Uri.parse('https://nc-project-api.herokuapp.com/api/users/${widget._passedInData}/reviews'),
+        Uri.parse(
+            'https://nc-project-api.herokuapp.com/api/users/${widget._passedInData}/reviews'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },

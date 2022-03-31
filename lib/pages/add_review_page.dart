@@ -1,12 +1,8 @@
 import "package:flutter/material.dart";
-import 'package:flutter/services.dart';
-import "dart:io";
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:nc_project/pages/profile_page.dart';
-import 'package:path/path.dart' as p;
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AddReviewPage extends StatefulWidget {
   final String? _profileOwner;

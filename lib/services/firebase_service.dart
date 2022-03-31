@@ -60,7 +60,6 @@ class FirebaseService {
         return true; //once done, return true as it's a function that returns a bool. This becomes the value returned from line39
       });
     } catch (e) {
-      print(e);
       return false;
     }
   }
@@ -87,6 +86,7 @@ class FirebaseService {
       return {"isValid": false, "error": "Incorrect email or password"};
     }
   }
+
   Future<void> logout() async {
     await _auth.signOut();
   }

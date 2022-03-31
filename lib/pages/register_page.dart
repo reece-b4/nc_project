@@ -2,7 +2,6 @@ import 'package:flutter/material.dart'; //
 import 'package:get_it/get_it.dart';
 import 'package:image_picker/image_picker.dart';
 import "dart:io"; //
-import 'package:flutter/services.dart';
 import 'package:nc_project/services/firebase_service.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -30,31 +29,17 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Future pickImageFromGallery() async {
-    try {
-      final image = await ImagePicker().pickImage(source: ImageSource.gallery);
-
-      if (image == null) return;
-
-      final imageTemp = File(image.path);
-
-      setState(() => imageProfile = imageTemp);
-    } on PlatformException catch (e) {
-      print("Failed to pick image: $e");
-    }
+    final image = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (image == null) return;
+    final imageTemp = File(image.path);
+    setState(() => imageProfile = imageTemp);
   }
 
   Future pickImageFromCamera() async {
-    try {
-      final image = await ImagePicker().pickImage(source: ImageSource.camera);
-
-      if (image == null) return;
-
-      final imageTemp = File(image.path);
-
-      setState(() => imageProfile = imageTemp);
-    } on PlatformException catch (e) {
-      print('Failed to pick image: $e');
-    }
+    final image = await ImagePicker().pickImage(source: ImageSource.camera);
+    if (image == null) return;
+    final imageTemp = File(image.path);
+    setState(() => imageProfile = imageTemp);
   }
 
   @override
