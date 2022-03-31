@@ -17,7 +17,6 @@ class _ChatPageState extends State<ChatPage> {
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
-      print(index);
     });
     Navigator.popAndPushNamed(context, _pages[_selectedIndex]);
   }
@@ -25,6 +24,7 @@ class _ChatPageState extends State<ChatPage> {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   final FirebaseAuth auth = FirebaseAuth.instance;
   List _conversations = [];
+  List _allConversations = [];
 
   @override
   void initState() {
@@ -62,6 +62,7 @@ class _ChatPageState extends State<ChatPage> {
         .sort(((b, a) => a["time"].toString().compareTo(b["time"].toString())));
     setState(() {
       _conversations = awaitedConvos;
+      _allConversations = awaitedConvos;
     });
   }
 
@@ -82,6 +83,12 @@ class _ChatPageState extends State<ChatPage> {
               Padding(
                 padding: const EdgeInsets.only(top: 16, left: 16, right: 16),
                 child: TextField(
+                  onChanged: (value) => setState(() {
+                    _conversations = _allConversations
+                        .where((convo) =>
+                            convo["name"].contains(RegExp(".*$value.*")))
+                        .toList();
+                  }),
                   decoration: InputDecoration(
                     hintText: "Search...",
                     hintStyle: TextStyle(color: Colors.grey.shade600),
@@ -133,7 +140,7 @@ class _ChatPageState extends State<ChatPage> {
             textAlign: TextAlign.center,
           ),
           BottomNavyBarItem(
-            icon: Icon(Icons.message),
+            icon: const Icon(Icons.message),
             title: const Text(
               'Messages',
             ),
