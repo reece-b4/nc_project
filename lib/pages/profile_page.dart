@@ -71,6 +71,7 @@ class _ProfilePageState extends State<ProfilePage> {
         }
         try {
           _reviews = _userJson['user']['reviews'];
+          _reviews.sort((b, a) => a["timestamp"].compareTo(b["timestamp"]));
         } catch (error) {
           _reviews = [];
         }
