@@ -296,21 +296,21 @@ class _ProfilePageState extends State<ProfilePage> {
                                 text: "${_pets[index]["name"]}\n",
                                 style: const TextStyle(
                                     color: Colors.black,
-                                    fontSize: 25,
+                                    fontSize: 22,
                                     fontWeight: FontWeight.w900)),
                             TextSpan(
                                 text:
                                     "\nAge: ${_pets[index]["age"]}\nSpecies: ${_pets[index]["species"]}",
                                 style: const TextStyle(
-                                    color: Colors.black, fontSize: 15)),
+                                    color: Colors.black, fontSize: 13)),
                             TextSpan(
                                 text: _isBreed,
                                 style: const TextStyle(
-                                    color: Colors.black, fontSize: 15)),
+                                    color: Colors.black, fontSize: 13)),
                             TextSpan(
                                 text: "\nNotes: ${_pets[index]["desc"]}",
                                 style: const TextStyle(
-                                    color: Colors.black, fontSize: 15)),
+                                    color: Colors.black, fontSize: 13)),
                           ],
                         ),
                       ),
@@ -543,20 +543,6 @@ class _ProfilePageState extends State<ProfilePage> {
                           reviewTextBody,
                         )
                       ]),
-                  widget._passedInData != null
-                      ? InkWell(
-                          onTap: () {
-                            setState(() {
-                              deleteReview(index);
-                              _reviews.removeAt(index);
-                            });
-                          },
-                          child: const Icon(
-                            Icons.delete,
-                            color: Colors.red,
-                          ),
-                        )
-                      : const Text(''),
                 ],
               ),
             );
@@ -565,26 +551,29 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _addReviewButton() {
-    return SizedBox.fromSize(
-      size: const Size(50, 50),
-      child: ClipOval(
-        child: Material(
-          color: Colors.green,
-          child: InkWell(
-            onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return AddReviewPage(widget._passedInData);
-              }));
-            },
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
-                Icon(
-                  Icons.rate_review,
-                  color: Colors.white,
-                ),
-                Text('Add', style: TextStyle(color: Colors.white)),
-              ],
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(0, 0, 0, 15),
+      child: SizedBox.fromSize(
+        size: const Size(50, 50),
+        child: ClipOval(
+          child: Material(
+            color: Colors.green,
+            child: InkWell(
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return AddReviewPage(widget._passedInData);
+                }));
+              },
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  Icon(
+                    Icons.rate_review,
+                    color: Colors.white,
+                  ),
+                  Text('Add', style: TextStyle(color: Colors.white)),
+                ],
+              ),
             ),
           ),
         ),
