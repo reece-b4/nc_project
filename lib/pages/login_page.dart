@@ -168,7 +168,28 @@ class _LoginPageState extends State<LoginPage> {
       _loginFormKey.currentState!.save();
       Map _result = await _firebaseService!
           .loginUser(email: _email!, password: _password!);
-      if (_result["isValid"]) Navigator.popAndPushNamed(context, 'home');
+      if (_result["isValid"]) {
+        Navigator.popAndPushNamed(context, 'home');
+      } else {
+        setState(() {
+          showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: const Text("Login Error"),
+                  content: Text(_result["error"]),
+                  actions: <Widget>[
+                    ElevatedButton(
+                      child: const Text("OK"),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                );
+              });
+        });
+      }
     }
   }
 
