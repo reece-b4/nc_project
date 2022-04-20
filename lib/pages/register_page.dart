@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart'; //
+import 'package:flutter/material.dart'; 
 import 'package:get_it/get_it.dart';
 import 'package:image_picker/image_picker.dart';
-import "dart:io"; //
+import "dart:io"; 
 import 'package:nc_project/services/firebase_service.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -196,7 +196,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 Icon(
                   Icons.add_a_photo,
                   color: Colors.white,
-                ), // <-- Icon
+                ),
               ],
             ),
           ),
@@ -234,7 +234,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 Icon(
                   Icons.collections,
                   color: Colors.white,
-                ), // <-- Icon <-- Text
+                ), 
               ],
             ),
           ),

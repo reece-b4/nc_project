@@ -129,9 +129,7 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
       ),
       bottomNavigationBar: ConvexAppBar(
-        // selectedIndex: _selectedIndex,
         style: TabStyle.react,
-        // onItemSelected: _onItemTapped,
         backgroundColor: const Color.fromARGB(255, 83, 167, 245),
         items: const [
           TabItem(icon: Icon(Icons.home), title: 'Home'),
@@ -229,8 +227,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
             return FlipCard(
               fill: Fill
-                  .fillBack, // Fill the back side of the card to make in the same size as the front.
-              direction: FlipDirection.VERTICAL, // default
+                  .fillBack, 
+              direction: FlipDirection.VERTICAL, 
               front: Container(
                 margin: EdgeInsets.only(
                   bottom: _deviceHeight! * 0.02,
@@ -399,8 +397,8 @@ class _ProfilePageState extends State<ProfilePage> {
                 Icon(
                   Icons.pets,
                   color: Colors.white,
-                ), // <-- Icon
-                Text("Add", style: TextStyle(color: Colors.white)), // <-- Text
+                ),
+                Text("Add", style: TextStyle(color: Colors.white)),
               ],
             ),
           ),
@@ -435,8 +433,8 @@ class _ProfilePageState extends State<ProfilePage> {
                 Icon(
                   Icons.chat,
                   color: Colors.white,
-                ), // <-- Icon
-                Text("Chat", style: TextStyle(color: Colors.white)), // <-- Text
+                ), 
+                Text("Chat", style: TextStyle(color: Colors.white)), 
               ],
             ),
           ),

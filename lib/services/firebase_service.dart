@@ -27,22 +27,21 @@ class FirebaseService {
     try {
       UserCredential _userCredential =
           await _auth.createUserWithEmailAndPassword(
-              email: email, password: password); //creates the user in AUTH
+              email: email, password: password); 
 
       String _userId =
-          _userCredential.user!.uid; //we save uid of the newly created user
+          _userCredential.user!.uid; 
 
       String _fileName = Timestamp.now().millisecondsSinceEpoch.toString() +
           p.extension(image
-              .path); //create a filename that looks like "1231232131412341" which is timestamp + the extension of the file ie .png
+              .path); 
 
       UploadTask _task = _storage.ref("images/$_userId/$_fileName").putFile(
-          image); //uploads the file on storage at the reference(file path) we define
+          image); 
 
       return _task.then((_snapshot) async {
-        //this will be the final return to the whole function
         String _downloadURL = await _snapshot.ref
-            .getDownloadURL(); //create the url for the file we just uploaded
+            .getDownloadURL(); 
         await http.post(
           Uri.parse('https://nc-project-api.herokuapp.com/api/users'),
           headers: <String, String>{
@@ -56,8 +55,7 @@ class FirebaseService {
             "img": _downloadURL,
           }),
         );
-        //finally upload to firestore db
-        return true; //once done, return true as it's a function that returns a bool. This becomes the value returned from line39
+        return true; 
       });
     } catch (e) {
       return false;
