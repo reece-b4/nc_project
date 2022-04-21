@@ -26,7 +26,8 @@ Flutter, Firebase, Firestore, Express, Nodejs, Mocha, Chai
 Minimum version of Flutter: 2.10.3<br>
 
 To watch a video of the app in use please go to:
-### 🏠 [Northcoders](https://northcoders.com/projects/april-2022) -not yet live-
+### 📹 [Youtube short-video](https://youtu.be/expn-N1t7L4)
+### 🏠 [Northcoders long-video](https://northcoders.com/projects/april-2022) -not yet live-
 <br>
 
 ### 🖥️ [Front-end Git Repo](https://github.com/reece-b4/nc_project)
@@ -52,15 +53,11 @@ flutter pub get
 This may need to be done from the directory of your chosen platform eg, android/ios.
 
 ## Install and View on Emulator
-Android:
+Android: <br>
 Install android studio. In the virtual device manager create an emulator (Pixel 2 emulator recommended). In your chosen code editor, from main.dart, select your virtual device and click the play/start debugging button to launch the app
 
-Ios:
+Ios: <br>
 Install xcode . In devices and simulators create an emulator. In your chosen code editor, from main.dart, select your virtual device (iphone SE emulator recommended) and click the play/start debugging button to launch the app.
-
-
-## Dependencies/packages
-flutter sdk, cupertino_icons, image_picker, flip_card, flutter_chat_ui, firebase_core, firebase_auth, cloud_firestore, firebase_storage, get_it, http, intl, convex_bottom_bar <br>
 
 ## Author
 
