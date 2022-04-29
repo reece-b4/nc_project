@@ -22,17 +22,19 @@ on your own.
 ## Full Project Tech Stack
 Flutter, Firebase, Firestore, Express, Nodejs, Mocha, Chai
 
-<br>
 Minimum version of Flutter: 2.10.3<br>
 
+## Links
+
 To watch a video of the app in use please go to:
-### 📹 [Youtube short-video](https://youtu.be/expn-N1t7L4)
-### 🏠 [Northcoders long-video](https://northcoders.com/projects/april-2022) -not yet live-
+## 📹 [Youtube short-video](https://youtu.be/expn-N1t7L4)
+## 📹 [Northcoders full demo-video](https://northcoders.com/projects/april-2022/part-time-pet)
 <br>
 
-### 🖥️ [Front-end Git Repo](https://github.com/reece-b4/nc_project)
+## 🖥️ [Front-end Git Repo](https://github.com/reece-b4/nc_project)
 
-### 🖥️ [Back-end Git Repo](https://github.com/reece-b4/nc-project-api) 
+## 🖥️ [Back-end Git Repo](https://github.com/reece-b4/nc-project-api) 
+## 🖥️ [Back-end hosted API](https://nc-project-api.herokuapp.com/api/users)
  <br>
 
 ## Install flutter
